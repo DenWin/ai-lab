@@ -4,13 +4,13 @@
     Mirror the source-of-truth skills under skills/ into a Claude Code commands/ tree.
 
 .DESCRIPTION
-    The repo stores skills in folder form (skills/<group>/<name>/SKILL.md + bundled
+    The repo stores skills in folder form (shared/skills/<group>/<name>/SKILL.md + bundled
     resources) as the single source of truth. Claude Code surfaces namespaced slash
     commands (/coding:tdd, /session:recon) from a commands/<group>/<name>.md tree.
 
     This script generates that tree:
-      skills/<group>/<name>/SKILL.md   ->  <target>/commands/<group>/<name>.md
-      skills/<group>/<name>/<res...>   ->  <target>/commands/<group>/<name>/<res...>
+      shared/skills/<group>/<name>/SKILL.md   ->  <target>/commands/<group>/<name>.md
+      shared/skills/<group>/<name>/<res...>   ->  <target>/commands/<group>/<name>/<res...>
 
     Because the SKILL.md moves up one level (into <name>.md) while its resources move
     into a <name>/ subfolder, the script rewrites the SKILL.md body's resource links
@@ -80,8 +80,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$skillsRoot = Join-Path $RepoRoot 'skills'
-if (-not (Test-Path $skillsRoot)) { throw "skills/ root not found at: $skillsRoot" }
+$skillsRoot = Join-Path $RepoRoot 'shared\skills'
+if (-not (Test-Path $skillsRoot)) { throw "shared/skills root not found at: $skillsRoot" }
 
 $commandsRoot = switch ($Scope) {
     'Project' { Join-Path $RepoRoot '.claude\commands' }

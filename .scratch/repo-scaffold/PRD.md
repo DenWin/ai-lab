@@ -1,6 +1,6 @@
 # PRD — Scaffold the `ai-lab` repo & initialize git
 
-Status: needs-triage
+Status: in-progress
 
 Finish **Phase 2** of the ai-lab repo-structure handoff: make the repo an actual git repository
 (`git init` + remote), add the artifact-type folders that have no home yet, author the root
@@ -9,59 +9,52 @@ Finish **Phase 2** of the ai-lab repo-structure handoff: make the repo an actual
 
 ## Problem Statement
 
-The repo is **partially scaffolded but not under version control** — the environment reports
-`Is a git repository: false`. Present today: `docs/`, `instructions/`, `skills/`, `scripts/`,
-`.scratch/`, `.gitignore`, `LICENSE`. **Missing** per the settled handoff structure: root
-`AGENTS.md`, and homes for the other artifact types — `mcp/`, `output-styles/`, `settings/`,
-`agents/`, `hooks/`, `eval/`.
+The repo is now a git repository (`git init` done 2026-06-04, branch `main`; nothing committed yet).
+The structure decisions were resolved via grill-me (2026-06-04) and the layout migrated.
 
-> **[RE-CONFIRM]** The "settled handoff structure" (artifact-type taxonomy) comes from the
-> claude.ai session that produced `HANDOFF-ai-lab-repo-structure.md`. Confirm the folder taxonomy
-> still matches how you want the repo laid out before creating the folders (scope item 2). Note the
-> handoff's *own* open decisions (#6/#7 below) are already correctly flagged as not-settled.
+> **[RESOLVED 2026-06-04 via grill-me]** The handoff's uniform `<vendor>/<harness>/` taxonomy was
+> superseded. Canonical layout is now `shared/` (default) + `<vendor>/` + `<vendor>/<harness>/`,
+> most-specific-wins; **loose folders** (no plugin bundles); folders created **on demand**. See
+> [docs/repo-layout.adoc](../../docs/repo-layout.adoc) — the canonical layout reference.
+> Done so far: `git init`; skills → `shared/skills/`; profile →
+> `anthropic/claude-ai/instructions/profile.md`; `sync-skills.ps1` retargeted + re-run; layout doc
+> authored. Remaining: `AGENTS.md`, file placement, remote, initial commit.
 
-Because there is no git repo, downstream work is blocked — notably the `tdd` skill cannot reference
-the foundation doc by a git-repo path (see
+`git init` (done) unblocks the `tdd`-skill→foundation-doc git-repo reference (see
 [testing-methodologies-foundation › issue 01](../testing-methodologies-foundation/issues/01-reference-doc-from-tdd-skill.md)).
-
-This was the gap behind the earlier `init-git-repo` stub — now folded here, because `git init` is
-**step 5 of Phase 2**, not standalone work.
+This also folded in the earlier `init-git-repo` stub.
 
 ## Scope
 
-Phase 1 of the handoff (skill adaptation) is largely done — `skills/` is populated and its remaining
-work is tracked in [claude-code-skill-adaptation](../claude-code-skill-adaptation/PRD.md) and
-[import-upstream-skills](../import-upstream-skills/PRD.md). This feature is **Phase 2 only**:
+Phase 1 of the handoff (skill adaptation) is largely done — skills live under `shared/skills/` and
+remaining work is tracked in [claude-code-skill-adaptation](../claude-code-skill-adaptation/PRD.md)
+and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is **Phase 2 only**:
 
-1. `git init`, establish the default branch, confirm `.gitignore` (reconcile with the sync-skills
-   flow — `.claude/commands/**` is generated — and the `.temp/` staging convention).
-2. Create the missing artifact-type folders: `mcp/`, `output-styles/`, `settings/`, `agents/`,
-   `hooks/`, `eval/` (each per the handoff's artifact-type taxonomy).
-3. Author the root `AGENTS.md` stub (broadest-compatible entrypoint; harness/vendor-specific files
-   live under `instructions/`).
-4. Place remaining non-skill files per the handoff's artifact inventory (profile →
-   `instructions/global/profile.md`, `INSTRUCTION-EVAL.md` → `eval/`, project-specific files per
-   decision #3).
-5. Decide remote (host + visibility) → `gh repo create ai-lab --public|--private`; initial commit + push.
+1. ✅ `git init`, default branch `main`. `.gitignore` already reconciled (`.claude/commands/*`
+   generated; `.temp/*` staged) — no change needed.
+2. ✅ Structure resolved + migrated: skills → `shared/skills/`, profile →
+   `anthropic/claude-ai/instructions/`, `sync-skills.ps1` retargeted, [docs/repo-layout.adoc](../../docs/repo-layout.adoc)
+   authored. Per-harness artifact folders (`settings/`, `mcp/`, `hooks/`, `output-styles/`) are
+   created **on demand**, not pre-scaffolded.
+3. ⏳ Author the root `AGENTS.md` (cross-harness shared layer; coordinate with
+   `incorporate-global-claude-setup` so it isn't written twice).
+4. ⏳ Place remaining non-skill files: `INSTRUCTION-EVAL.md` → `eval/` (owned by eval-skill-harness);
+   claude.ai project files → `anthropic/claude-ai/projects/<project-name>/`.
+5. ⏳ Decide remote (host + visibility) → `gh repo create ai-lab --public|--private`; initial commit + push.
 
-## Open Decisions (from the handoff — confirm before committing structure)
+## Decisions
 
-These are settled-as-questions in the handoff; **do not pre-answer** — the handoff says to grill them:
-
-1. **#6 Taxonomy keying** — folder keys use **harness** (primary) + **vendor** (tag); drop "platform".
-   Decide concrete keys: `instructions/<vendor>/<harness>/`, `skills/<vendor>/<harness>/`, etc.
-   (`docs/platforms/` is already `docs/harnesses/` — good.)
-2. **#7 Packaging** — loose artifact folders vs Claude Code **plugin bundles**
-   (`.claude-plugin/plugin.json`). If plugins win, `skills/`/`agents/`/`hooks/`/`mcp/`/`output-styles/`
-   nest inside `plugins/<name>/` rather than top-level. Resolve **before** creating the folders in
-   scope item 2, since it changes where they live.
-3. **Tracker** — GitHub Issues (`gh issue create`) vs local-markdown `.scratch/`. This repo already
-   uses `.scratch/`; default to it unless the init decision says otherwise.
-4. **Remote visibility** — public vs private (affects the license/attribution notes in
-   [import-upstream-skills](../import-upstream-skills/PRD.md)).
-5. **Project-specific files** (#3 in handoff) — `02-project-instructions.md`, `POWERSHELL.md`,
-   `powershell.yml` etc.: move under `instructions/` keyed per #6, leave in the claude.ai project, or
-   both.
+1. **#6 Taxonomy keying — RESOLVED (grill-me 2026-06-04).** `shared/` (default) + `<vendor>/` +
+   `<vendor>/<harness>/`, most-specific-wins. Skills default to `shared/skills/`; config
+   (instructions/settings/mcp/hooks/output-styles) lives under `<vendor>/<harness>/`. claude.ai adds
+   a `projects/<project-name>/` layer. No vendor-only "platform" key. Ref: docs/repo-layout.adoc.
+2. **#7 Packaging — RESOLVED.** Loose folders, not plugin bundles (personal use; can be wrapped into a
+   plugin later if distribution ever matters).
+3. **Tracker — settled by practice:** local-markdown `.scratch/`.
+4. **Remote visibility — OPEN:** public vs private (affects license/attribution notes in
+   [import-upstream-skills](../import-upstream-skills/PRD.md)). Decide before `gh repo create`.
+5. **Project-specific files — RESOLVED:** the pwsh project files (`02-project-instructions.md`,
+   `POWERSHELL.md`, `powershell.yml`) live under `anthropic/claude-ai/projects/<project-name>/`.
 
 ## Relationship to existing backlog features
 

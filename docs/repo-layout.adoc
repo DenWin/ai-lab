@@ -1,0 +1,83 @@
+= Repository Layout
+
+How artifacts (skills, instructions, settings, MCP defs, hooks, output styles, agents) are
+organized in this repo, and how they reach each harness.
+
+== Organizing principle: specificity, keyed by who an artifact is for
+
+Every artifact lives at the *most general* level it is valid for. More-specific levels *override*
+more-general ones (most-specific wins).
+
+[cols="1,3a",options="header"]
+|===
+| Tier | Meaning
+
+| `shared/`
+| Vendor- and harness-agnostic. Runs anywhere. The default home — almost everything lives here.
+
+| `<vendor>/`
+| Specific to one vendor (e.g. `anthropic/`, `openai/`), but cross-harness within it.
+
+| `<vendor>/<harness>/`
+| Specific to one harness (e.g. `anthropic/claude-code/`, `anthropic/claude-ai/`).
+|===
+
+`shared/skills/coding/tdd` is the cross-everything copy; `anthropic/claude-code/skills/tdd` (if it
+existed) would shadow it *only* when running in Claude Code.
+
+== Top-level layout
+
+....
+ai-lab/
+├── AGENTS.md                 # root shared cross-harness instructions (cross-vendor)
+├── shared/                   # vendor- & harness-agnostic artifacts
+│   └── skills/               # ← all current skills (intent-grouped: coding/ planning/ session/ setup/)
+├── anthropic/
+│   ├── claude-ai/
+│   │   ├── instructions/profile.md          # account-wide profile (live: Settings → Instructions for Claude)
+│   │   └── projects/<project-name>/         # per-project: project-instruction.md + knowledge files
+│   ├── claude-code/                         # settings/ mcp/ hooks/ output-styles/ instructions/ skills/  (on demand)
+│   └── claude-desktop/                      # (on demand)
+├── openai/                   # codex, etc. — added via the cross-harness review loop
+├── docs/                     # cross-cutting docs: harnesses/, repo-layout.adoc, testing-methodologies…
+├── eval/                     # vendor-agnostic: INSTRUCTION-EVAL.md + the eval harness
+├── scripts/                  # sync-skills.ps1, …
+├── .scratch/                 # local-markdown issue tracker (PRDs + issues; committed)
+└── .claude/commands/         # GENERATED skill mirror (gitignored) — never edit; rebuild via sync-skills.ps1
+....
+
+Folders are created *on demand* — a `<vendor>/<harness>/<artifact-type>/` directory is materialized
+only when it has content, not pre-scaffolded empty.
+
+== Per-artifact-type keying
+
+* *skills* — usually `shared/` (they are methodology, not vendor-specific). Drop to `<vendor>/` or
+  `<vendor>/<harness>/` only for a skill that genuinely is specific. Skills follow the
+  *capability contract* (detect shell/filesystem → full path; else conversational fallback) so one
+  copy works across harnesses — avoid per-harness copies unless behavior truly diverges.
+* *instructions, settings, mcp, hooks, output-styles* — almost always `<vendor>/<harness>/`. A Claude
+  Code `settings.json` is meaningless to Codex; the claude-ai profile is not the Claude Code `CLAUDE.md`.
+
+== Reaching each harness (sync)
+
+The repo is the source of truth. Each harness loads artifacts from its own locations, so a sync step
+deploys from here to there.
+
+* *Now — Claude Code only.* `scripts/sync-skills.ps1` mirrors `shared/skills/<group>/<name>/` to the
+  Claude Code command tree (`.claude/commands/<group>/<name>.md` + resources). The generated tree is
+  gitignored; rebuild after editing a skill.
+* *Other harnesses (Codex, Copilot, …)* — added incrementally through the cross-harness review loop
+  (see `docs/harnesses/`): each harness, on its turn, records where *it* expects its files; sync grows
+  to target it only then. No multi-harness sync engine is built ahead of that need.
+
+== Not the same file (common confusion)
+
+* `anthropic/claude-ai/instructions/profile.md` — the claude.ai account profile. Read by the Chat
+  harness only. Live version: Settings → Instructions for Claude (paste the whole file).
+* `~/.claude/CLAUDE.md` — Claude Code's global instructions. Different harness, different file. Expected
+  to *overlap* with the profile (same behavioral preferences) but authored and loaded separately.
+  Repo copy, when added, lives at `anthropic/claude-code/instructions/CLAUDE.md`.
+* `AGENTS.md` (repo root) — the cross-harness shared layer read by Claude Code, Codex, and Copilot.
+  The place for anything that should be identical across harnesses.
+
+See `docs/harnesses/<harness>.md` for each harness's instruction surfaces and load model.

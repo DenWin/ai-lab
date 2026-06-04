@@ -1,4 +1,4 @@
-# PRD — Backlog enhancements (metadata, recurrence, deadline-aware ranking)
+# PRD — Backlog enhancements (metadata, recurrence, deadline ranking, stable IDs, browse-by-status)
 
 Status: ready-for-human
 
@@ -24,7 +24,9 @@ deadline-aware ranking pass, handles recurrence, and re-renders `BACKLOG.md`.
 
 ### 1 — Extend backlog metadata (issue 01)
 
-Introduce PRD frontmatter as the source of truth; render a subset to `BACKLOG.md`.
+Introduce PRD frontmatter as the source of truth; a **generator** (a standalone script, invocable by
+`scratch-plan`) reads each PRD's YAML frontmatter and renders a subset to `BACKLOG.md`. `BACKLOG.md`
+is never hand-maintained for metadata — it is replaced by generated output.
 
 Proposed frontmatter:
 
@@ -71,6 +73,55 @@ User's draft rule:
   within the last 7 days → raise priority one level (cap at high).
 
 This is acknowledged as needing more grilling — see issue 03 for the open edge cases.
+
+### 4 — Stable scratch IDs (issue 04 — to create)
+
+Assign each feature an **immutable** ID `S<NNNN>-<feature-slug>` (e.g. `S0007-repo-scaffold`), used as
+the folder name and as a short referenceable handle. The ID never encodes status or rank, so it never
+needs to change.
+
+- **Assignment:** next-free integer (max existing + 1), zero-padded to 4 — derivable from folder names,
+  no separate counter file.
+- **One-time cost:** renaming the 9 existing folders to `S<NNNN>-<slug>` **breaks every relative
+  cross-reference** (`../<slug>/...`) in PRDs/issues/BACKLOG; all must be rewritten in the same pass.
+- **Knock-on:** update `LAYOUT.md` (folder = `S<NNNN>-<slug>/`) and the `scratch` / `scratch-plan` /
+  `to-issues` / `to-prd` / `triage` skills that currently assume a bare `<slug>/`.
+
+### 5 — Organize scratches by lifecycle stage (issue 05 — to create)
+
+**Problem:** once there are many scratches, it's hard to tell which stage each is in. `done` and
+`won't_fix` especially clutter the active view — they should be out of the way.
+
+**Idea:** separate scratches into **coarse lifecycle buckets**, not fine-grained status. Working
+buckets:
+
+- **funnel / undefined** — captured but not yet ironed out (open questions, not fully understood)
+- **backlog** — fully understood features, including `in-progress`
+- **done**
+- **won't_fix**
+
+Indifferent to *mechanism* — physical bucket folders or a grouped generated view — as long as the
+separation is achieved, particularly pulling `done` / `won't_fix` out of the active set. How the coarse
+buckets map onto the fine `Status:` values is part of this.
+
+**Open for scratch-planning (do NOT decide here):**
+- Physical bucket folders vs grouped generated BACKLOG view (tension with concept 1's
+  status-in-frontmatter; path churn on transitions). Resolve when this feature is planned.
+- Whether `funnel` / `undefined` becomes a real `Status:` value (see concept 6).
+
+### 6 — Capture enters the funnel; ironing-out happens in scratch-planning (issue 06 — to create)
+
+The intended workflow, made explicit:
+
+- A **new** scratch is a quick offload (minimal detail) and lands in **funnel / undefined** by default
+  — not a fully-detailed `needs-triage` entry.
+- **scratch-planning** is where features get ironed out — discuss in detail, answer questions, tackle
+  contradictions, rank. It is **not** where they get *worked on / implemented*.
+- On revisit: if the captured thought is no longer understood, it goes to **won't_fix**.
+
+Implication: `scratch` (capture) defaults `status` to `funnel`/`undefined`; `scratch-plan` promotes
+funnel → backlog as items become understood. Adds `funnel`/`undefined` to the status vocabulary
+(concept 1).
 
 ## Implementation Decisions (provisional)
 
