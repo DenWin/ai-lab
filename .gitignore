@@ -1,0 +1,14 @@
+# VS Code Local History extension
+/.history/
+
+# Transient working material: upstream snapshots, handoffs, downloads.
+# The folder itself is kept (via .gitkeep) as a landing zone; its contents are ignored.
+/.temp/*
+!/.temp/.gitkeep
+
+# Generated skill mirror — the live, invocable copies. Source of truth is skills/.
+# Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
+/.claude/commands/*
+
+# NOTE: .scratch/ is intentionally NOT ignored — it is the local-markdown issue
+# tracker (PRDs + issues live there and are meant to be committed).

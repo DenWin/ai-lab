@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem:*)",
+      "PowerShell(Get-Content:*)",
+      "PowerShell(Get-Item:*)",
+      "PowerShell(Test-Path:*)",
+      "PowerShell(Select-String:*)",
+      "PowerShell(ForEach-Object:*)",
+      "PowerShell(Measure-Object:*)",
+      "PowerShell(Select-Object:*)",
+      "PowerShell(Sort-Object:*)",
+      "PowerShell(Where-Object:*)",
+      "PowerShell(Format-*:*)",
+      "PowerShell(Out-String:*)",
+      "PowerShell(ConvertFrom-Json:*)",
+      "PowerShell(ConvertTo-Json:*)",
+      "PowerShell(Join-Path:*)",
+      "PowerShell(Resolve-Path:*)",
+      "PowerShell(Split-Path:*)",
+      "PowerShell(Set-Location:*)"
+    ]
+  },
+  "effortLevel": "high",
+  "model": "opus"
+}

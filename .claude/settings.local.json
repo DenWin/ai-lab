@@ -1,0 +1,57 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk '/^---/{c++} c<=2{print} c==2 && /^---/{exit}' __TRACKED_VAR__/__TRACKED_VAR__/SKILL.md)",
+      "Bash(basename *)",
+      "Bash(cat *)",
+      "Bash(cut *)",
+      "Bash(dirname *)",
+      "Bash(echo *)",
+      "Bash(find plugins/marketplaces/claude-plugins-official/plugins/example-plugin -maxdepth 4 -type f)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(ls *)",
+      "Bash(readlink *)",
+      "Bash(realpath *)",
+      "Bash(sort *)",
+      "Bash(stat *)",
+      "Bash(tail *)",
+      "Bash(tr *)",
+      "Bash(uniq *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "PowerShell(ConvertFrom-Json *)",
+      "PowerShell(ConvertTo-Json *)",
+      "PowerShell(ForEach-Object *)",
+      "PowerShell(Format-* *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Get-Item *)",
+      "PowerShell(Join-Path *)",
+      "PowerShell(Measure-Object *)",
+      "PowerShell(Out-String *)",
+      "PowerShell(Resolve-Path *)",
+      "PowerShell(Select-Object *)",
+      "PowerShell(Select-String *)",
+      "PowerShell(Set-Location *)",
+      "PowerShell(Sort-Object *)",
+      "PowerShell(Split-Path *)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Where-Object *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -IfMissing",
+            "shell": "powershell",
+            "statusMessage": "Materializing skill mirror…"
+          }
+        ]
+      }
+    ]
+  }
+}
