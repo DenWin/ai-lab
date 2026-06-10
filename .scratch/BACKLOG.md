@@ -19,3 +19,11 @@ Last updated: 2026-06-04
 | 8    | [harness-docs](harness-docs/PRD.md) | low | medium | 1day | 12 | ready-for-human |
 | 9    | [backlog-enhancements](backlog-enhancements/PRD.md) | low | medium | 1week | 8 | ready-for-human |
 | ?    | [claude-md-planning-defaults](claude-md-planning-defaults/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [add-watch-skill](add-watch-skill/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [check-updates-detection-scope](check-updates-detection-scope/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [gated-work-prd-issue-approval](gated-work-prd-issue-approval/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [agents-md-folder-guides](agents-md-folder-guides/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [understand-scratch-skill](understand-scratch-skill/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [harden-github-repo](harden-github-repo/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [quick-script-over-engineering](quick-script-over-engineering/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [scratch-immutability-appendix](scratch-immutability-appendix/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
