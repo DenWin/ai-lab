@@ -5,6 +5,7 @@
 :sectnumlevels: 3
 :icons: font
 :source-highlighter: rouge
+// Document conventions: encoding=UTF-8, line-endings=LF, indentation=2 spaces, lang=en-US
 
 
 == Purpose and Scope
@@ -33,7 +34,7 @@ Defining what the system is *supposed* to do, independently of how it currently 
 A specification survives reimplementation. +
 A verification test does not.
 
-The same artifact — a piece of code in a test file — can play one, two, or all three roles depending on how it was written and what it asserts. The methodologies in this document differ mainly in which roles they prioritise and how they keep those roles from interfering with each other.
+The same artifact — a piece of code in a test file — can play one, two, or all three roles depending on how it was written and what it asserts. The methodologies in this document differ mainly in which roles they prioritize and how they keep those roles from interfering with each other.
 
 
 == Test-Driven Development (TDD)
@@ -43,7 +44,7 @@ The same artifact — a piece of code in a test file — can play one, two, or a
 TDD is a development workflow in which a failing test is written *before* the production code that makes it pass. The workflow runs in a tight loop, named *red–green–refactor* by Kent Beck:
 
 . *Red*: write a failing test that expresses a small piece of desired behavior, and confirm it fails. A test that passes on the first run is not testing what you think.
-. *Green*: write the minimum production code that makes the test pass. Do not generalise prematurely.
+. *Green*: write the minimum production code that makes the test pass. Do not generalize prematurely.
 . *Refactor*: with the test passing, improve the structure without changing behavior, running the test after each change to confirm behavior is preserved.
 
 The cycle is intentionally small — typically seconds to a few minutes per iteration.
@@ -62,6 +63,8 @@ The naming is misleading. TDD's primary value is not testing — it is the *desi
 Before the mechanics, two conceptual mistakes worth clearing up. Unlike the pitfalls later in this section, these are not slips in *how* to do TDD — they are wrong mental models that cause people to under-apply TDD or reject it outright.
 
 *TDD is a workflow, not a scope.* TDD is frequently equated with unit testing. This is a common and consequential misconception — it is the one BDD was explicitly created to address — and it causes two failure modes: people conclude TDD does not apply to integration, acceptance, or system-level work, or they reject TDD on the grounds that not everything can be unit-tested. Neither follows. TDD is the *workflow* — write a failing test, make it pass, refactor — and it drives integration tests, acceptance tests, and end-to-end tests just as well as unit tests. What changes across levels is speed, blast radius, and how many tests you write, not whether the test-first cycle applies. This document treats TDD as the workflow throughout; where the unit level specifically is meant, it says so.
+
+The practical consequence is that the red–green–refactor cycle runs simultaneously at multiple timescales. A unit-level cycle closes in minutes. An acceptance-level cycle may remain red for days or weeks while the unit-level work beneath it accumulates — and that is expected behavior, not a problem. The two loops nest: unit tests are the inner loop, acceptance tests are the outer loop. Because of this timescale difference, tests at different levels belong in different CI suites with different triggers — a fast suite of unit tests on every commit, a slow suite of acceptance and integration tests at merge time or on demand. See <<starting-greenfield>> for how this is wired up in practice.
 
 *Coverage is a side effect, not a goal.* TDD produces high coverage naturally, because code written to satisfy a test is covered by definition. But coverage is the *consequence* of the practice, not its target. The moment coverage becomes a goal — a percentage gate, a bonus metric — people game it, and the result is tests that execute lines without verifying anything:
 
@@ -84,7 +87,7 @@ Each phase carries out a distinct design activity:
 * *Green — making it work*. Green should be deliberately stupid: the minimum code, even hard-coded constants if appropriate, to flip the test to passing. The temptation to "do it properly" during green is a common reason TDD goes wrong. That work belongs in refactor.
 * *Refactor — designing the internal implementation*. With the test passing, you decide how the code is shaped *on the inside*: data structures, helper functions, module boundaries, naming of internals. The test acts as a safety net that confirms each structural change preserves behavior.
 
-The discipline is to keep these three activities separate. Interface decisions during refactor produce tests that break for the wrong reasons. Implementation work during red produces tests coupled to imagined code rather than to desired behavior. Premature generalisation during green is implementation work in disguise — defer it to refactor where the test is already protecting you.
+The discipline is to keep these three activities separate. Interface decisions during refactor produce tests that break for the wrong reasons. Implementation work during red produces tests coupled to imagined code rather than to desired behavior. Premature generalization during green is implementation work in disguise — defer it to refactor where the test is already protecting you.
 
 ==== What Counts as "Red"?
 
@@ -132,7 +135,7 @@ The first three steps cover what is sometimes called the "make it compile / make
 
 ==== An Alternative Strategy: Triangulation
 
-The example in 3.3.1 used Beck's *Fake It* strategy followed by a refactor that revealed the real implementation. That worked because the generalisation was so obvious that the moment we wrote `return 5`, anyone reading the code already knew the answer was `return a + b`. Triangulation is the strategy for the case where the generalisation is *not* obvious from one test.
+The example in 3.3.1 used Beck's *Fake It* strategy followed by a refactor that revealed the real implementation. That worked because the generalization was so obvious that the moment we wrote `return 5`, anyone reading the code already knew the answer was `return a + b`. Triangulation is the strategy for the case where the generalization is *not* obvious from one test.
 
 ===== A Worked Example: Roman Numerals
 
@@ -156,7 +159,7 @@ Third cycle:
 
 * *Red*: `assert to_roman(3) == "III"`. Run the test. It passes on the first run (`"I" * 3 == "III"`).
 +
-A test that passes immediately is *not* a failure of the TDD process. It is a confirmation that the current implementation is more general than the previous step strictly required. The new test enters the suite as a permanent guard. Some practitioners would argue you should not bother writing a test you expect to pass — but in Triangulation, the value of seeing it pass is precisely that you confirm the generalisation `"I" * n` holds for at least one case the previous step did not exercise. The doctrine "red must come first" applies to *new behavior*, not to every test ever written.
+A test that passes immediately is *not* a failure of the TDD process. It is a confirmation that the current implementation is more general than the previous step strictly required. The new test enters the suite as a permanent guard. Some practitioners would argue you should not bother writing a test you expect to pass — but in Triangulation, the value of seeing it pass is precisely that you confirm the generalization `"I" * n` holds for at least one case the previous step did not exercise. The doctrine "red must come first" applies to *new behavior*, not to every test ever written.
 * *Green*: no change needed.
 * *Refactor*: none.
 
@@ -195,7 +198,7 @@ Sixth cycle:
 * *Red*: `assert to_roman(6) == "VI"`. Current implementation returns `"IIIIII"`. Fails.
 * *Green*: the developer faces a choice. Adding `if n == 6: return "VI"` would technically pass, but is obviously unsustainable — every distinct value would need its own exception. The exception-based approach has failed as a general strategy.
 +
-The real generalisation is a list of (value, symbol) pairs, iterated from largest to smallest, subtracting and appending as you go. The table includes only the pairs the existing six tests prove are needed:
+The real generalization is a list of (value, symbol) pairs, iterated from largest to smallest, subtracting and appending as you go. The table includes only the pairs the existing six tests prove are needed:
 +
 [source,python]
 ----
@@ -231,13 +234,13 @@ Subsequent cycles for `10` (`"X"`), `40` (`"XL"`), `50` (`"L"`), `90` (`"XC"`), 
 
 This sequence is more authentic than skipping ahead. It includes the *false start* of adding exceptions — exactly what a real developer would do under incremental pressure. The pattern breaks not because the developer foresaw it but because *the cost of continuing the existing strategy becomes obviously worse than the cost of restructuring*. That moment of "this approach won't scale" is when refactoring earns its place. Before that moment, the exceptions were a legitimate green. After it, they are technical debt that has to go.
 
-The point of this example: at no step did the developer have to foresee the final algorithm. Each test exposed a limitation in the previous implementation and forced a small, local generalisation. The design — a table of (value, symbol) pairs iterated from largest to smallest — emerged from the sequence of tests, not from upfront planning.
+The point of this example: at no step did the developer have to foresee the final algorithm. Each test exposed a limitation in the previous implementation and forced a small, local generalization. The design — a table of (value, symbol) pairs iterated from largest to smallest — emerged from the sequence of tests, not from upfront planning.
 
 ===== Beyond the Example
 
-In practice one would recognise the Roman numeral rules from the start and approach the problem differently. The cycle-by-cycle sequence above is pedagogical — it shows the *mechanics* of Triangulation, including its false starts, not how this specific problem would actually be tackled.
+In practice one would recognize the Roman numeral rules from the start and approach the problem differently. The cycle-by-cycle sequence above is pedagogical — it shows the *mechanics* of Triangulation, including its false starts, not how this specific problem would actually be tackled.
 
-For that, consider a more realistic case: a date parser that has to handle whatever formats real users actually enter. You cannot enumerate the formats in advance. You write a parser that handles the formats you currently know about, ship it, and over time discover that some users enter `2024-01-15`, others `15/01/2024`, others `Jan 15, 2024`, others `15. Januar 2024`, and one or two have typed `next Tuesday`. Each new format you encounter is effectively a new red — the existing parser cannot handle it. You write a test that captures the new case, watch it fail, and generalise the parser to accommodate it.
+For that, consider a more realistic case: a date parser that has to handle whatever formats real users actually enter. You cannot enumerate the formats in advance. You write a parser that handles the formats you currently know about, ship it, and over time discover that some users enter `2024-01-15`, others `15/01/2024`, others `Jan 15, 2024`, others `15. Januar 2024`, and one or two have typed `next Tuesday`. Each new format you encounter is effectively a new red — the existing parser cannot handle it. You write a test that captures the new case, watch it fail, and generalize the parser to accommodate it.
 
 ===== Planned vs. Discovered Triangulation
 
@@ -252,9 +255,9 @@ When to use which:
 
 * *Obvious Implementation* (a third Beck strategy) — when the right code is genuinely obvious, just write it. No fakery, no triangulation. Most experienced developers do this for trivial code like the `add` example in 3.3.1.
 * *Fake It* — when the right code is not yet obvious but you suspect it will be after one or two more minutes of thought. Hard-code the answer, look at the working test, then refactor to the real implementation.
-* *Triangulation* — when the design is genuinely unclear and you do not yet trust your own judgement about the generalisation. Let tests force the structure to emerge — either consecutively in one sitting, or accumulated over the lifetime of the system as new cases are discovered. Most useful for algorithms with open-ended input space (parsers for human-entered data, business rules with overlapping conditions, anything where the cases you have to handle are not knowable up front).
+* *Triangulation* — when the design is genuinely unclear and you do not yet trust your own judgement about the generalization. Let tests force the structure to emerge — either consecutively in one sitting, or accumulated over the lifetime of the system as new cases are discovered. Most useful for algorithms with open-ended input space (parsers for human-entered data, business rules with overlapping conditions, anything where the cases you have to handle are not knowable up front).
 
-This is the engine of TDD across consecutive cycles: each new test exposes a limitation in the implementation that the previous test allowed to pass. The design emerges from the sequence of tests, not from upfront planning. The order in which test cases are introduced controls which generalisations the developer is forced to discover, and in what order. Kent Beck named this the *succession problem*.
+This is the engine of TDD across consecutive cycles: each new test exposes a limitation in the implementation that the previous test allowed to pass. The design emerges from the sequence of tests, not from upfront planning. The order in which test cases are introduced controls which generalizations the developer is forced to discover, and in what order. Kent Beck named this the *succession problem*.
 
 
 === Common TDD Pitfalls
@@ -300,7 +303,7 @@ Wrap the library in a thin abstraction you own, then test against that abstracti
 (See <<pitfall-mock-thirdparty,example below>>.)
 
 | Writing all tests first, then all implementation
-| Tests written in bulk against an imagined design produce *imagined* behaviour, not actual behaviour — the same coupling problem as imagining one implementation, scaled to a whole feature. +
+| Tests written in bulk against an imagined design produce *imagined* behavior, not actual behavior — the same coupling problem as imagining one implementation, scaled to a whole feature. +
 The design-feedback loop only runs if each test pressure-tests the previous step's design. +
 Five red tests before any green is a commitment to a structure that no working code has yet challenged. +
 (See <<pitfall-horizontal-slicing,example below>>.)
@@ -308,7 +311,7 @@ Five red tests before any green is a commitment to a structure that no working c
 | Verifying through the back door
 | The test calls the code under test through its public interface but verifies success by querying an internal mechanism — the database directly, an internal log, a private attribute — instead of using the interface again to observe the result. +
 The test now couples to *how* the system records its results, not *what* the system exposes. +
-Any change to internal storage breaks the test even when externally-observable behaviour is unchanged. +
+Any change to internal storage breaks the test even when externally-observable behavior is unchanged. +
 (See <<pitfall-back-door,example below>>.)
 |===
 
@@ -377,7 +380,7 @@ def test_find_user_by_id():
     session.query.assert_called_with(User)
 ----
 
-The test exists before the code, but it dictates the implementation: SQLAlchemy, session lookup, chained `filter().first()`. Switching to a different ORM, raw SQL, or a cache breaks the test even though the behaviour — "return the user with this id" — is unchanged. The fix is to assert only on behaviour ("given this id, return this user") and to keep the ORM, the session, and every other implementation choice out of the test entirely — typically by testing against an interface or an in-memory implementation rather than a mocked database session. The pitfall is the same outcome as test-after, but reached by a different route: the developer pre-decided the structure and then wrote a test that locks it in.
+The test exists before the code, but it dictates the implementation: SQLAlchemy, session lookup, chained `filter().first()`. Switching to a different ORM, raw SQL, or a cache breaks the test even though the behavior — "return the user with this id" — is unchanged. The fix is to assert only on behavior ("given this id, return this user") and to keep the ORM, the session, and every other implementation choice out of the test entirely — typically by testing against an interface or an in-memory implementation rather than a mocked database session. The pitfall is the same outcome as test-after, but reached by a different route: the developer pre-decided the structure and then wrote a test that locks it in.
 
 [[pitfall-impl-details]]
 ===== Testing Implementation Details
@@ -432,7 +435,7 @@ def to_roman(n):
     return result
 ----
 
-Same behaviour, all tests still pass, and adding new Roman numeral cases is now a one-line table edit. The pitfall: green is not done. Green is the *opportunity* to refactor while the safety net is in place.
+Same behavior, all tests still pass, and adding new Roman numeral cases is now a one-line table edit. The pitfall: green is not done. Green is the *opportunity* to refactor while the safety net is in place.
 
 [[pitfall-big-steps]]
 ===== Steps That Are Too Large
@@ -454,7 +457,7 @@ def test_user_registration_workflow():
     assert len(response.session_token) == 64
 ----
 
-When this test fails, the developer learns only that *something* in registration broke. Validation, persistence, email dispatch, audit logging, password hashing, session token generation — each is a separate behaviour that wants its own test:
+When this test fails, the developer learns only that *something* in registration broke. Validation, persistence, email dispatch, audit logging, password hashing, session token generation — each is a separate behavior that wants its own test:
 
 [source,python]
 ----
@@ -489,11 +492,11 @@ def test_send_notification(mock_post):
     )
 ----
 
-This test asserts that the code calls `requests.post` with one exact URL, one exact JSON body, one exact set of headers, and one exact timeout. Each of those is a detail of *how the code talks to `requests`*, not of *what the code is for*. Consider what breaks this test without changing the behaviour the user cares about:
+This test asserts that the code calls `requests.post` with one exact URL, one exact JSON body, one exact set of headers, and one exact timeout. Each of those is a detail of *how the code talks to `requests`*, not of *what the code is for*. Consider what breaks this test without changing the behavior the user cares about:
 
-* Swapping `requests` for `httpx` — the call is now `httpx.post`, the mock never matches. Test fails. Behaviour ("a notification was sent saying hello") unchanged.
-* The notification provider changes its endpoint URL — test fails. Behaviour unchanged.
-* The provider requires a new header — test fails. Behaviour unchanged.
+* Swapping `requests` for `httpx` — the call is now `httpx.post`, the mock never matches. Test fails. Behavior ("a notification was sent saying hello") unchanged.
+* The notification provider changes its endpoint URL — test fails. Behavior unchanged.
+* The provider requires a new header — test fails. Behavior unchanged.
 
 The reason the test is this brittle is that mocking `requests` directly left nothing else to assert on. `requests` is a general-purpose library — it exposes URLs, headers, timeouts, retries, and many other parameters because it serves a wide range of callers with different needs. Your code uses a thin slice of that surface, but mocking the library drags the *whole* surface into the test, where every irrelevant parameter becomes something the test now depends on.
 
@@ -553,7 +556,7 @@ def test_register_persists_the_user():
 # an id, or something else? Should it be sync or async? Does it need a
 # transaction boundary? Decide based on what the test forced into view.
 
-# Cycle 2: only after cycle 1 has settled, add the next behaviour.
+# Cycle 2: only after cycle 1 has settled, add the next behavior.
 ----
 
 Each cycle is a check on the previous cycle's design choice. Horizontal slicing — RED-RED-RED-RED-RED then GREEN-GREEN-GREEN-GREEN-GREEN — forfeits those checks. What is left is just tests-as-verification written before the code, which is structurally the same failure as test-after, only the timestamps differ. TDD's primary value is the design-feedback loop; batching tests removes the loop.
@@ -665,7 +668,7 @@ The decision about whether to use a Gherkin-based tool is independent of whether
 
 === The Collaboration Dimension
 
-The other half of BDD's value, often underemphasised, is *collaborative scenario authoring*. The pattern popularised as the *Three Amigos* by George Dinwiddie — a developer, a tester, and a product owner or domain expert sitting together to define scenarios before any code is written — is where BDD's specification value really lives.
+The other half of BDD's value, often underemphasized, is *collaborative scenario authoring*. The pattern popularized as the *Three Amigos* by George Dinwiddie — a developer, a tester, and a product owner or domain expert sitting together to define scenarios before any code is written — is where BDD's specification value really lives.
 
 A scenario written by one person and implemented by the same person is structurally indistinguishable from a well-named TDD test. A scenario co-authored by people with different perspectives surfaces ambiguities, edge cases, and hidden assumptions that no individual would have caught. This is the difference between a specification and a restatement.
 
@@ -725,12 +728,20 @@ A useful framing: TDD and BDD are not competing methodologies. They are the same
 | Unit test framework
 | Unit test framework, optionally a Gherkin layer
 
+| Cycle timescale
+| Minutes — closes within a single sitting
+| Days or weeks — closes when the feature is complete
+
+| CI suite
+| Fast suite — runs on every commit
+| Slow suite — runs at merge time or on demand
+
 | What breaks when implementation changes
 | Tests should not break; if they do, they were too coupled
 | Scenarios should not break; if they do, they were written at the wrong level
 |===
 
-A healthy codebase typically has both — a fast inner ring of TDD-style unit tests driving design at the code level, and a slower outer ring of BDD-style acceptance tests driving design at the feature level. They are complements, not substitutes.
+A healthy codebase typically has both — a fast inner ring of TDD-style unit tests driving design at the code level, and a slower outer ring of BDD-style acceptance tests driving design at the feature level. They are complements, not substitutes. The acceptance test is the outermost red–green–refactor loop; each passing unit test is progress toward closing it.
 
 
 == Companion Methodologies
@@ -739,7 +750,7 @@ The following techniques are not alternatives to TDD/BDD — they fill gaps that
 
 === Acceptance Test-Driven Development (ATDD)
 
-ATDD is, in practice, the same activity as BDD applied at the feature level. The name emphasises *driving development from acceptance criteria*: no feature is considered started until its acceptance scenarios exist (and fail), and no feature is considered done until they pass.
+ATDD is, in practice, the same activity as BDD applied at the feature level. The name emphasizes *driving development from acceptance criteria*: no feature is considered started until its acceptance scenarios exist (and fail), and no feature is considered done until they pass.
 
 The distinction between BDD and ATDD is mostly historical and community-driven. Treat them as effectively synonymous for engineering purposes. The mindset is: the acceptance test is the contract. The implementation work is whatever is required to satisfy that contract.
 
@@ -751,7 +762,7 @@ A traditional unit test asserts: "given input `[3, 1, 2]`, `sort` returns `[1, 2
 
 When property-based testing earns its place:
 
-* Code with strong mathematical or logical invariants (parsers, serialisers, sort/search, data structure operations, anything with a roundtrip property).
+* Code with strong mathematical or logical invariants (parsers, serializers, sort/search, data structure operations, anything with a roundtrip property).
 * Code where the input space is large and the developer's example coverage is implicitly biased toward "happy" cases.
 * Algorithmic code where edge cases are the source of most defects.
 
@@ -761,7 +772,7 @@ When it does not earn its place:
 * UI code, where the input space is small and the relevant cases are specific.
 * Code dominated by I/O, where generating inputs is expensive and the bottleneck is the dependency, not the logic.
 
-Property-based testing complements TDD: use TDD to drive design with concrete examples, then add a property-based test for the invariants once the design has stabilised.
+Property-based testing complements TDD: use TDD to drive design with concrete examples, then add a property-based test for the invariants once the design has stabilized.
 
 === Mutation Testing
 
@@ -785,7 +796,7 @@ Contract testing pairs well with BDD at the service boundary — the BDD scenari
 
 === Approval Testing
 
-Approval testing (also called *characterisation testing* or *golden master testing*; tools: ApprovalTests, Verify, Touca) handles the case where the *correct* output is too complex or too tedious to specify with assertions, but is easy to recognise when you see it.
+Approval testing (also called *characterization testing* or *golden master testing*; tools: ApprovalTests, Verify, Touca) handles the case where the *correct* output is too complex or too tedious to specify with assertions, but is easy to recognize when you see it.
 
 The pattern: run the code, capture its output, manually review the output, and *approve* it. The approved version becomes the baseline. On every subsequent run, the framework compares the new output to the approved baseline and fails if they differ. When the difference is intentional, the developer updates the approved baseline; when it is unintentional, they have caught a regression.
 
@@ -794,13 +805,13 @@ When approval testing earns its place:
 * Report generators (PDF, HTML, formatted documents).
 * Code generators, transpilers, templating engines.
 * Complex data transformations where the structure of the output matters as a whole.
-* Legacy code where you need to lock down current behavior before refactoring, without first understanding *why* it behaves that way (this is the *characterisation* use case).
+* Legacy code where you need to lock down current behavior before refactoring, without first understanding *why* it behaves that way (this is the *characterization* use case).
 
-Approval testing pairs with TDD as a complement: TDD when you can articulate the rule, approval testing when you cannot articulate the rule but can recognise correct output.
+Approval testing pairs with TDD as a complement: TDD when you can articulate the rule, approval testing when you cannot articulate the rule but can recognize correct output.
 
 === Snapshot Testing
 
-Snapshot testing is a narrower variant of approval testing, popular in front-end communities (Jest, Vitest). The output (typically rendered component HTML, a serialised React tree, or a JSON response) is captured on first run and asserted equal on subsequent runs. It is essentially approval testing with friction removed and review discipline weakened.
+Snapshot testing is a narrower variant of approval testing, popular in front-end communities (Jest, Vitest). The output (typically rendered component HTML, a serialized React tree, or a JSON response) is captured on first run and asserted equal on subsequent runs. It is essentially approval testing with friction removed and review discipline weakened.
 
 The risk: developers update snapshots without reviewing them, and the test devolves into "the output is what the output is." Use snapshot testing only with a strict review discipline on snapshot updates, otherwise it is a coverage decoration with no verification value.
 
@@ -826,14 +837,14 @@ Slowest, most fragile, but the only way to verify deployment, configuration, and
 | A small E2E subset that runs against production (or production-like) environments after deployment to confirm the deployment is functioning at all.
 |===
 
-A common framing is the *testing pyramid*, popularised by Mike Cohn: many fast unit tests at the bottom, fewer integration tests in the middle, very few E2E tests at the top. The shape reflects cost: as a rule of thumb, each layer up is around an order of magnitude slower and more fragile than the one below.
+A common framing is the *testing pyramid*, popularized by Mike Cohn: many fast unit tests at the bottom, fewer integration tests in the middle, very few E2E tests at the top. The shape reflects cost: as a rule of thumb, each layer up is around an order of magnitude slower and more fragile than the one below.
 
-An alternative framing, the *testing trophy* (Kent C. Dodds), argues that for typical modern applications (heavy on glue, light on computation), integration tests are the highest-value layer and should outnumber unit tests. The truth depends on what your code actually *is*: computation-heavy systems benefit from the pyramid; glue-heavy systems benefit from the trophy. Match the test distribution to the code's centre of gravity, not to a generic template.
+An alternative framing, the *testing trophy* (Kent C. Dodds), argues that for typical modern applications (heavy on glue, light on computation), integration tests are the highest-value layer and should outnumber unit tests. The truth depends on what your code actually *is*: computation-heavy systems benefit from the pyramid; glue-heavy systems benefit from the trophy. Match the test distribution to the code's center of gravity, not to a generic template.
 
 [[test-doubles]]
 === Test Doubles: Mocks, Stubs, Fakes, Spies
 
-Test doubles are the general category. The vocabulary below was systematised by Gerard Meszaros in *xUnit Test Patterns* (2007) and is now the standard reference for distinguishing the variants. Specific kinds:
+Test doubles are the general category. The vocabulary below was systematized by Gerard Meszaros in *xUnit Test Patterns* (2007) and is now the standard reference for distinguishing the variants. Specific kinds:
 
 [cols="1,3"]
 |===
@@ -880,15 +891,15 @@ def outer(n):
     return a + b
 ----
 
-Do not mock `inner_a` and `inner_b` in the test for `outer`. They are part of the same *unit of behaviour* — a "unit" is a unit of behaviour, not a unit of code. Let them run for real and assert on `outer`'s result. Mocking them would produce a test that asserts "`outer` called `inner_a` then `inner_b`" — the implementation-details pitfall again, which breaks the moment you restructure the internals. You may *also* give `inner_a` and `inner_b` their own tests if they are complex enough to be worth pinning independently, but that is a separate decision from mocking them inside `outer`.
+Do not mock `inner_a` and `inner_b` in the test for `outer`. They are part of the same *unit of behavior* — a "unit" is a unit of behavior, not a unit of code. Let them run for real and assert on `outer`'s result. Mocking them would produce a test that asserts "`outer` called `inner_a` then `inner_b`" — the implementation-details pitfall again, which breaks the moment you restructure the internals. You may *also* give `inner_a` and `inner_b` their own tests if they are complex enough to be worth pinning independently, but that is a separate decision from mocking them inside `outer`.
 
 Mock when crossing a boundary you do not own or do not want to exercise: I/O, third-party calls, the clock, randomness, or a genuinely separate subsystem with its own contract. The decision rule, in order:
 
-. Inner code is pure logic you own, part of the same behaviour → do not mock; let it run.
+. Inner code is pure logic you own, part of the same behavior → do not mock; let it run.
 . Inner code does I/O, hits a third party, or is non-deterministic → mock it, ideally via an abstraction you own.
-. Inner code is a separate subsystem with its own contract → mock at that boundary, because the interaction *is* the behaviour under test.
+. Inner code is a separate subsystem with its own contract → mock at that boundary, because the interaction *is* the behavior under test.
 
-This is the core of the long-running *classicist* (state-based, mock only at real boundaries) versus *London school* (interaction-based, mock collaborators and assert on interactions) debate. Some published style guides — particularly those built around behaviour-driven design or strict ports-and-adapters architectures — adopt the London position as a rule: never mock what you own, mock everything you do not. That is a coherent discipline, and in interaction-heavy designs where the *sequence and shape of messages between collaborators* is the behaviour under specification, it works well. The cost is the over-coupling described above; tests written this way pay for fidelity to interaction with brittleness under refactor.
+This is the core of the long-running *classicist* (state-based, mock only at real boundaries) versus *London school* (interaction-based, mock collaborators and assert on interactions) debate. Some published style guides — particularly those built around behavior-driven design or strict ports-and-adapters architectures — adopt the London position as a rule: never mock what you own, mock everything you do not. That is a coherent discipline, and in interaction-heavy designs where the *sequence and shape of messages between collaborators* is the behavior under specification, it works well. The cost is the over-coupling described above; tests written this way pay for fidelity to interaction with brittleness under refactor.
 
 As a general default this document recommends the classicist position — mock the boundary, not the decomposition — because most codebases are not interaction-heavy and most tests outlive the implementations they were written against. Where a project explicitly works in the London style, by deliberate team choice or because the architecture is dominantly message-passing, apply that style consistently. The mistake is silently mixing the two: classicist tests next to London tests in the same suite, with no convention to indicate which is which.
 
@@ -906,7 +917,7 @@ A useful self-check on any test: *if I deleted the production code and rewrote i
 
 === Small Steps
 
-The smaller the step between two known-good states, the more localised the cause of any failure. If you change one line and a test breaks, the bug is in that line. If you change a thousand lines and a test breaks, the bug is somewhere in a thousand lines.
+The smaller the step between two known-good states, the more localized the cause of any failure. If you change one line and a test breaks, the bug is in that line. If you change a thousand lines and a test breaks, the bug is somewhere in a thousand lines.
 
 This compounds: the argument for small steps is that they make you faster overall rather than slower — time not lost to debugging is spent progressing instead. This is a claim about mechanism, visible within a single session; it is not a settled empirical finding, and the controlled studies on TDD productivity are mixed (see <<answering-the-skeptic,Answering the Skeptic>>). The skill of finding the next small step is the actual hard part of disciplined development.
 
@@ -943,7 +954,7 @@ A balanced view requires being honest about the limits.
 
 === Exploratory Code and Prototypes
 
-When the goal is to discover whether something is possible at all — a spike, a proof of concept, a research prototype — TDD's design feedback has nothing to push against, because there is no design to evaluate yet. The honest answer is to write the prototype quickly, learn from it, and then either *throw it away and rewrite under TDD* or *retroactively add tests for the parts that survive into production*. Prototypes that survive without ever being tested become the most expensive code the organisation owns.
+When the goal is to discover whether something is possible at all — a spike, a proof of concept, a research prototype — TDD's design feedback has nothing to push against, because there is no design to evaluate yet. The honest answer is to write the prototype quickly, learn from it, and then either *throw it away and rewrite under TDD* or *retroactively add tests for the parts that survive into production*. Prototypes that survive without ever being tested become the most expensive code the organization owns. When a prototype does survive into production, the starting point is not TDD — it is characterization: lock down the current behavior before touching anything. See <<starting-legacy>>.
 
 === Pure Glue Code
 
@@ -951,7 +962,7 @@ Code whose sole purpose is to wire together calls to other systems — a control
 
 === UI Polish and Aesthetics
 
-Layout, spacing, colour, and feel are hard to specify in tests. Visual regression tools (Percy, Chromatic, Playwright's screenshot comparison) exist for the parts that can be automated, but the act of *designing* a usable interface is not well-served by TDD. The interface design happens in a different mode of work, and tests are added once decisions stabilise — typically at the interaction level (clicks, keyboard navigation, accessibility) rather than the appearance level.
+Layout, spacing, color, and feel are hard to specify in tests. Visual regression tools (Percy, Chromatic, Playwright's screenshot comparison) exist for the parts that can be automated, but the act of *designing* a usable interface is not well-served by TDD. The interface design happens in a different mode of work, and tests are added once decisions stabilize — typically at the interaction level (clicks, keyboard navigation, accessibility) rather than the appearance level.
 
 === Throwaway Diagnostic Scripts
 
@@ -975,7 +986,7 @@ Controlled studies and meta-analyses of TDD's effect on defect rates and product
 
 *What's true.* All of it. The evidence is genuinely inconclusive, confounded, and context-dependent. Claims that TDD definitively lowers defect density or development cost are not supported by the research as it stands.
 
-*The answer.* So do not make that claim. TDD's defensible case was never statistical — it is mechanistic. Writing the test first makes you the first consumer of your own interface; it forces steps small enough that a failure localises to the last change; it leaves behind a behavior-locked regression net that makes refactoring safe. Those are claims about *what the practice does*, observable in a single session, not predictions about populations. Defend TDD on the mechanism and concede the metrics. A skeptic cannot dismiss "this made the design problem visible at zero cost" by citing a meta-analysis, because it is not the kind of claim a meta-analysis addresses.
+*The answer.* So do not make that claim. TDD's defensible case was never statistical — it is mechanistic. Writing the test first makes you the first consumer of your own interface; it forces steps small enough that a failure localizes to the last change; it leaves behind a behavior-locked regression net that makes refactoring safe. Those are claims about *what the practice does*, observable in a single session, not predictions about populations. Defend TDD on the mechanism and concede the metrics. A skeptic cannot dismiss "this made the design problem visible at zero cost" by citing a meta-analysis, because it is not the kind of claim a meta-analysis addresses.
 
 === "TDD induces design damage"
 
@@ -1014,7 +1025,7 @@ Whole categories of work have no stable input-to-output contract to assert on: v
 After the concessions, the defensible position is narrow and sturdy:
 
 * *Do not claim* that TDD is empirically proven to reduce defects, lower cost, or increase speed. The evidence does not support it.
-* *Do claim* that TDD is a design and change-safety discipline whose benefits are mechanistic and visible within a single session: interface feedback at the moment of lowest change cost, small steps that localise failure, and a behavior-locked net that makes refactoring safe.
+* *Do claim* that TDD is a design and change-safety discipline whose benefits are mechanistic and visible within a single session: interface feedback at the moment of lowest change cost, small steps that localize failure, and a behavior-locked net that makes refactoring safe.
 * *Locate the failure modes correctly.* Design damage and calcification are failures of implementation-coupled, mock-everything testing — which this discipline explicitly warns against — not properties of test-first.
 * *Scope it honestly.* TDD is for deterministic logic with observable contracts, not for everything.
 
@@ -1087,9 +1098,9 @@ SQL is the case where the testing pyramid breaks down most visibly. The "code" i
 *Behavior vs. structure for SQL*:
 
 * *Behavior*: "this stored procedure, given these inputs and this initial data, produces these outputs and these data changes."
-* *Structure*: index choices, query rewrites, denormalisation. These should be invisible to tests. If a test breaks when you add an index, the test was wrong.
+* *Structure*: index choices, query rewrites, denormalization. These should be invisible to tests. If a test breaks when you add an index, the test was wrong.
 
-*Migration testing as characterisation*: when working with legacy databases, write characterisation tests against the current behavior *before* refactoring schema or procedures. Approval testing fits well here — capture the current outputs for representative inputs, then refactor and verify nothing changed.
+*Migration testing as characterization*: when working with legacy databases, write characterization tests against the current behavior *before* refactoring schema or procedures. Approval testing fits well here — capture the current outputs for representative inputs, then refactor and verify nothing changed.
 
 ==== SQL-Specific Pitfalls
 
@@ -1102,9 +1113,9 @@ SQL is the case where the testing pyramid breaks down most visibly. The "code" i
 
 Python's testing ecosystem is mature and the dynamic nature of the language makes test-driven design feedback particularly valuable — typos and shape errors that a static language would catch at compile time only surface when code runs.
 
-*Framework*: pytest is the modern default. unittest (the standard library's xUnit-style framework) is still common in older code and acceptable, but pytest's fixture model, parameterisation, and assertion rewriting make it the right choice for new work. Do not mix pytest and unittest patterns in the same module.
+*Framework*: pytest is the modern default. unittest (the standard library's xUnit-style framework) is still common in older code and acceptable, but pytest's fixture model, parameterization, and assertion rewriting make it the right choice for new work. Do not mix pytest and unittest patterns in the same module.
 
-*Assertions*: pytest's plain `assert` statements are rewritten by the framework to give detailed failure messages. Do not import or reach for separate assertion libraries — the built-in behavior is already good. Avoid `assert` statements in production code, however; they are stripped when Python runs with `-O` optimisation.
+*Assertions*: pytest's plain `assert` statements are rewritten by the framework to give detailed failure messages. Do not import or reach for separate assertion libraries — the built-in behavior is already good. Avoid `assert` statements in production code, however; they are stripped when Python runs with `-O` optimization.
 
 *Mocking*: `unittest.mock` (re-exported as `pytest-mock`'s `mocker` fixture for cleaner pytest integration) is the standard. The `patch` decorator and context manager are powerful and easy to misuse:
 
@@ -1123,7 +1134,7 @@ In a statically typed language, a test that calls a function with the wrong argu
 
 * Default to `function` scope. Widen only with explicit justification.
 * For expensive setup (database containers, large fixtures), use `session` scope but ensure the resource is *read-only* or *reset* between tests.
-* Never share mutable state across tests via module-level variables. The next developer will not realise it is shared.
+* Never share mutable state across tests via module-level variables. The next developer will not realize it is shared.
 
 *Async testing*: Python's async story has matured but is still a source of testing pain.
 
@@ -1138,13 +1149,13 @@ In a statically typed language, a test that calls a function with the wrong argu
 * `pytest-django` for Django projects; it handles transaction rollback per test automatically.
 * SQLAlchemy: use a fresh in-memory engine per test, or transaction-rollback fixtures. Do not share sessions across tests.
 
-*Property-based testing*: Hypothesis is the standard. It is unusually well-integrated with pytest — `@given(...)` decorators on test functions, automatic shrinking of failing inputs, and persistent failure databases. For parsers, serialisers, data transformations, and anything algorithmic, Hypothesis finds bugs that example-based tests miss.
+*Property-based testing*: Hypothesis is the standard. It is unusually well-integrated with pytest — `@given(...)` decorators on test functions, automatic shrinking of failing inputs, and persistent failure databases. For parsers, serializers, data transformations, and anything algorithmic, Hypothesis finds bugs that example-based tests miss.
 
 *Mutation testing*: `mutmut` and `cosmic-ray` are the established tools. Both have rough edges; runtimes can be long. Use periodically on critical modules, not on every commit.
 
 ==== Python-Specific Pitfalls
 
-* Tests that depend on module-import side effects. If your module does work at import time, tests become order-dependent. Move import-time work into explicit initialisation functions.
+* Tests that depend on module-import side effects. If your module does work at import time, tests become order-dependent. Move import-time work into explicit initialization functions.
 * `patch` aimed at the wrong namespace — see above. When a mock "is not being called," the cause is almost always patching the definition location instead of the use site.
 * Comparing floats with `==`. Use `pytest.approx` or `math.isclose` with explicit tolerances.
 * Tests that depend on dict ordering in older Python versions, or on set ordering at any version. Set order is not guaranteed.
@@ -1160,7 +1171,7 @@ The resolution is the same boundary-and-layer reasoning used for the third-party
 
 * *Tool functions* — the actual `def search_flights(origin, dest, date) -> list[Flight]` implementations. These are ordinary Python. TDD applies fully; test them deterministically with pytest. This is where most of your testable logic lives, and it does not involve the model at all.
 * *Tool schemas and argument validation* — the JSON schema the model sees, and the code that validates incoming arguments. Test that the schema matches the function signature, that required arguments are marked required, and that the function rejects malformed input. Deterministic; ordinary tests.
-* *Agent behaviour* — whether the model picks the right tool and chains tools correctly. This cannot be unit-tested, because it depends on the model. Verify it with *evals*: run a set of representative inputs, score the outputs, and track the success rate over time. You assert on a success *rate across a set*, not on a single exact output. Evals are the LLM equivalent of integration testing.
+* *Agent behavior* — whether the model picks the right tool and chains tools correctly. This cannot be unit-tested, because it depends on the model. Verify it with *evals*: run a set of representative inputs, score the outputs, and track the success rate over time. You assert on a success *rate across a set*, not on a single exact output. Evals are the LLM equivalent of integration testing.
 
 To make the *agent loop itself* testable (its control flow — does it stop when the model returns no tool call, does it pass tool results back correctly), mock the model client to return canned responses. A mocked `anthropic` or `openai` client returning a fixed tool-call lets you test the loop's branching deterministically without calling the real model. This is mocking at the boundary (the model client) exactly as the Test Doubles section prescribes — never assert that the real model chose a particular tool inside a unit test.
 
@@ -1198,22 +1209,209 @@ C# is heavily async. Tests must handle this correctly:
 
 *Entity Framework Core specifically*: do not test against the `InMemory` provider as a substitute for SQL Server. The semantics differ — case sensitivity, transaction behavior, query translation, concurrency tokens all behave differently. Use the SQLite in-memory provider for fast tests where the SQL dialect is close enough, or use Testcontainers against the real database engine for tests where dialect matters.
 
-*Property-based testing in .NET*: FsCheck works from both F# and C#. CsCheck is a more recent C#-native option. For computational code (parsers, serialisers, algorithms), these find edge cases that hand-written `[Theory]` test data misses.
+*Property-based testing in .NET*: FsCheck works from both F# and C#. CsCheck is a more recent C#-native option. For computational code (parsers, serializers, algorithms), these find edge cases that hand-written `[Theory]` test data misses.
 
 *Mutation testing*: Stryker.NET is mature. Run periodically on critical projects; the runtime cost is real but the quality signal is much stronger than coverage.
 
 ==== C#-Specific Pitfalls
 
-* Over-use of `[Theory]` with `[InlineData]` for tests that should be separate `[Fact]` methods because they verify different behaviors. The convenience of parameterisation should not collapse behaviorally-distinct tests into one.
+* Over-use of `[Theory]` with `[InlineData]` for tests that should be separate `[Fact]` methods because they verify different behaviors. The convenience of parameterization should not collapse behaviorally-distinct tests into one.
 * Reliance on `internal` + `InternalsVisibleTo` to test internals. This is structural coupling dressed up — if you need to reach into internals to test something, the public API is wrong, or that something belongs in a separately-testable type.
 * Tests that depend on `DateTime.Now`. Inject `TimeProvider` (modern .NET) or an `IClock` abstraction; never call `DateTime.Now` in code you want to test.
 * Tests that depend on culture (`CurrentCulture`, `InvariantCulture`). Set explicitly in test setup; never assume the default.
 
 
+[[starting-greenfield]]
+== Starting a New Project
+
+The rest of this document describes how to stay in the TDD/BDD loop once you are in it. This section addresses the problem that precedes all of that: how do you enter the loop when the repository is empty and no design decisions have been made yet?
+
+The blank-page moment is where most guidance fails, because it assumes you already know what your first scenario is, what your first unit is, and how your test infrastructure is set up. None of those things are true at the start.
+
+=== The Walking Skeleton First
+
+The single most useful concept for starting greenfield is Alistair Cockburn's *walking skeleton*: a tiny end-to-end slice of the system that does nothing useful, but proves that all the moving parts — build, test runner, CI, deployment — are connected and working.
+
+Write the first test *against the skeleton*, not against application logic. The test should be almost embarrassingly trivial:
+
+[source,python]
+----
+def test_app_starts_and_responds():
+    response = client.get("/health")
+    assert response.status_code == 200
+----
+
+[source,csharp]
+----
+[Fact]
+public async Task App_starts_and_responds()
+{
+    var response = await _client.GetAsync("/health");
+    response.StatusCode.Should().Be(HttpStatusCode.OK);
+}
+----
+
+This test does almost nothing. Its value is not what it verifies — it is that writing it forces you to set up the test runner, the project structure, the CI pipeline, and the deployment target *before* you have any application logic to protect. Every subsequent test inherits that infrastructure for free.
+
+Do not skip this step in the name of "getting to real work." The walking skeleton *is* real work: it is the TDD cycle applied to infrastructure rather than to business logic. It is also the only step that is purely a judgment call — the document cannot tell you what your skeleton looks like, because that depends on what you are building.
+
+=== The First BDD Scenario
+
+Before writing any unit-level tests, write one acceptance-level BDD scenario for the most central thing the system must do. Not a comprehensive set of scenarios — one. The purpose is not to specify the system but to give the unit-level work a destination: you know you are done with the first slice when this scenario passes.
+
+The first scenario is hard to write because you do not yet have domain vocabulary. Use the vocabulary you *wish* you had:
+
+----
+Given a new customer account
+When the customer places their first order
+Then the order is confirmed and the customer receives a confirmation number
+----
+
+Do not worry that "customer account", "order", and "confirmation number" do not yet exist as types. Writing the scenario is the act of deciding they should. The test will fail to compile or to run — that is correct. It sits at the top of the work and pulls the unit-level work upward.
+
+=== The First Unit
+
+With a failing acceptance scenario defined, the question of where to start at the unit level has an answer: start at the core domain concept the scenario names, not at the infrastructure layer.
+
+A common greenfield mistake is to start with the database schema, the API contract, or the framework configuration, on the grounds that these feel like foundations. They are not — they are details that should be driven by what the domain needs, not the other way around. Starting at the infrastructure level locks in decisions before you have any behavioral pressure to inform them.
+
+Instead:
+
+. Identify the smallest domain concept named by the acceptance scenario.
+. Write a unit test for the most basic behavior that concept must have.
+. TDD it from there, letting the acceptance scenario pull the direction.
+
+The acceptance scenario will remain red for a long time. That is fine. Each green unit test is progress toward it.
+
+A red acceptance scenario does not prevent the application from being built, run, or manually tested. The application can be started and used at any point during development — the acceptance test turning green is simply the moment you have automated, repeatable proof that the full slice works end-to-end. Until then, the red scenario is a destination, not a blocker.
+
+=== Test Suites and the Pipeline
+
+An acceptance test is technically the same artifact as a unit test — a function in a test file that asserts something. What differs is *when it runs* and *which suite it belongs to*.
+
+Most projects separate tests into at least two suites with different triggers:
+
+* *Fast suite* (unit tests): runs on every commit, in seconds. Contains only tests that have no external dependencies and always pass or fail for code-level reasons. A red acceptance test does not belong here — it would block every commit.
+* *Slow suite* (acceptance, integration, E2E tests): runs on a longer cadence — typically on a CI branch build, before a merge, or on demand. A permanently red acceptance test *does* belong here, because the suite is expected to contain in-progress work.
+
+The practical mechanism is to tag or group tests by suite. In pytest this is `@pytest.mark.acceptance`; in xUnit it is a trait or category; in Pester it is a tag on the `Describe` block. The CI pipeline then runs the fast suite on every push and the slow suite only at designated checkpoints.
+
+The acceptance test is added to the slow suite from the moment it is written — red from day one, turning green when the feature is complete. It never enters the fast suite until it is green, stable, and fast enough to belong there.
+
+The red–green–refactor cycle applies to acceptance tests exactly as it does to unit tests. The difference is timescale only: a unit test cycle closes in minutes; an acceptance test cycle closes over days or weeks as the unit-level work beneath it accumulates. The acceptance test is not exempt from the cycle — it is the outermost loop of it.
+
+=== Bootstrapping Order
+
+On a typical greenfield project the sequence is:
+
+. *Walking skeleton*: build pipeline, test runner, CI, deployment target wired together. One trivial test proves the wiring. This is infrastructure TDD.
+. *First acceptance scenario*: written in domain vocabulary before the types exist. Added immediately to the slow/acceptance suite. Will fail immediately. That is its job.
+. *First domain unit*: TDD the core concept named in the scenario. Ignore infrastructure details.
+. *Grow outward*: each new acceptance scenario or failing edge case drives a new unit. The design emerges from behavioral pressure, not from upfront planning.
+. *Wire to infrastructure last*: once the domain behavior is solid, wire it to the database, the API layer, or whatever else it needs. The integration seams become obvious from the outside in.
+
+The order matters because it keeps the design feedback flowing. Starting with infrastructure means every design decision is made without behavioral pressure. Starting with domain units means every infrastructure decision is made after you know what behavior it needs to support.
+
+=== What Requires Judgment
+
+The walking skeleton requires a decision this document cannot make: what counts as "connected end to end" for your system. A CLI tool, a web service, an event-driven processor, and a library all have different answers. The judgment is: what is the thinnest possible slice that, if it works, proves all the moving parts are wired up? Start there.
+
+
+[[starting-legacy]]
+== Starting Within a Legacy Project
+
+Legacy code — code that exists, works in production, and has few or no tests — presents the inverse problem from greenfield. The design decisions have already been made. Many of them are hostile to testing: I/O woven into logic, global state, tightly-coupled classes, no dependency injection. The TDD loop cannot simply be entered; the codebase must be prepared for it first.
+
+Michael Feathers' *Working Effectively with Legacy Code* (2004) is the authoritative reference for this preparation work. This section summarizes the sequencing that connects his approach to the methodologies described in the rest of this document.
+
+=== The Goal Is Not Full Coverage
+
+The instinct when confronted with untested legacy code is to add tests until coverage reaches some target. This instinct is wrong in two ways. First, tests added after the fact verify the current behavior — including its bugs — and give no design feedback. Second, adding tests to code that was not designed for testing produces the worst kind of test: one that is so tightly coupled to the implementation that every refactor breaks it.
+
+The goal is not coverage. The goal is a *sufficient safety net to refactor*, and then a *redesign toward testability*, and only then the introduction of TDD for new behavior.
+
+=== Step One: Characterize Before You Touch
+
+Before changing anything in a legacy codebase, lock down its current behavior with characterization tests. A characterization test does not assert what the code *should* do — it asserts what the code *currently does*, so that refactoring does not accidentally change it.
+
+Approval testing (see the Companion Methodologies section) is the natural tool here: run the code with representative inputs, capture the output, approve it as the baseline, and let the framework detect any deviation during refactoring.
+
+[source,python]
+----
+# Not "what should process_invoice do" — "what does it currently do"
+def test_process_invoice_current_behavior():
+    result = process_invoice({"id": "INV-001", "amount": 100, "customer": "ACME"})
+    verify(result)  # approval testing — first run captures and approves the output
+----
+
+Characterization tests are honest about their purpose: they preserve existing behavior, bugs included. Write them for any code path you intend to touch, not for the whole system.
+
+=== Step Two: Find Seams
+
+A *seam* (Feathers' term) is a place in the code where behavior can be changed without modifying the code at that place — typically a parameter, an interface, or a point of indirection that does not exist yet but could.
+
+The two most useful seams in practice:
+
+*Extract and override*: extract the dependency into a method, then override that method in a test subclass. Invasive but often the fastest way to get a grip on code with no interfaces.
+
+[source,python]
+----
+# Before: cannot test because it calls the live payment gateway directly
+def process_payment(order):
+    gateway = PaymentGateway("live-key")
+    return gateway.charge(order.total)
+
+# After: extracted into a method that can be overridden in tests
+def process_payment(order):
+    gateway = self._get_gateway()
+    return gateway.charge(order.total)
+
+def _get_gateway(self):
+    return PaymentGateway("live-key")
+----
+
+*Parameter injection*: pass the dependency in as a parameter instead of constructing it internally. The production caller passes the real dependency; the test passes a double.
+
+Neither approach is as clean as a greenfield design. They are bridges — enough to get tests in place so that the real redesign can happen safely.
+
+=== Step Three: Introduce Tests Incrementally
+
+With seams in place, add tests to the specific code paths you are about to change, not to the whole module. The scope of the safety net should match the scope of the planned change.
+
+The test discipline here is *discovered Triangulation* (see section 3.3.2): a bug report, a planned change, or a new feature requirement defines the test you need. Write the test, watch it fail or confirm current behavior, make the change, confirm the test still passes.
+
+Do not try to achieve complete test coverage of a legacy module before touching it. You will never finish, and the tests you write for code you do not intend to touch have a maintenance cost with no near-term payoff.
+
+=== Step Four: Refactor Toward Testability Under the Safety Net
+
+With characterization tests and targeted unit tests in place, refactor the code toward the designs this document describes: push I/O to boundaries, separate logic from side effects, introduce interfaces at dependency edges.
+
+The sequence within this step is the same as any TDD refactor:
+
+. Make a structural change.
+. Run the tests.
+. If they pass, the behavior is preserved. Commit.
+. If they fail, the change broke something. Revert and try a smaller step.
+
+The characterization tests are the net. They were written to survive structural changes — if a characterization test fails, either the refactor changed behavior (stop and investigate) or the test was coupled to structure rather than behavior (fix the test).
+
+=== Step Five: TDD New Behavior
+
+Once a section of code has been refactored to the point where seams exist and the structure is testable, new behavior can be added under full TDD: write a failing test, make it pass, refactor. At this point the section behaves like greenfield code and the rest of this document applies without qualification.
+
+The transition is gradual and section-by-section. A production codebase does not flip from legacy to fully-tested overnight. The practical target is: every time a section is touched for a bug fix or a feature, it is left with better test coverage and better seam design than it had before. Over time the proportion of well-tested, testable code grows; the legacy core shrinks.
+
+=== The Asymmetry With Greenfield
+
+The key difference from the greenfield section above: on a greenfield project, you choose the design. On a legacy project, the design chose you, and your first job is to understand it well enough to move safely within it before you can begin to change it.
+
+This is why the document rates legacy adoption as significantly harder than greenfield adoption. The methodologies are the same. The preparation work is entirely different, and the preparation work is the hard part.
+
+
 [[practical-working-sequence]]
 == A Practical Working Sequence
 
-For a typical change to a typical codebase, the sequence that combines these methodologies effectively:
+For a typical change to a typical codebase that already has tests and a working CI pipeline, the sequence that combines these methodologies effectively. If you are starting from scratch, see <<starting-greenfield>> first. If the codebase has no tests, see <<starting-legacy>> first — the sequence below assumes a safety net already exists.
 
 . *Understand the desired behavior at the user level*. If the change is large enough to warrant a feature description, write one or more BDD scenarios first. Co-author them with whoever has the domain knowledge. Make the scenarios fail.
 . *Decompose into units*. Identify the components or functions that will need to exist for the scenarios to pass.
@@ -1236,7 +1434,7 @@ The point is not to do everything on every change. The point is to know which to
 | Acceptance test
 | A test that verifies a feature works from the user's perspective. Typically written in BDD/ATDD style.
 
-| Characterisation test
+| Characterization test
 | A term introduced by Michael Feathers in *Working Effectively with Legacy Code* (2004) for a test written against existing code with no prior tests, to capture its current behavior before refactoring. Often implemented as approval testing.
 
 | Contract test
@@ -1246,7 +1444,7 @@ The point is not to do everything on every change. The point is to know which to
 | Categories of test double, in roughly increasing order of behavioral richness.
 
 | Eval
-| For LLM-based systems, a test of non-deterministic model behaviour that scores outputs across a set of representative inputs and tracks the success rate, rather than asserting a single exact output. The LLM equivalent of integration testing.
+| For LLM-based systems, a test of non-deterministic model behavior that scores outputs across a set of representative inputs and tracks the success rate, rather than asserting a single exact output. The LLM equivalent of integration testing.
 
 | Fake It (Til You Make It)
 | Kent Beck's TDD strategy of making the test pass with a hard-coded answer or other minimal cheat, then replacing it with the real implementation in refactor.
@@ -1258,7 +1456,7 @@ The point is not to do everything on every change. The point is to know which to
 | A captured-and-approved output used as a baseline for approval testing.
 
 | Hexagonal architecture
-| A design pattern by Alistair Cockburn that places pure business logic at the centre and pushes I/O and external dependencies to the edges, where they can be substituted in tests. Also known as ports and adapters.
+| A design pattern by Alistair Cockburn that places pure business logic at the center and pushes I/O and external dependencies to the edges, where they can be substituted in tests. Also known as ports and adapters.
 
 | Mutation testing
 | A technique that mutates production code and checks whether the test suite detects the mutation. A measure of test quality, not coverage.
@@ -1272,23 +1470,29 @@ The point is not to do everything on every change. The point is to know which to
 | Red–green–refactor
 | Kent Beck's three-phase TDD cycle: write a failing test, make it pass with minimal code, then improve structure without changing behavior.
 
+| Seam
+| A term introduced by Michael Feathers in *Working Effectively with Legacy Code* (2004) for a place in existing code where behavior can be changed without modifying the code at that place — typically a parameter, an overridable method, or an interface that does not exist yet but can be introduced. Seams are the entry points for adding tests to legacy code without first understanding or rewriting it.
+
 | Snapshot test
 | A narrow form of approval testing in which captured output is compared to a stored baseline.
 
 | Test double
-| Any object substituted for a real collaborator in a test. The taxonomy below was systematised by Gerard Meszaros.
+| Any object substituted for a real collaborator in a test. The taxonomy below was systematized by Gerard Meszaros.
 
 | Test pyramid
 | Mike Cohn's heuristic distribution of test types: many unit tests, fewer integration tests, even fewer end-to-end tests.
 
 | Test trophy
-| Kent C. Dodds's alternative distribution that emphasises integration tests as the highest-value layer, suited to glue-heavy applications.
+| Kent C. Dodds's alternative distribution that emphasizes integration tests as the highest-value layer, suited to glue-heavy applications.
 
 | Three Amigos
-| A practice popularised by George Dinwiddie in which a developer, a tester, and a domain expert or product owner co-author scenarios before implementation begins.
+| A practice popularized by George Dinwiddie in which a developer, a tester, and a domain expert or product owner co-author scenarios before implementation begins.
 
 | Triangulation
-| Kent Beck's TDD strategy of leaving a hard-coded answer in place after the first green and letting a further test force the generalisation, rather than refactoring to the general implementation immediately. The forcing test may be written in the same sitting (planned Triangulation) or discovered later from a bug report, production incident, or integration test (discovered Triangulation).
+| Kent Beck's TDD strategy of leaving a hard-coded answer in place after the first green and letting a further test force the generalization, rather than refactoring to the general implementation immediately. The forcing test may be written in the same sitting (planned Triangulation) or discovered later from a bug report, production incident, or integration test (discovered Triangulation).
+
+| Walking skeleton
+| A term coined by Alistair Cockburn for the thinnest possible end-to-end slice of a new system that does nothing useful but proves all the moving parts are connected: build pipeline, test runner, CI, and deployment target. The walking skeleton is built first on a greenfield project, before any application logic, so that subsequent work inherits working infrastructure from the start.
 |===
 
 
@@ -1382,8 +1586,8 @@ rather than silently complying.
   Green is deliberately minimal — hard-coded constants are acceptable.
 - Three valid strategies for green: Obvious Implementation (write the
   real code when it is obvious), Fake It (hard-code the answer, then
-  generalise in refactor), Triangulation (hard-code the answer, then
-  let a further test force the generalisation). Default to Obvious
+  generalize in refactor), Triangulation (hard-code the answer, then
+  let a further test force the generalization). Default to Obvious
   Implementation; fall back to Fake It when the design is unclear;
   use Triangulation when the cases the code must handle are not
   knowable up front (parsers for human input, business rules with
@@ -1391,7 +1595,7 @@ rather than silently complying.
 - A bug report, production incident, or newly-discovered failing case
   is discovered Triangulation: write a failing test that reproduces
   the case, watch it fail against the current implementation, then
-  generalise the code to handle it. The red→green→refactor loop is
+  generalize the code to handle it. The red→green→refactor loop is
   the same; only the timing of when the new test was written differs.
 - Do not mix structural and behavioral changes in one step or one
   commit. Either change what the code does or change how it is shaped,
@@ -1448,15 +1652,15 @@ rather than silently complying.
 # Companion Methodologies — When to Suggest Each
 
 - Property-based testing: suggest when code has clear invariants
-  (parsers, serialisers, sort/search, roundtrip operations, algorithms).
+  (parsers, serializers, sort/search, roundtrip operations, algorithms).
   Do not suggest for glue code or UI.
 - Mutation testing: suggest as a periodic quality check on critical
   modules, not as a per-commit gate. Coverage is not a substitute.
 - Contract testing: suggest at every inter-service boundary where two
   independently-deployed components communicate.
 - Approval/golden-master testing: suggest when correct output is hard
-  to specify but easy to recognise (reports, codegen, complex
-  transformations, characterising legacy code before refactoring).
+  to specify but easy to recognize (reports, codegen, complex
+  transformations, characterizing legacy code before refactoring).
 - Snapshot testing: suggest with explicit warning about review
   discipline. Auto-updated snapshots without review have no verification
   value.
@@ -1473,7 +1677,7 @@ rather than silently complying.
 ## What Not to Do
 
 - Do not propose tests written after the production code unless I
-  explicitly ask for characterisation/retrofit work on legacy code.
+  explicitly ask for characterization/retrofit work on legacy code.
 - Do not propose coverage percentage targets. Coverage is a side effect
   measure, not a goal.
 - Do not propose tests with no assertions, tests that only check for
@@ -1499,7 +1703,7 @@ rather than silently complying.
 - If I ask "write a test for X" without specifying the level, ask
   whether I want unit-level (TDD) or feature-level (BDD/acceptance).
 - If I ask for a test on code that already exists, confirm whether this
-  is characterisation (locking down current behavior before refactoring)
+  is characterization (locking down current behavior before refactoring)
   or retrofit (adding tests because the code lacks them), because the
   approach differs.
 - If I propose a test that asserts on implementation detail, push back
@@ -1552,7 +1756,7 @@ rather than silently complying.
 - Inject the clock for any code touching GETDATE/NOW/CURRENT_TIMESTAMP.
 - Each test owns its data. Either roll back transactions or use
   distinct schemas per test run.
-- For legacy schema work, suggest approval/characterisation tests
+- For legacy schema work, suggest approval/characterization tests
   before refactoring procedures or schema.
 ----
 
@@ -1590,7 +1794,7 @@ rather than silently complying.
   truthiness. `assert result` passes for `1`, `"x"`, `[0]`.
 - For LLM tools/agents: test tool functions as ordinary deterministic
   units; test schemas/argument validation deterministically; verify
-  agent behaviour with evals (success rate over a set), never with a
+  agent behavior with evals (success rate over a set), never with a
   unit test asserting the model chose a specific tool. Mock the model
   client to make the agent loop's control flow deterministic.
 - Tool tests live in the repo, version-locked, run in CI. Evals live

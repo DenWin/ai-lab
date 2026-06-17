@@ -1,6 +1,9 @@
 # VS Code Local History extension
 /.history/
 
+# Gradle cache written by docToolchain runs
+/.gradle/
+
 # Transient working material: upstream snapshots, handoffs, downloads.
 # The folder itself is kept (via .gitkeep) as a landing zone; its contents are ignored.
 /.temp/*

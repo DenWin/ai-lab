@@ -27,3 +27,4 @@ Last updated: 2026-06-04
 | ?    | [harden-github-repo](harden-github-repo/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [quick-script-over-engineering](quick-script-over-engineering/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [scratch-immutability-appendix](scratch-immutability-appendix/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| TBD  | [global-gitignore](global-gitignore/PRD.md) | TBD | TBD | TBD | ? | needs-triage |

@@ -37,7 +37,8 @@
       "PowerShell(Sort-Object *)",
       "PowerShell(Split-Path *)",
       "PowerShell(Test-Path *)",
-      "PowerShell(Where-Object *)"
+      "PowerShell(Where-Object *)",
+      "Bash(bash --version)"
     ]
   },
   "hooks": {
