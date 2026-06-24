@@ -1,0 +1,47 @@
+{
+  "name": "adoc-preview-menu",
+  "displayName": "AsciiDoc Preview Context Menu",
+  "description": "Adds 'Open AsciiDoc Preview' to the right-click context menu for .adoc files",
+  "version": "1.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "adoc-preview-menu.openPreview",
+        "title": "Open AsciiDoc Preview"
+      },
+      {
+        "command": "adoc-preview-menu.openPreviewToSide",
+        "title": "Open AsciiDoc Preview to Side"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "adoc-preview-menu.openPreview",
+          "when": "resourceExtname == .adoc",
+          "group": "navigation"
+        },
+        {
+          "command": "adoc-preview-menu.openPreviewToSide",
+          "when": "resourceExtname == .adoc",
+          "group": "navigation"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "adoc-preview-menu.openPreview",
+          "when": "resourceExtname == .adoc"
+        },
+        {
+          "command": "adoc-preview-menu.openPreviewToSide",
+          "when": "resourceExtname == .adoc"
+        }
+      ]
+    }
+  }
+}
