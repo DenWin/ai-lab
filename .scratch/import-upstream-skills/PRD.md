@@ -1,11 +1,11 @@
-# PRD — Import upstream (mattpocock) engineering & misc skills
+# PRD — Import Upstream Skills (Generic Process)
 
 Status: ready-for-human
 
-Bring the remaining mattpocock skills into this repo as first-class, grouped, provenance-tracked
-skills — the ones not already imported in the first pass. Source of truth for these is **Matt's repo**
-(`.temp/github.com_mattpocock/skills`, commit `aaf2453…`); the same-named global skills are the
-*prior version* — reference only, not a source of truth.
+Define and implement a generic, repeatable process for importing skills from any upstream source
+into this repo as first-class, grouped, provenance-tracked skills. The mattpocock GitHub repo
+(`aaf2453…`) is the first concrete use case that drove the need for this, but the process itself
+must be source-agnostic.
 
 ## Problem Statement
 

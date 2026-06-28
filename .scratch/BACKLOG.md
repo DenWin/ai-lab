@@ -28,3 +28,5 @@ Last updated: 2026-06-04
 | ?    | [quick-script-over-engineering](quick-script-over-engineering/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [scratch-immutability-appendix](scratch-immutability-appendix/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
 | TBD  | [global-gitignore](global-gitignore/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [mail-to-doc](mail-to-doc/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [fetch-latest-claude-skills](fetch-latest-claude-skills/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
