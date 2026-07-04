@@ -48,6 +48,9 @@ explicitly requested against a specific scratch.
   never "if <harness name>".
 - Vendored/imported content carries `upstream-*` provenance frontmatter; the origin map is
   [shared/skills/README.md](shared/skills/README.md).
+- **Single owner per fact:** each fact lives in one canonical file; other docs link to it instead
+  of restating (layout → `docs/repo-layout.adoc`, skill origins → `shared/skills/README.md`,
+  scratch conventions → the `scratch` skill's `LAYOUT.md`).
 
 ## Scope note
 

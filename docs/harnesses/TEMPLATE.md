@@ -82,7 +82,7 @@ section within each harness doc — not in a shared file — so each harness is 
 | Harness                                  | File                             | Source                                                                  | Last verified |
 | ---------------------------------------- | -------------------------------- | ----------------------------------------------------------------------- | ------------- |
 | claude.ai (web/mobile/Desktop Chat)      | [claude-ai.md](claude-ai.md)     | Self-described (inside claude.ai)                                       | 2026-06       |
-| Claude Code + Cowork (Anthropic desktop) | [claude-code.md](claude-code.md) | Claude Code self-described; Cowork section from shared-engine knowledge | 2026-06       |
+| Claude Code + Cowork (Anthropic desktop) | [claude-code.md](claude-code.md) | Claude Code self-described; Cowork section from shared-engine knowledge | 2026-07 (Cowork section: 2026-06, external) |
 | GitHub Copilot (VS Code)                 | [copilot.md](copilot.md)         | Self-described (inside Copilot)                                         | 2026-06       |
 | Codex CLI                                | _(pending)_                      | —                                                                       | —             |
 | ChatGPT (Projects)                       | _(pending)_                      | —                                                                       | —             |
@@ -92,6 +92,21 @@ section within each harness doc — not in a shared file — so each harness is 
 Each harness doc answers the 14 questions, then has a **Cross-compatibility** section and a
 **What I need from instruction files** section. No other structure required. Mark uncertain
 cells `?` — a precise `?` is better than a confident wrong answer.
+
+## Re-verification (decay contract)
+
+Harness docs describe fast-moving products; every doc carries a **verified-on date** and a
+**per-section confidence table** (see `copilot.md` / `claude-code.md` for the pattern). Re-verify a
+doc — from inside the harness, using the prompt above — when **any** of these hits, whichever comes
+first:
+
+1. The harness ships a major version or visibly changes load behavior.
+2. Observed behavior contradicts the doc (fix the doc in the same session that caught it).
+3. The verified-on date is more than ~6 months old.
+
+Update the **Last verified** column in the table above in the same pass. Sections older docs never
+answered (e.g. questions 12–14 in pre-14-question docs) are filled at the next full re-verification
+— never from memory.
 
 **Authoring restriction:** Describe only your own behavior. Do not explain or reference what
 another harness does or does not do — that belongs in the Cross-compatibility section only,

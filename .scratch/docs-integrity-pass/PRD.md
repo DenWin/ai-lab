@@ -1,9 +1,7 @@
 # PRD — Docs integrity pass: fix drift, de-duplicate facts, add decay contract
 
-Status: needs-triage
+Status: done (2026-07-04 — all four drift instances fixed, decay contract added; see Progress)
 Origin: fable (Claude Fable 5 repo review, 2026-07-04)
-
-Quick capture — iron out in scratch-planning, don't action yet.
 
 ## Problem Statement
 
@@ -37,6 +35,27 @@ _Proposed — refine in triage:_
   concept 2, or "re-verify on major product release").
 - Note: correcting item 2 edits a human-reviewed scratch — touches the
   [[scratch-immutability-appendix]] question; decide whether it's an in-place fix or an appendix.
+
+## Progress (2026-07-04 — all items closed)
+
+1. ✅ skills README: paths corrected to `shared/skills/…`, `planning` group added to the group
+   table, `scratch`/`scratch-plan` added to the origin map as local originals.
+2. ✅ Stale git-init blocker removed from the testing PRD **and** its issue 01 (in-place dated fix —
+   consistent with the repo's existing `[RESOLVED …]` house style; the immutability question was
+   decided that way for this pass). Remaining gate there is Open Decision 3 (doc home), correctly
+   preserved.
+3. ✅ "Not the same file" now owned solely by repo-layout.adoc; instructions/README links to it.
+   The dedupe surfaced and resolved a real contradiction: instructions/README said the future
+   CLAUDE.md repo copy goes to `instructions/claude-code/`, canon is
+   `anthropic/claude-code/instructions/` — one more instance of why single-owner matters.
+   (Same stale path still appears as a *proposal* inside `incorporate-global-claude-setup`'s
+   PRD table — left for that scratch to fix when it builds.)
+4. ✅ claude-code.md gained §11 evidence metadata (per-section confidence, verified 2026-07-04 from
+   inside a Claude Code session) + §12 smoke tests; TEMPLATE.md gained the **decay contract**
+   (re-verify on major release / observed contradiction / >6 months) and its Last-verified cell
+   was updated in the same pass, per the new rule.
+5. ✅ The single-owner-per-fact rule now lives in AGENTS.md Conventions, so it applies to future
+   docs, not just this cleanup.
 
 ## Further Notes
 

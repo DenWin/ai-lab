@@ -19,10 +19,11 @@ section pointing at `docs/testing-methodologies-foundation.adoc` as the canonica
 
 ## Blocked by
 
-- [repo-scaffold](../../repo-scaffold/PRD.md) — specifically its `git init` step (Phase 2, scope
-  item 1). ai-lab is not yet a git repository, so a git-repo reference (repo-relative path / git URL)
-  cannot be authored. Until then the doc lives at `docs/testing-methodologies-foundation.adoc` but the
-  skill is not wired to it.
+- ~~[repo-scaffold](../../repo-scaffold/PRD.md) `git init`~~ — **unblocked 2026-07-04**: git init
+  done 2026-06-04, repo published at `github.com/DenWin/ai-lab`. A repo-relative reference is now
+  authorable.
+- Remaining gate: PRD **Open Decision 3** (doc home — this repo vs its own repo). Settle before
+  authoring the link so it isn't rewritten (see Note below).
 
 ## Note
 

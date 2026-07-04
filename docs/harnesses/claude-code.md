@@ -118,6 +118,40 @@ is loaded every turn and competes with code for context budget — keep it conci
 - No scheduled background tasks without the session open (Cowork has these in a limited form)
 - `CLAUDE.md` is weighted **above** chat messages in the context — noise is disproportionately costly
 
+## 11. Evidence metadata
+
+- **Verified on:** 2026-07-04 (re-checked from inside a Claude Code session; original
+  self-description 2026-06)
+- **Harness/App:** Claude Code VS Code extension, Windows 11; model `claude-fable-5`
+- **Not yet answered:** the newer TEMPLATE questions 12–13 (command + argument mapping, capability
+  contract) postdate this doc — answer them at the next full re-verification rather than guessing now.
+
+| Section | Confidence | Why |
+|---|---|---|
+| 1. Instruction surfaces + precedence | high | Load order observed in-session; managed/enterprise tier not exercised (`?` on exact path) |
+| 2. Storage split | high | Paths confirmed on this machine |
+| 3. Disk locations | high | Standard stable paths; auto-memory location confirmed in-session 2026-07 |
+| 4. Artifact mapping | high | All types exercised in this repo except output styles / plugins (medium) |
+| 5. Cross-compatibility | medium | `AGENTS.md` auto-load is documented behavior; other harnesses' reads are external observation |
+| 6. Composition mechanics | medium | `@import` / frontmatter used; tier-merge semantics not systematically tested |
+| 7. Activation + load model | high | Observed in-session: skills resolve on invocation, hooks fire on events |
+| 8. Validation | high | Commands verified |
+| 9. Security / secrets boundary | high | Matches documented settings behavior |
+| 10. Capability limits | medium | Fast-moving (line limits, known issues); re-verify per the TEMPLATE decay contract |
+| Cowork section | low–medium | External observation + shared-engine knowledge — never self-described from inside Cowork |
+
+## 12. Validation smoke tests
+
+1. **Instruction load check** — Prompt: "Which instruction files are active in this session? Quote
+   the first heading of each." Pass: names the repo-root `AGENTS.md` and any present `CLAUDE.md`
+   tiers with real content. Fail: invents files or misses `AGENTS.md`.
+2. **Skill invocation check** — Run `/planning:scratch` with no arguments. Pass: the ranked table
+   from `.scratch/BACKLOG.md` is displayed (command body + resources resolved from the mirror).
+   Fail: skill unknown → mirror missing; run `pwsh scripts/sync-skills.ps1`.
+3. **Hook check** — Start a new session on a machine with the SessionStart hook configured in
+   `.claude/settings.local.json`. Pass: the "Synced skills → …" hook output appears at session
+   start. Fail: no output → hook not installed on this machine or script error (`--debug` for logs).
+
 ---
 
 ## Cross-compatibility

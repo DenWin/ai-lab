@@ -6,7 +6,7 @@ the `/setup:check-skill-updates` skill, and anything about that process lives in
 
 ## Layout
 
-`skills/<group>/<name>/SKILL.md` (+ bundled resources) is the **single source of truth**. The
+`shared/skills/<group>/<name>/SKILL.md` (+ bundled resources) is the **single source of truth**. The
 invocable copies under `.claude/commands/<group>/<name>.md` are a **generated mirror** — never edit
 them; edit the source and re-run:
 
@@ -14,13 +14,14 @@ them; edit the source and re-run:
 pwsh scripts/sync-skills.ps1
 ```
 
-Namespacing follows the directory: `skills/coding/tdd/` → `/coding:tdd`.
+Namespacing follows the directory: `shared/skills/coding/tdd/` → `/coding:tdd`.
 
 | Group | Intent |
 | --- | --- |
-| `coding`  | Used while writing/changing code |
-| `session` | Conversational / process skills that shape a working session |
-| `setup`   | Repo tooling and skill maintenance |
+| `coding`   | Used while writing/changing code |
+| `planning` | Backlog / PRD / issue workflow (the `.scratch/` tracker) |
+| `session`  | Conversational / process skills that shape a working session |
+| `setup`    | Repo tooling and skill maintenance |
 
 ## Origins
 
@@ -37,6 +38,8 @@ This table is the human-readable summary.
 | `write-a-skill` | session | mattpocock `skills/productivity/write-a-skill` | Localized. Known issue: links `REFERENCE.md` but ships `EXAMPLES.md` — see below |
 | `recon` | session | — (local original) | No upstream |
 | `check-skill-updates` | setup | — (local original) | No upstream; the update tool itself |
+| `scratch` | planning | — (local original) | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md` |
+| `scratch-plan` | planning | — (local original) | Backlog ranking companion to `scratch` |
 
 All upstream-derived skills were forked at mattpocock/skills commit
 `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`.
@@ -54,7 +57,8 @@ upstream-commit: <40-char SHA this copy was last reconciled to>
 
 - `upstream-path` keeps the *author's* folder structure (`engineering/`, `productivity/`), independent
   of our intent grouping.
-- Local originals (`recon`, `check-skill-updates`) carry **no** `upstream-*` fields.
+- Local originals (`recon`, `check-skill-updates`, `scratch`, `scratch-plan`) carry **no**
+  `upstream-*` fields.
 - To check these against upstream, run `/setup:check-skill-updates`.
 
 ## Known content issues (carried over verbatim)

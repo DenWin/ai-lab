@@ -66,9 +66,12 @@ Still to walk:
 - The doc's home is now `docs/testing-methodologies-foundation.adoc` (relocated from `.temp/TDD.adoc`).
 - Add a reference from the `tdd` skill (`skills/coding/tdd/SKILL.md`) to the doc **as a git-repo
   reference** (repo-relative path / git URL), establishing it as the skill's source-of-truth document.
-- **Blocked:** this repo is not yet a git repository, so a git-repo reference cannot be authored.
-  See [issues/01-reference-doc-from-tdd-skill.md](issues/01-reference-doc-from-tdd-skill.md),
-  blocked by [init-git-repo](../init-git-repo/PRD.md).
+- **Unblocked 2026-07-04:** `git init` was done 2026-06-04 and the repo is published
+  (`github.com/DenWin/ai-lab`), so a git-repo reference can now be authored — see
+  [issues/01-reference-doc-from-tdd-skill.md](issues/01-reference-doc-from-tdd-skill.md).
+  (The earlier blocker pointed at `init-git-repo`, which was folded into
+  [repo-scaffold](../repo-scaffold/PRD.md), now done.) Still gated on **Open Decision 3** below
+  (doc home: this repo vs its own repo) per the issue's own note — settle before authoring the link.
 - Once the doc changes in (A) land, **regenerate the skill from §11** (it is canonical; the skill is
   never edited directly). Known drift to fix on regen: `behaviors.md` is missing the
   "don't overclaim TDD empirically" rule; add `stacks/bash.md`.

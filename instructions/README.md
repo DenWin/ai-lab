@@ -11,14 +11,12 @@ expected, not duplication to be merged.
 
 ## Not the same file (common confusion)
 
-- **`claude-ai/profile.md`** — the claude.ai account profile. Read by the Chat harness only.
-- **`~/.claude/CLAUDE.md`** — Claude Code's global instructions. Different harness, different file.
-  Expected to **overlap** with the profile (same behavioral preferences) but authored and loaded
-  separately. Not yet mirrored here; would live under `instructions/claude-code/` if added.
-- **`AGENTS.md`** (repo root) — the cross-harness shared layer read by Claude Code,
-  Codex, and Copilot. The place for anything that should be identical across harnesses.
+Owned by [docs/repo-layout.adoc](../docs/repo-layout.adoc) ("Not the same file" section) — not
+restated here. Note: an earlier version of this section placed the future Claude Code `CLAUDE.md`
+repo copy under `instructions/claude-code/`; the canonical location per the layout doc is
+`anthropic/claude-code/instructions/CLAUDE.md`.
 
 See `docs/harnesses/<harness>.md` for each harness's instruction surfaces and load model.
 
-> The instructions taxonomy (vendor tag, additional harnesses, whether shared content is hoisted
-> into `AGENTS.md`) is finalized as part of the repo-scaffold work — see the repo-structure handoff.
+> Remaining instructions-taxonomy questions (which shared content is hoisted into `AGENTS.md`) are
+> owned by `.scratch/incorporate-global-claude-setup/` (repo-scaffold itself is done).
