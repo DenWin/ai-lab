@@ -35,4 +35,8 @@ Either answer is fine — the undeclared middle isn't. Renaming/moving the exten
 ## Further Notes
 
 - Touches the repo-layout doc owned by [[repo-scaffold]]; coordinate if both are in flight.
+- 2026-07-04 scratch-plan (user input): `VSCode_Extsion/` **needs a README**; it is an outlier but
+  not unrelated — it exists to make reading AsciiDoc files in VS Code easier, in support of AI
+  projects. And [[mail-to-doc]] is a **skill**, not a software project — which weakens the "stray
+  software project" framing above; re-frame during triage.
 - _Created by Claude Fable 5 via /planning:scratch._
