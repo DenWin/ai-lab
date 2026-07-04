@@ -13,8 +13,8 @@ from captions (Whisper API fallback), then reason over frames + transcript to an
 - Upstream repo: https://github.com/bradautomates/claude-video
 - Pin commit: `c333c2289e57bf040b32846f18d669e3f8edad9b`
 - Author: bradautomates · License: MIT
-- Already fetched to `.temp/watch/` (SKILL.md + `scripts/` Python tooling + `scripts/build-skill.sh`
-  + `.codex-plugin/plugin.json`).
+- Upstream source vendored to [artifacts/watch/](artifacts/watch/) (SKILL.md + `scripts/` Python
+  tooling + `scripts/build-skill.sh` + `.codex-plugin/plugin.json`).
 
 ## Notes / open questions (for triage, not to action now)
 

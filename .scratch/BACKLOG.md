@@ -30,3 +30,4 @@ Last updated: 2026-06-04
 | TBD  | [global-gitignore](global-gitignore/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [mail-to-doc](mail-to-doc/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [fetch-latest-claude-skills](fetch-latest-claude-skills/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [evaluate-temp-ai-config](evaluate-temp-ai-config/PRD.md) | TBD | TBD | TBD | ? | needs-triage |

@@ -5,7 +5,8 @@ Status: needs-triage
 Complete the deferred scope additions to the testing-methodologies foundation document,
 finish the unfinished `/grill-me` pass, relocate the doc into the repo at
 [docs/testing-methodologies-foundation.adoc](../../docs/testing-methodologies-foundation.adoc),
-and reference it from the `tdd` skill. Captured from a session handoff (`.temp/handoff`).
+and reference it from the `tdd` skill. Captured from a session handoff
+([artifacts/handoff.md](artifacts/handoff.md)).
 
 ## Problem Statement
 
@@ -20,7 +21,7 @@ is regenerated from it. Three things are open:
    points a reader at it as the authoritative source.
 
 This PRD captures *only what is not yet done* — it does not restate the document's content. The
-handoff (`.temp/handoff`) is the detailed reference for placements and conventions.
+handoff ([artifacts/handoff.md](artifacts/handoff.md)) is the detailed reference for placements and conventions.
 
 ## Solution
 
@@ -106,7 +107,7 @@ Still to walk:
 ## Further Notes
 
 - Artefact (the doc itself): [docs/testing-methodologies-foundation.adoc](../../docs/testing-methodologies-foundation.adoc).
-  Source handoff: `.temp/handoff`.
+  Source handoff: [artifacts/handoff.md](artifacts/handoff.md).
 - The handoff references an earlier `tdd.zip` skill package built in a prior (chat-based) session —
   **stale**, superseded by the repo's `skills/coding/tdd/`. Not carried over.
 - Created from a handoff via `/planning:scratch`.
