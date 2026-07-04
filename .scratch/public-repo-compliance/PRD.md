@@ -1,6 +1,6 @@
 # PRD — Public-repo compliance: attribution, profile exposure, quick hardening wins
 
-Status: needs-triage
+Status: ready-for-human (items 1 + 3 done 2026-07-04; item 2 is a human decision — see Progress)
 Origin: fable (Claude Fable 5 repo review, 2026-07-04)
 
 Quick capture — iron out in scratch-planning, don't action yet.
@@ -34,6 +34,21 @@ _Proposed — refine in triage:_
   to private until [[harden-github-repo]] lands).
 - Pull the free GitHub toggles forward (may simply be executed as the first slice of
   [[harden-github-repo]] rather than a separate build — decide in triage whether to merge).
+
+## Progress (2026-07-04)
+
+- ✅ **Item 1 — attribution:** both upstreams verified MIT.
+  [THIRD-PARTY/](../../THIRD-PARTY/README.md) created with license copies pinned to the vendored
+  commits (`mattpocock-skills.LICENSE`, `bradautomates-claude-video.LICENSE`) plus a notice map and
+  a "same commit as the vendored content" rule for future imports.
+- ✅ **Item 3 — free hardening wins:** secret scanning, push protection, and Dependabot alerts
+  enabled via `gh api`. **Branch protection deliberately NOT enabled** — it would block the current
+  direct-to-main workflow; decide it together with [[gated-work-prd-issue-approval]] (which wants a
+  PR flow anyway) inside [[harden-github-repo]].
+- ⏳ **Item 2 — human decision, remaining:** explicit go/no-go on public visibility of the personal
+  profile ([anthropic/claude-ai/instructions/profile.md](../../anthropic/claude-ai/instructions/profile.md))
+  and committed `.scratch` history. Alternative remains flipping the repo private until
+  [[harden-github-repo]] lands.
 
 ## Further Notes
 

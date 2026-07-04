@@ -33,6 +33,6 @@ Last updated: 2026-06-04
 | ?    | [evaluate-temp-ai-config](evaluate-temp-ai-config/PRD.md) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [sync-skills-drift-check](sync-skills-drift-check/PRD.md) (fable) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [docs-integrity-pass](docs-integrity-pass/PRD.md) (fable) | TBD | TBD | TBD | ? | needs-triage |
-| ?    | [public-repo-compliance](public-repo-compliance/PRD.md) (fable) | TBD | TBD | TBD | ? | needs-triage |
+| ?    | [public-repo-compliance](public-repo-compliance/PRD.md) (fable) | TBD | TBD | TBD | ? | ready-for-human |
 | ?    | [backlog-hygiene-wip-limit](backlog-hygiene-wip-limit/PRD.md) (fable) | TBD | TBD | TBD | ? | needs-triage |
 | ?    | [repo-scope-strays](repo-scope-strays/PRD.md) (fable) | TBD | TBD | TBD | ? | needs-triage |
