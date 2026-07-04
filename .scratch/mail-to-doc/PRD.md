@@ -48,4 +48,8 @@ in the row-close logic of the HTML table→AsciiDoc table converter.
 
 - Source zip: `artifacts/mail-to-adoc.zip`
 - User considers this close to 1.0.0 — only targeted fixes, no scope creep.
+- 2026-07-04 scratch-plan: user has **additional requirements/material not yet in the repo** —
+  collect those before triage so the scope here is complete.
+- 2026-07-04 scratch-plan: user classifies mail-to-doc as a **skill**, not a standalone software
+  project (relevant to [[repo-scope-strays]]).
 - _Created by /planning:scratch._
