@@ -1,9 +1,7 @@
 # PRD — Add a drift check to sync-skills.ps1
 
-Status: needs-triage
+Status: done (2026-07-04 — see Progress)
 Origin: fable (Claude Fable 5 repo review, 2026-07-04)
-
-Quick capture — iron out in scratch-planning, don't action yet.
 
 ## Problem Statement
 
@@ -25,6 +23,22 @@ _Proposed — refine in triage:_
 - Open question: should the hook auto-refresh stale skills instead of warning? The mirror is a
   declared build artifact ("never edit"), so auto-refresh is arguably safe — but decide explicitly
   (a user might have an uncommitted source edit mid-flight).
+
+## Progress (2026-07-04 — done)
+
+- ✅ `-Check` mode added to [scripts/sync-skills.ps1](../../scripts/sync-skills.ps1): read-only,
+  compares expected mirror output (link rewriting applied) against the actual tree — command-file
+  content (`-cne`), per-resource hashes, and extra-files-in-mirror all count as drift. Reports
+  UP-TO-DATE / STALE / MISSING per skill; exit 1 on any drift; guarded against combining with
+  `-IfMissing`.
+- ✅ **Open question decided: warn, don't auto-refresh.** Preserves `-IfMissing`'s non-clobbering
+  design; escalate to full-sync-on-start later if warnings prove annoying (one-line hook change).
+- ✅ Tested end to end: baseline clean (exit 0); injected drift — edited `caveman.md` → STALE,
+  deleted `handoff.md` → MISSING, exit 1; guard throws on `-Check -IfMissing`; full sync repaired;
+  re-check clean.
+- ✅ SessionStart hook on this machine now runs `-IfMissing` then `-Check`
+  (`.claude/settings.local.json` — machine-local, not committed); the recommended two-entry hook
+  snippet is documented in the script's `.NOTES` for other machines.
 
 ## Further Notes
 

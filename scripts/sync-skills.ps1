@@ -31,7 +31,16 @@
     Bootstrap mode: only write a skill whose target command file does not already exist
     ("does not exist -> copy; else leave alone"). Use for a SessionStart hook that materializes
     the gitignored mirror on a fresh clone without clobbering an existing one. Does NOT refresh
-    skills you have edited — re-run without this switch after editing a skill.
+    skills you have edited — re-run without this switch after editing a skill (pair the hook
+    with -Check so that staleness is visible instead of silent).
+
+.PARAMETER Check
+    Read-only drift check: computes each skill's expected mirror output (including rewritten
+    resource links) and compares it against the actual commands tree. Reports UP-TO-DATE /
+    STALE / MISSING per skill, never writes, and exits 1 if anything is stale or missing.
+    Combine with -Skill to check a single skill; cannot be combined with -IfMissing.
+    Intended as a second SessionStart hook entry after -IfMissing, so an edited-but-unsynced
+    skill produces a visible warning at session start.
 
 .PARAMETER RepoRoot
     Repo root. Defaults to the parent of this script's folder.
@@ -55,12 +64,16 @@
             "SessionStart": [
               {
                 "hooks": [
-                  { "type": "command", "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -IfMissing" }
+                  { "type": "command", "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -IfMissing" },
+                  { "type": "command", "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -Check" }
                 ]
               }
             ]
           }
         }
+
+    The second entry is the drift check: it exits nonzero when a source skill was edited without
+    re-running the sync, so the staleness shows up at session start instead of failing silently.
 
     This runs silently without a per-execution prompt — hooks are pre-authorized by being in the file.
     Accepting it = adding it to settings.local.json on a given machine. Remove to disable.
@@ -75,10 +88,13 @@ param(
 
     [switch]$IfMissing,
 
+    [switch]$Check,
+
     [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 )
 
 $ErrorActionPreference = 'Stop'
+if ($Check -and $IfMissing) { throw "-Check is read-only; do not combine it with -IfMissing." }
 
 $skillsRoot = Join-Path $RepoRoot 'shared\skills'
 if (-not (Test-Path $skillsRoot)) { throw "shared/skills root not found at: $skillsRoot" }
@@ -118,6 +134,7 @@ if (-not $skillDirs) {
 }
 
 $report = [System.Text.StringBuilder]::new()
+$driftCount = 0
 foreach ($dir in $skillDirs) {
     $name  = $dir.Name
     $group = $dir.Parent.Name
@@ -131,20 +148,47 @@ foreach ($dir in $skillDirs) {
         continue
     }
 
+    # Enumerate bundled resources (everything except SKILL.md)
+    $resources = @(Get-ChildItem $dir.FullName -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' })
+    $resRelPaths = $resources | ForEach-Object {
+        $_.FullName.Substring($dir.FullName.Length).TrimStart('\').Replace('\', '/')
+    }
+
+    # Expected command-file body: source SKILL.md with rewritten resource links
+    $body = Get-Content (Join-Path $dir.FullName 'SKILL.md') -Raw
+    if ($resRelPaths) { $body = Convert-ResourceLinks -Body $body -Name $name -ResourceRelPaths $resRelPaths }
+
+    if ($Check) {
+        # Read-only: compare expected output against the actual mirror; never write.
+        $state = 'UP-TO-DATE'
+        if (-not (Test-Path $targetMd)) { $state = 'MISSING' }
+        elseif ((Get-Content $targetMd -Raw) -cne $body) { $state = 'STALE' }
+        else {
+            foreach ($res in $resources) {
+                $rel  = $res.FullName.Substring($dir.FullName.Length).TrimStart('\')
+                $dest = Join-Path $targetRes $rel
+                if (-not (Test-Path $dest) -or
+                    (Get-FileHash $res.FullName).Hash -ne (Get-FileHash $dest).Hash) {
+                    $state = 'STALE'; break
+                }
+            }
+            if ($state -eq 'UP-TO-DATE') {
+                # Extra files in the mirror (deleted from source) also count as drift
+                $mirrored = if (Test-Path $targetRes) { @(Get-ChildItem $targetRes -Recurse -File).Count } else { 0 }
+                if ($mirrored -ne $resources.Count) { $state = 'STALE' }
+            }
+        }
+        if ($state -ne 'UP-TO-DATE') { $driftCount++ }
+        [void]$report.AppendLine(("  /{0}:{1,-18} {2}" -f $group, $name, $state))
+        continue
+    }
+
     # Clean only this skill's own targets (leaves unmanaged siblings, e.g. bootstrap.md, intact)
     if (Test-Path $targetMd)  { Remove-Item $targetMd -Force }
     if (Test-Path $targetRes) { Remove-Item $targetRes -Recurse -Force }
     New-Item -ItemType Directory -Path $groupDir -Force | Out-Null
 
-    # Enumerate bundled resources (everything except SKILL.md)
-    $resources = Get-ChildItem $dir.FullName -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' }
-    $resRelPaths = $resources | ForEach-Object {
-        $_.FullName.Substring($dir.FullName.Length).TrimStart('\').Replace('\', '/')
-    }
-
     # Write the command file with rewritten resource links
-    $body = Get-Content (Join-Path $dir.FullName 'SKILL.md') -Raw
-    if ($resRelPaths) { $body = Convert-ResourceLinks -Body $body -Name $name -ResourceRelPaths $resRelPaths }
     Set-Content -Path $targetMd -Value $body -Encoding utf8 -NoNewline
 
     # Copy resources verbatim into <name>/
@@ -156,6 +200,17 @@ foreach ($dir in $skillDirs) {
     }
 
     [void]$report.AppendLine(("  /{0}:{1,-18} {2} resource file(s)" -f $group, $name, $resources.Count))
+}
+
+if ($Check) {
+    Write-Output "Drift check: $skillsRoot -> $commandsRoot (scope=$Scope)"
+    Write-Output $report.ToString().TrimEnd()
+    if ($driftCount) {
+        Write-Output "STALE MIRROR: $driftCount skill(s) stale or missing — rebuild with: pwsh scripts/sync-skills.ps1"
+        exit 1
+    }
+    Write-Output "All skills up to date."
+    exit 0
 }
 
 Write-Output "Synced skills -> $commandsRoot (scope=$Scope)"
