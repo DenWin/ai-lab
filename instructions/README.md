@@ -15,7 +15,7 @@ expected, not duplication to be merged.
 - **`~/.claude/CLAUDE.md`** — Claude Code's global instructions. Different harness, different file.
   Expected to **overlap** with the profile (same behavioral preferences) but authored and loaded
   separately. Not yet mirrored here; would live under `instructions/claude-code/` if added.
-- **`AGENTS.md`** (repo root, when created) — the cross-harness shared layer read by Claude Code,
+- **`AGENTS.md`** (repo root) — the cross-harness shared layer read by Claude Code,
   Codex, and Copilot. The place for anything that should be identical across harnesses.
 
 See `docs/harnesses/<harness>.md` for each harness's instruction surfaces and load model.

@@ -1,6 +1,6 @@
 # PRD — Scaffold the `ai-lab` repo & initialize git
 
-Status: in-progress
+Status: done (2026-07-04 — items 3–5 closed; see Scope for resolutions)
 
 Finish **Phase 2** of the ai-lab repo-structure handoff: make the repo an actual git repository
 (`git init` + remote), add the artifact-type folders that have no home yet, author the root
@@ -36,11 +36,19 @@ and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is 
    `anthropic/claude-ai/instructions/`, `sync-skills.ps1` retargeted, [docs/repo-layout.adoc](../../docs/repo-layout.adoc)
    authored. Per-harness artifact folders (`settings/`, `mcp/`, `hooks/`, `output-styles/`) are
    created **on demand**, not pre-scaffolded.
-3. ⏳ Author the root `AGENTS.md` (cross-harness shared layer; coordinate with
-   `incorporate-global-claude-setup` so it isn't written twice).
-4. ⏳ Place remaining non-skill files: `INSTRUCTION-EVAL.md` → `eval/` (owned by eval-skill-harness);
-   claude.ai project files → `anthropic/claude-ai/projects/<project-name>/`.
-5. ⏳ Decide remote (host + visibility) → `gh repo create ai-lab --public|--private`; initial commit + push.
+3. ✅ Root `AGENTS.md` authored (2026-07-04) as an **operational stub**: cross-harness facts only
+   (layout, source-of-truth/mirror rules, `.scratch` workflow, conventions). The behavioral-overlap
+   hoist is deliberately deferred to `incorporate-global-claude-setup` decision 2, so nothing is
+   written twice — its Scope note says so.
+4. ✅ Resolved by delegation (2026-07-04): `INSTRUCTION-EVAL.md` → `eval/` is done at build time by
+   [eval-skill-harness](../eval-skill-harness/PRD.md) (its PRD says so; moving it now would break
+   that PRD's `artifacts/` reference). The claude.ai project files (`02-project-instructions.md`,
+   `POWERSHELL.md`, `powershell.yml`) no longer exist — `.temp/` was cleared; only older variants
+   survive in [evaluate-temp-ai-config artifacts](../evaluate-temp-ai-config/artifacts/AI/Claude/Powershell/),
+   and that scratch owns their keep-or-discard decision. Nothing left for this feature to place.
+5. ✅ Resolved by practice (2026-07-04): remote exists — `github.com/DenWin/ai-lab`, **public** —
+   and commits are pushed. The public-visibility consequences (license/attribution, hardening) are
+   tracked in [public-repo-compliance](../public-repo-compliance/PRD.md).
 
 ## Decisions
 
@@ -51,8 +59,10 @@ and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is 
 2. **#7 Packaging — RESOLVED.** Loose folders, not plugin bundles (personal use; can be wrapped into a
    plugin later if distribution ever matters).
 3. **Tracker — settled by practice:** local-markdown `.scratch/`.
-4. **Remote visibility — OPEN:** public vs private (affects license/attribution notes in
-   [import-upstream-skills](../import-upstream-skills/PRD.md)). Decide before `gh repo create`.
+4. **Remote visibility — RESOLVED by practice (2026-07-04):** the repo is **public**
+   (`github.com/DenWin/ai-lab`). Knock-on: the license/attribution notes in
+   [import-upstream-skills](../import-upstream-skills/PRD.md) are now due — tracked in
+   [public-repo-compliance](../public-repo-compliance/PRD.md).
 5. **Project-specific files — RESOLVED:** the pwsh project files (`02-project-instructions.md`,
    `POWERSHELL.md`, `powershell.yml`) live under `anthropic/claude-ai/projects/<project-name>/`.
 

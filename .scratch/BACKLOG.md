@@ -10,7 +10,7 @@ Last updated: 2026-06-04
 | Rank | Feature | Priority | Importance | Effort | Score | Status |
 |------|---------|----------|------------|--------|-------|--------|
 | 1    | [import-upstream-skills](import-upstream-skills/PRD.md) | high | high | 4h | 63 | ready-for-human |
-| 2    | [repo-scaffold](repo-scaffold/PRD.md) | high | high | 2days | 45 | in-progress |
+| 2    | [repo-scaffold](repo-scaffold/PRD.md) | high | high | 2days | 45 | done |
 | 3    | [claude-code-skill-adaptation](claude-code-skill-adaptation/PRD.md) | medium | high | 4h | 42 | ready-for-human |
 | 4    | [profile-improvement](profile-improvement/PRD.md) | medium | high | 4h | 42 | ready-for-human |
 | 5    | [incorporate-global-claude-setup](incorporate-global-claude-setup/PRD.md) | medium | medium | 1day | 24 | ready-for-human |
