@@ -4,9 +4,9 @@ Status: in-progress (issue 01 markers landed 2026-07-05; issues 02/03 pending)
 
 ## Problem Statement
 
-The existing `mail-to-adoc` tool (source drops in `artifacts/`, extracted working copy at
-`artifacts/mail-to-adoc/`) converts `.eml` files to AsciiDoc but has several issues blocking
-a 1.0.0 release:
+The existing `mail-to-adoc` tool — now a first-class skill at
+[`shared/skills/documents/mail-to-adoc/`](../../shared/skills/documents/mail-to-adoc/) — converts
+`.eml` files to AsciiDoc but has several issues blocking a 1.0.0 release:
 
 1. The HTML→AsciiDoc conversion logic is tangled with the main orchestration code, making it hard
    to test or reuse independently.
@@ -64,9 +64,17 @@ in the row-close logic of the HTML table→AsciiDoc table converter.
 
 ## Further Notes
 
+- **The deliverable lives outside the scratch (2026-07-05).** A scratch holds the *idea*; a working
+  skill is a *deliverable* and belongs in the repo's skills tree. The tool was promoted from
+  `artifacts/mail-to-adoc/` to the first-class skill
+  [`shared/skills/documents/mail-to-adoc/`](../../shared/skills/documents/mail-to-adoc/) (new
+  `documents` group — no existing group fits document conversion). This scratch keeps only the
+  idea + tracking; it no longer carries the code. Note: the skill's `_PROJECT_ROOT` assumes a
+  `<root>/skills/<name>/` layout, so the extra `documents/` level shifts it in-repo — irrelevant here
+  (it's a redacted reference; the user runs their real copy elsewhere), but flag for issue 02.
 - Source drops: `.temp/mail-to-adoc-2026-06-28.zip` (prior) and
   `.temp/mail-to-adoc-2026-07-05.zip` (latest) — **gitignored local backups**, not in git.
-  The latest drop is extracted to `artifacts/mail-to-adoc/` and **redacted for the public
+  The latest drop's working copy is now the `documents/mail-to-adoc` skill, **redacted for the public
   repo**: real emails/party names replaced with placeholders (`owner@example.com`,
   `PartyA`/`PartyB`, `FamilyMember`); real values only in the `.temp/` originals.
   Note: the unredacted 2026-06-28 zip is still in public git history from an earlier
