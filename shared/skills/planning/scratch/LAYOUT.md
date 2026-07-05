@@ -45,9 +45,21 @@ Status: <needs-triage | ready-for-human | ready-for-agent | in-progress | done |
 
 ## artifacts/
 
-No required structure. Common sub-folders:
+**Reference material that *supports* the idea — never the deliverable itself.** A scratch is a
+vehicle for capturing and tracking an idea; the things that idea *produces* — a working skill or
+script, a report, a durable finding, any shippable output — are **deliverables** and live in their
+proper repo home, not inside `.scratch/`. The PRD links to where the deliverable lives.
+
+| Deliverable | Home (not the scratch) |
+| --- | --- |
+| Skill / tool | `shared/skills/<group>/<name>/` (or a `<vendor>/<harness>/` skills dir) |
+| Report / durable finding / review | `docs/` — `docs/findings/`, `docs/reviews/`, … |
+| Instructions / settings / hooks | their harness-scoped home (`<vendor>/<harness>/…`) |
+
+`artifacts/` therefore holds only *supporting inputs*. No required structure; common sub-folders:
 - `artifacts/<upstream-name>/` — upstream source files (when `.temp/` is gitignored)
 - `artifacts/global-prior/` — prior installed versions to mine for local customizations
+- reference snapshots, prior drafts, sample inputs — anything that feeds the work but isn't the output
 
 ## BACKLOG.md
 

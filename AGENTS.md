@@ -38,6 +38,12 @@ One folder per feature: `.scratch/<feature-slug>/PRD.md` (+ optional `issues/`, 
 TBD backlog row) — do not implement, rank, decide, or restructure. Implementation happens only when
 explicitly requested against a specific scratch.
 
+**Deliverables live outside the scratch.** A `.scratch/` entry tracks an *idea*; the working output
+it leads to — a skill, script, report, or durable finding — belongs in its proper repo home
+(`shared/skills/…`, `docs/…`, a harness dir), with the PRD linking to it. `artifacts/` holds only
+supporting reference material, never the deliverable. Canonical detail: the `scratch` skill's
+[LAYOUT.md](shared/skills/planning/scratch/LAYOUT.md).
+
 ## Conventions
 
 - Primary environment: Windows, PowerShell 7 (`pwsh`). Write scripts in pwsh unless the target is
