@@ -27,6 +27,27 @@ Entries like `.gradle/`, `.history/`, OS noise (`.DS_Store`, `Thumbs.db`), and e
 
 - `/.temp/*` + `!/.temp/.gitkeep` — project-specific landing zone convention
 - `/.claude/commands/*` — project-specific generated skill mirror
+- `__pycache__/`, `*.pyc` — **reclassified to repo-level** (see decision 2026-07-05 below)
+
+## Decisions / actionable (2026-07-05)
+
+Surfaced while running the `mail-to-doc` tool's pytest suite in a cloud session: the generated
+`__pycache__/` dirs showed as untracked and tripped the session stop-hook.
+
+1. **`__pycache__/` + `*.pyc` belong in the repo `.gitignore`, not only a global one.** A global
+   `~/.gitignore_global` (`core.excludesFile`) is **machine-local and never cloned** — fresh cloud
+   sessions, CI, and other contributors don't have it. Any tool cache that appears *while working in
+   this repo* (Python bytecode from the mail-to-doc tool, `.gradle/` from docToolchain runs) must be
+   ignored **in-repo** to actually stop the untracked-file noise. So the global-vs-repo split isn't
+   "OS/tool ⇒ global"; it's: **caches produced by this repo's own workflows ⇒ repo-level**; purely
+   host/editor noise unrelated to repo work (`.DS_Store`, `Thumbs.db`, `.idea/`, `.vs/`) ⇒ global.
+2. **`__pycache__/` + `*.pyc` were added to the repo `.gitignore`** on the `mail-to-doc` branch
+   (this PR). ⚠️ **Actionable:** that rule only lives on that branch until it merges — until then
+   other branches/sessions still hit the noise. **Land the pycache/`.gitignore` rule on `main`**
+   (merge #6, or cherry-pick just the `.gitignore` change) so every branch and cloud session inherits it.
+3. When this scratch is built: audit `.gitignore` with the split in (1); create the canonical
+   `config/gitignore.global` for the genuinely host/editor-only entries and document the
+   `core.excludesFile` wiring — but do **not** move repo-workflow caches out of the repo `.gitignore`.
 
 ## Further Notes
 
