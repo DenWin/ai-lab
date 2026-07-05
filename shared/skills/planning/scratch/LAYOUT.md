@@ -45,7 +45,10 @@ Status: <needs-triage | ready-for-human | ready-for-agent | in-progress | done |
 
 ## artifacts/
 
-No required structure. Common sub-folders:
+Supporting *inputs* only — reference material that feeds the work, **never the deliverable itself**.
+Deliverables (a skill, script, report, or durable finding) live in their proper repo home; the rule
+and the deliverable→home table are in the folder guide `.scratch/AGENTS.md`. No required structure;
+common sub-folders:
 - `artifacts/<upstream-name>/` — upstream source files (when `.temp/` is gitignored)
 - `artifacts/global-prior/` — prior installed versions to mine for local customizations
 

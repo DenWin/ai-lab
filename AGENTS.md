@@ -38,6 +38,11 @@ One folder per feature: `.scratch/<feature-slug>/PRD.md` (+ optional `issues/`, 
 TBD backlog row) — do not implement, rank, decide, or restructure. Implementation happens only when
 explicitly requested against a specific scratch.
 
+The working rules for agents operating in `.scratch/` — capture≠execute, **deliverables live outside
+the scratch** (`artifacts/` is supporting material only), and ranking hygiene — live in the folder
+guide [.scratch/AGENTS.md](.scratch/AGENTS.md); structural layout stays in the `scratch` skill's
+[LAYOUT.md](shared/skills/planning/scratch/LAYOUT.md).
+
 ## Conventions
 
 - Primary environment: Windows, PowerShell 7 (`pwsh`). Write scripts in pwsh unless the target is
@@ -50,7 +55,8 @@ explicitly requested against a specific scratch.
   [shared/skills/README.md](shared/skills/README.md).
 - **Single owner per fact:** each fact lives in one canonical file; other docs link to it instead
   of restating (layout → `docs/repo-layout.adoc`, skill origins → `shared/skills/README.md`,
-  scratch conventions → the `scratch` skill's `LAYOUT.md`).
+  scratch working rules → `.scratch/AGENTS.md`, scratch structural layout → the `scratch` skill's
+  `LAYOUT.md`).
 
 ## Scope note
 

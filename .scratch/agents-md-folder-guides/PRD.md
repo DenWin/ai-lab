@@ -33,4 +33,14 @@ in a future run."** Don't assume it's true — test it.
 - Generation + freshness: one-time hand-write, or a generator/hook that flags drift when a subtree
   changes? Overlap with the auto-sync hooks already in the repo.
 
+## First instance already exists — a data point (2026-07-05)
+
+`.scratch/AGENTS.md` was created as the repo's **first per-folder guide** — not a violation of the
+gate above but a deliberate single instance: it houses an *already-decided convention* (the `.scratch/`
+working rules — capture≠execute, deliverables-live-outside, ranking hygiene) delivered contextually,
+rather than a speculative navigation aid. It doubles as the first real data point for the hypothesis
+test: does the local guide measurably help an agent working in `.scratch/` vs. re-deriving from root
+`AGENTS.md` + `LAYOUT.md`? Evaluate it here before any broader rollout — the mass-generation decision
+stays gated. (Also settles the filename open-question for this instance: `AGENTS.md`, cross-harness.)
+
 _Solution: Fill in (gated on the hypothesis analysis above)._
