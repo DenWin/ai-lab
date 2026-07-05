@@ -30,7 +30,9 @@ its real behavior, not the one-line description. Establish ground truth before r
 ## Findings (investigation 2026-07-05)
 
 Ground truth read from `shared/skills/planning/scratch/SKILL.md` (+ `LAYOUT.md`, `RANKING.md`) and
-`scratch-plan/SKILL.md`, cross-checked against the actual `.scratch/` tree.
+`scratch-plan/SKILL.md`, cross-checked against the actual `.scratch/` tree — and, for the sibling
+relationship, against the committed mattpocock upstream artifacts of `to-issues`/`to-prd`/`triage`
+(§3a).
 
 ### 1. The two modes, step by step
 
@@ -69,12 +71,60 @@ does no ranking. Ranking is `scratch-plan`'s job (§3).
   runs a one-question-at-a-time interview (priority / importance / effort, with fuzzy-input bucket
   rounding), computes `P × I × E`, and **rewrites** `BACKLOG.md` sorted with a `Last updated:` line.
   Division of labour: `scratch` = capture + display; `scratch-plan` = calibrate + rank.
-- **`to-issues` / `to-prd` / `triage` do NOT exist in the repo yet.** They are referenced in
-  `scratch`'s description and `LAYOUT.md` as siblings that *will* reference `LAYOUT.md` rather than
-  restate it, but they are still pending import (`import-upstream-skills`, issue 04). Today the only
-  skills that actually consume `LAYOUT.md` are `scratch`, `scratch-plan`, and `check-skill-updates`
-  (which links it for its tracker-config note). So that part of the "single owner" wiring is
-  **forward-looking**, not yet realised.
+- **`to-issues` / `to-prd` / `triage` aren't imported into `shared/skills/` yet** — but their
+  mattpocock **upstream versions are committed as artifacts** under
+  `import-upstream-skills/artifacts/engineering/{to-issues,to-prd,triage}/SKILL.md` (plus the config
+  docs `setup-matt-pocock-skills/{issue-tracker-local,triage-labels,domain}.md`). Import into
+  `shared/` is deferred to `import-upstream-skills` issue 04. Today the only skills that actually
+  consume `LAYOUT.md` are `scratch`, `scratch-plan`, and `check-skill-updates`, so the "single owner"
+  wiring for the planning cluster is **forward-looking**. What the upstream artifacts *expect* of the
+  tracker is analysed in §3a — it matters because it tells us what `LAYOUT.md` must expose before those
+  skills can be wired to `.scratch/`.
+
+### 3a. Sibling-skill compatibility — `scratch`/`LAYOUT.md` vs. the upstream artifacts
+
+Analysed the committed mattpocock artifacts (`to-issues`, `to-prd`, `triage` + `issue-tracker-local.md`,
+`triage-labels.md`, `domain.md`) against `LAYOUT.md`/`RANKING.md` to see what the planning cluster
+needs from the tracker `scratch` owns. The interface is a **near-fit with four concrete gaps** — worth
+capturing on `import-upstream-skills` issue 04 (and issue 02 for the config side):
+
+1. **Storage contract already matches — except `## Comments`.** `issue-tracker-local.md` describes the
+   exact tracker `LAYOUT.md` defines: one `.scratch/<feature-slug>/` dir, `PRD.md`,
+   `issues/<NN>-<slug>.md` numbered from 01, and the `Status:` line as triage state. The **one thing it
+   adds that `LAYOUT.md` lacks** is a `## Comments` append convention — `triage` posts triage
+   notes / agent-brief comments and `to-issues`/`to-prd` "publish to the tracker" by writing there.
+   `LAYOUT.md` must define a `## Comments` section before those skills land.
+
+2. **Status vocabularies diverge — needs a reconciliation decision.**
+   `LAYOUT.md` enum: `needs-triage · ready-for-human · ready-for-agent · in-progress · done · wontfix`.
+   `triage` **state** roles: `needs-triage · needs-info · ready-for-agent · ready-for-human · wontfix`.
+   Delta: `triage` adds `needs-info` (absent from `LAYOUT.md`) **and** a `bug`/`enhancement`
+   **category** dimension `scratch` has no equivalent for; `LAYOUT.md` has `in-progress`/`done` that
+   `triage` lacks (it *closes* issues instead). `triage-labels.md` is the intended mapping seam, but on
+   a *feature/PRD* tracker the bug/enhancement category and `needs-info` are awkward fits — import must
+   decide: extend `LAYOUT.md`'s enum (add `needs-info`), or map the roles onto the existing vocabulary.
+
+3. **`to-prd` explains "PRDs richer than the stub" (§4).** `to-prd`'s template — Problem / Solution /
+   User Stories / Implementation Decisions / **Testing Decisions** / Out of Scope / Further Notes — is
+   far richer than `scratch`'s 3-section stub, and it matches the shape the **matured** `.scratch/`
+   PRDs already use. So the roles are complementary: `scratch` = thin quick-capture; `to-prd` =
+   synthesize a full PRD from context (applies `ready-for-agent` directly → maps cleanly to a
+   `LAYOUT.md` Status). The one scratch-side gap: `to-prd`'s **Testing Decisions / seams** section is a
+   mattpocock TDD-ism absent from the stub and from most current PRDs.
+
+4. **`to-issues` output already fits — plus the `Status:` line and a methodology layer.** Its
+   issue-template (Parent / What to build / Acceptance criteria / Blocked by) aligns with `LAYOUT.md`'s
+   issue shape; the repo's existing `issues/01–07` already follow it. Deltas: `to-issues` adds an
+   optional **Parent** link (harmless), and its template omits the `Status:` line `LAYOUT.md` requires
+   (the local adaptation must add it). Its tracer-bullet / HITL-AFK vertical-slicing is how issues are
+   *derived*, not how they're *stored*, so `LAYOUT.md` is unaffected.
+
+**Unmet dependencies the cluster expects (non-blocking):** all three read a domain glossary —
+`CONTEXT.md` + `docs/adr/` per `domain.md` — which **do not exist** in the repo; `domain.md` says to
+"proceed silently if absent," so it's soft, but it's the domain-doc side of `import-upstream-skills`
+issue 02. And all three currently say "run `/setup-matt-pocock-skills`" for the tracker/label config —
+the repo plan (issue 07 decision) drops that monolithic skill so the imported skills read `.scratch/`
+conventions from `LAYOUT.md` directly plus a small triage-label map.
 
 ### 4. Documented behavior vs. practice — gaps
 
@@ -96,6 +146,10 @@ does no ranking. Ranking is `scratch-plan`'s job (§3).
 ### Verdict
 
 The `scratch` skill does exactly what its SKILL.md says: a two-mode capture/list tool that owns the
-`.scratch/` conventions and hands ranking to `scratch-plan`. The only real "gaps" are (a) the sibling
-planning skills it references aren't imported yet, and (b) the LAYOUT template understates what a
-matured `BACKLOG.md` accumulates. Trust in the workflow is warranted; no behavior change needed.
+`.scratch/` conventions and hands ranking to `scratch-plan`. Trust in the workflow is warranted; no
+change to `scratch` itself is needed today. The actionable output of this investigation is the **§3a
+compatibility list** — before `to-issues`/`to-prd`/`triage` are imported (issue 04), `LAYOUT.md` needs
+a `## Comments` convention and a status-vocabulary reconciliation (the `needs-info` + `bug`/`enhancement`
+delta), and the imported skills must add the `Status:` line to `to-issues` output and read tracker/
+domain config from `LAYOUT.md` (+ a triage-label map) rather than `/setup-matt-pocock-skills`. Those are
+inputs to `import-upstream-skills` issues 04/02, not changes to `scratch`.
