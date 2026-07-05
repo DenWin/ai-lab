@@ -33,6 +33,8 @@ This table is the human-readable summary.
 | --- | --- | --- | --- |
 | `tdd` | coding | mattpocock `skills/engineering/tdd` | Heavily localized: stack rules (PowerShell/SQL/Python/C#), reworked resources |
 | `prototype` | coding | mattpocock `skills/engineering/prototype` | Localized |
+| `diagnose` | coding | mattpocock `skills/engineering/diagnose` | Dual-mode capability contract; HITL loop ships pwsh (primary) + bash templates |
+| `zoom-out` | coding | mattpocock `skills/engineering/zoom-out` | Prompt-only (`disable-model-invocation`); dual-mode note added |
 | `caveman` | session | mattpocock `skills/productivity/caveman` | Minor edits |
 | `grill-me` | session | mattpocock `skills/productivity/grill-me` | **Absorbed** `engineering/grill-with-docs`; `upstream-path` tracks the `grill-me` lineage only |
 | `handoff` | session | mattpocock `skills/productivity/handoff` | Minor edits |
