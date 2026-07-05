@@ -13,5 +13,9 @@
 # Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
 /.claude/commands/*
 
+# Python bytecode caches (e.g. from running the mail-to-doc tool's test suite)
+__pycache__/
+*.pyc
+
 # NOTE: .scratch/ is intentionally NOT ignored — it is the local-markdown issue
 # tracker (PRDs + issues live there and are meant to be committed).

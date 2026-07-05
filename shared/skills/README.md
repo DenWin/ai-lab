@@ -18,10 +18,11 @@ Namespacing follows the directory: `shared/skills/coding/tdd/` → `/coding:tdd`
 
 | Group | Intent |
 | --- | --- |
-| `coding`   | Used while writing/changing code |
-| `planning` | Backlog / PRD / issue workflow (the `.scratch/` tracker) |
-| `session`  | Conversational / process skills that shape a working session |
-| `setup`    | Repo tooling and skill maintenance |
+| `coding`    | Used while writing/changing code |
+| `planning`  | Backlog / PRD / issue workflow (the `.scratch/` tracker) |
+| `session`   | Conversational / process skills that shape a working session |
+| `setup`     | Repo tooling and skill maintenance |
+| `documents` | Producing / converting documents (e.g. email → AsciiDoc/Markdown) |
 
 ## Origins
 
@@ -40,6 +41,7 @@ This table is the human-readable summary.
 | `check-skill-updates` | setup | — (local original) | No upstream; the update tool itself |
 | `scratch` | planning | — (local original) | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md` |
 | `scratch-plan` | planning | — (local original) | Backlog ranking companion to `scratch` |
+| `mail-to-adoc` | documents | — (local original) | `.msg`/`.eml` → AsciiDoc; personal-workflow tool (redacted). Rename to `mail-to-doc` + Markdown target is `.scratch/mail-to-doc` issue 03 |
 
 All upstream-derived skills were forked at mattpocock/skills commit
 `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`.

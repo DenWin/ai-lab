@@ -31,7 +31,7 @@ existed) would shadow it *only* when running in Claude Code.
 ai-lab/
 ├── AGENTS.md                 # root shared cross-harness instructions (cross-vendor)
 ├── shared/                   # vendor- & harness-agnostic artifacts
-│   └── skills/               # ← all current skills (intent-grouped: coding/ planning/ session/ setup/)
+│   └── skills/               # ← all current skills (intent-grouped: coding/ documents/ planning/ session/ setup/)
 ├── anthropic/
 │   ├── claude-ai/
 │   │   ├── instructions/profile.md          # account-wide profile (live: Settings → Instructions for Claude)

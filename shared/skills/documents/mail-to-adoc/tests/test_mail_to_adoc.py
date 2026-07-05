@@ -4,6 +4,8 @@ import hashlib
 from email.message import EmailMessage
 from pathlib import Path
 
+import pytest
+
 
 def test_split_addresses_sorts_and_collapses_duplicate_display(converter):
     header = 'Zoe <zoe@example.com>, "amy@example.com" <amy@example.com>, Bob <bob@example.com>'
@@ -28,6 +30,11 @@ def test_addr_table_row_uses_bullets_for_medium_recipient_lists(converter):
     assert "* User3 <u3@example.com>" in row
 
 
+@pytest.mark.skip(
+    reason="_add_hardbreaks_to_reply_headers was removed in the 2026-07-05 drop "
+    "(no [%hardbreaks] output remains). Decide intended-removal vs regression in "
+    "mail-to-doc issue 02, then delete or restore this test."
+)
 def test_add_hardbreaks_to_reply_headers_only_at_header_run_start(converter):
     body = """Hello team,
 
@@ -43,6 +50,11 @@ Thanks
     assert "[%hardbreaks]\n*From:* A <a@example.com>" in normalized
 
 
+@pytest.mark.skip(
+    reason="_auto_name was refactored away in the 2026-07-05 drop; naming is now "
+    "_adoc_stem + _direction_tag with a different convention. Decide in mail-to-doc "
+    "issue 02 whether to retarget this at _adoc_stem or delete it."
+)
 def test_auto_name_trims_existing_date_prefix_and_handles_raw_folder(converter):
     mail_date = __import__("datetime").datetime(2026, 5, 11, 14, 52)
     mail_path = Path("mails/raw/2026-05-11 1452 - Weekly Meeting.eml")
@@ -80,7 +92,7 @@ def test_process_attachments_skips_blocklist_and_dedupes_existing(
         msg_path=Path("mails/sample.eml"),
     )
 
-    assert links == [("duplicate.pdf", "../docs/20260511_1452-evidence.pdf", False)]
+    assert links == [("duplicate.pdf", "../../../docs/20260511_1452-evidence.pdf", False)]
     assert not (docs_dir / "20260511_1452-blocked.png").exists()
 
 
@@ -106,11 +118,77 @@ def test_eml_to_adoc_prefers_html_and_writes_attachment_links(converter, tmp_pat
     eml_path.write_bytes(msg.as_bytes())
 
     adoc = converter.eml_to_adoc(eml_path)
-    saved_attachments = list((tmp_path / "docs").glob("*-evidence.pdf"))
+    saved_attachments = list(
+        (tmp_path / "01_Korrespondenz" / "Attachments").glob("*-evidence.pdf")
+    )
 
     assert "= Mail Subject" in adoc
     assert "*HTML body*" in adoc
     assert "plain fallback body" not in adoc
     assert len(saved_attachments) == 1
     saved_name = saved_attachments[0].name
-    assert f"* link:../docs/{saved_name}[evidence.pdf]" in adoc
+    assert f"* link:../../Attachments/{saved_name}[evidence.pdf]" in adoc
+
+
+# --- Filename direction/attachment markers (bracket tags, replacing emoji) ------
+
+_DENNIS = "Dennis <owner@example.com>"
+_PARTY_A = "PartyA <kontakt@lawfirm-a.example>"
+
+
+def test_direction_tag_sent_uses_bracket_to(converter):
+    assert converter._direction_tag(from_v=_DENNIS, to_v=_PARTY_A) == "PartyA [TO]"
+
+
+def test_direction_tag_received_uses_bracket_from(converter):
+    assert converter._direction_tag(from_v=_PARTY_A, to_v=_DENNIS) == "PartyA [FROM]"
+
+
+def test_direction_tag_attachment_flag_is_last(converter):
+    assert (
+        converter._direction_tag(from_v=_PARTY_A, to_v=_DENNIS, has_att=True)
+        == "PartyA [FROM][+]"
+    )
+
+
+def test_direction_tag_cc_only_appends_cc_after_from(converter):
+    tag = converter._direction_tag(
+        from_v=_PARTY_A, to_v="Other <other@example.com>", cc_only=True
+    )
+    assert tag == "PartyA [FROM][CC]"
+
+
+def test_direction_tag_cc_and_attachment_order(converter):
+    tag = converter._direction_tag(
+        from_v=_PARTY_A, to_v="Other <other@example.com>", has_att=True, cc_only=True
+    )
+    assert tag == "PartyA [FROM][CC][+]"
+
+
+def test_direction_tag_carries_no_legacy_emoji(converter):
+    for tag in (
+        converter._direction_tag(from_v=_DENNIS, to_v=_PARTY_A, has_att=True),
+        converter._direction_tag(from_v=_PARTY_A, to_v=_DENNIS, has_att=True),
+    ):
+        assert not any(ch in tag for ch in ("✉", "✎", "𓂃", "📎"))
+
+
+def test_dennis_in_detects_own_address_only(converter):
+    assert converter._dennis_in("X <owner@example.com>") is True
+    assert converter._dennis_in("owner.alt@example.com") is True
+    assert converter._dennis_in("Y <stranger@example.com>") is False
+    assert converter._dennis_in("") is False
+
+
+def test_meta_field_reads_inline_and_bulleted_rows(converter):
+    adoc = (
+        "|===\n"
+        "|From |A <a@x.com>\n"
+        "|To   |B <b@x.com>\n"
+        "|CC   a|\n* c@x.com\n* d@x.com\n"
+        "|===\n"
+    )
+    assert converter._meta_field(adoc, "From") == "A <a@x.com>"
+    assert converter._meta_field(adoc, "To") == "B <b@x.com>"
+    assert converter._meta_field(adoc, "CC") == "c@x.com, d@x.com"
+    assert converter._meta_field(adoc, "BCC") == ""

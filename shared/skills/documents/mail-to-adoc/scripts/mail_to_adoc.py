@@ -388,10 +388,12 @@ def _clean_filename(subject: str) -> str:
 
 # Filename component separator — visible, rarely appears in subjects.
 _STEM_SEP = " — "
-# Attachment indicator appended after the direction tag when mail has attachments.
-_DIR_RECEIVED = "✉"
-_DIR_SENT     = "✎𓂃"
-_ATT_FLAG     = "📎"
+# Bracket tags appended at the end of the filename stem (replaces the older emoji
+# markers ✉/✎𓂃/📎). Order in the stem: '{name} {direction}{[CC] if cc-only}{[+] if attachments}'.
+_DIR_RECEIVED = "[FROM]"   # mail Dennis received
+_DIR_SENT     = "[TO]"     # mail Dennis sent
+_CC_FLAG      = "[CC]"     # received mail where Dennis was only in Cc (not To)
+_ATT_FLAG     = "[+]"      # mail has attachments
 
 
 def _adoc_stem(mail_date, subject: str) -> str:
@@ -401,11 +403,49 @@ def _adoc_stem(mail_date, subject: str) -> str:
     return f"{prefix}{_STEM_SEP}{_clean_filename(subject)}"
 
 
-def _direction_tag(from_v: str, to_v: str, has_att: bool = False) -> str:
-    """Return '{name} ✉' or '{name} ✎𓂃' direction tag for use in filenames.
+def _dennis_in(field: str) -> bool:
+    """True if any of Dennis's own addresses appears in a header field value."""
+    if not field:
+        return False
+    cands = re.findall(r"<([^>]+)>", field) or re.findall(r"[\w.+-]+@[\w.-]+", field)
+    return any(a.strip().lower() in _DENNIS_EMAILS for a in cands)
 
-    Inspects From/To header values extracted from the adoc metadata table.
-    Uses _DENNIS_EMAILS to detect sent mail; _EMAIL_NAME_MAP for party names.
+
+def _meta_field(adoc: str, label: str) -> str:
+    """Extract a metadata-table field value by label, inline or bulleted.
+
+    Handles both the inline form '|Label |value' and the multi-recipient bullet
+    form '|Label a|' followed by '* addr' lines. Returns "" when not found.
+    """
+    lines = adoc.splitlines()
+    row = re.compile(rf"^\|{re.escape(label)}\s*(a)?\|(.*)$")
+    for i, ln in enumerate(lines):
+        m = row.match(ln)
+        if not m:
+            continue
+        if m.group(1) == "a":  # bulleted list continues on the following '* ' lines
+            vals = []
+            for nxt in lines[i + 1:]:
+                s = nxt.strip()
+                if s.startswith("* "):
+                    vals.append(s[2:])
+                else:
+                    break
+            return ", ".join(vals)
+        return m.group(2).strip()
+    return ""
+
+
+def _direction_tag(
+    from_v: str, to_v: str, has_att: bool = False, cc_only: bool = False
+) -> str:
+    """Return a '{name} {tags}' direction tag for use in filenames.
+
+    Tags are bracket markers appended at the end of the stem: '[TO]' (Dennis sent),
+    '[FROM]' (Dennis received), '[CC]' (received, Dennis was only in Cc — appended
+    right after '[FROM]'), and '[+]' (has attachments — always last). Inspects
+    From/To header values extracted from the adoc metadata table; uses _DENNIS_EMAILS
+    to detect sent mail and _EMAIL_NAME_MAP for party names.
     """
     def _extract_addr(field: str) -> str:
         m = re.search(r"<([^>]+)>", field)
@@ -425,17 +465,17 @@ def _direction_tag(from_v: str, to_v: str, has_att: bool = False) -> str:
                 return "PartyB"
         return "Unknown"
 
+    _att = _ATT_FLAG if has_att else ""
     from_addr = _extract_addr(from_v)
     if from_addr in _DENNIS_EMAILS:
         others = [
             a for a in re.findall(r"<([^>]+)>", to_v)
             if a.lower() not in _DENNIS_EMAILS
         ]
-        _att = _ATT_FLAG if has_att else ""
         _n = "MultipleRecipients" if len(others) > 1 else _name_for(to_v)
-        return f"{_n} {_att}{_DIR_SENT}"
-    _att = _ATT_FLAG if has_att else ""
-    return f"{_name_for(from_v)} {_att}{_DIR_RECEIVED}"
+        return f"{_n} {_DIR_SENT}{_att}"
+    _cc = _CC_FLAG if cc_only else ""
+    return f"{_name_for(from_v)} {_DIR_RECEIVED}{_cc}{_att}"
 
 
 def _peek_mail_metadata(mail_path: Path) -> tuple[object | None, str]:
@@ -1000,7 +1040,11 @@ def main():
     _from_v = _fm.group(1).strip() if _fm else ""
     _to_v   = _tm.group(1).strip() if _tm else ""
     _has_att = "*Attachments:*" in final_adoc
-    _dtag = _direction_tag(_from_v, _to_v, has_att=_has_att)
+    # Dennis was only CC'd when he appears in the Cc field but not in To.
+    _cc_only = _dennis_in(_meta_field(final_adoc, "CC")) and not _dennis_in(
+        _meta_field(final_adoc, "To")
+    )
+    _dtag = _direction_tag(_from_v, _to_v, has_att=_has_att, cc_only=_cc_only)
     month = f"{local_date.month:02d}" if local_date else "00"
     full_stem = f"{stem}{_STEM_SEP}{_dtag}"
 
