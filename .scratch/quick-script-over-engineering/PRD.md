@@ -1,6 +1,6 @@
 # PRD — Quick-script requests get over-engineered
 
-Status: needs-triage
+Status: ready-for-human (root cause analysed + guidance drafted 2026-07-05 — paste into live CLAUDE.md)
 
 ## Problem Statement
 
@@ -23,9 +23,20 @@ quick helper. The scaffolding is unrequested fluff for a throwaway task.
 even when "quick" is stated, so the root cause can be addressed (likely via global
 CLAUDE.md guidance under the existing "Diagnostic Scripts" / "Code Generation" sections).
 
-## Solution
+## Root-cause analysis (2026-07-05)
 
-_Fill in (root-cause analysis pending). Candidate symptoms to address:_
+The full root-cause analysis (five causes traced to the global CLAUDE.md guidance) is a durable
+finding, kept where it survives this scratch:
+**[docs/findings/2026-07-05-quick-script-over-engineering.md](../../docs/findings/2026-07-05-quick-script-over-engineering.md)**.
+
+In brief: "quick" is not defined as a mode (§9 covers only diagnostics and never lists the
+scaffolding to drop); rigor is the unconditional default (§8/§10); `#Requires` is a reflexive badge
+not a justified claim; form and depth are conflated on follow-ups; and §9's output convention invites
+inlining the legend with the value. The **fix** is drafted as a concrete patch in
+[artifacts/proposed-CLAUDE-guidance.md](artifacts/proposed-CLAUDE-guidance.md), targeting the live
+global CLAUDE.md — apply it there, or fold it in via [[incorporate-global-claude-setup]].
+
+## Solution — candidate symptoms to address
 
 1. **"Quick" is not honored as a mode switch.** A quick/quick-and-dirty request should
    suppress `#Requires`, `[CmdletBinding()]`, and `param()` scaffolding by default.

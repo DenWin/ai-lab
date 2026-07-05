@@ -32,6 +32,21 @@ instead of being maintained twice.
 | `settings.json` (permissions/hooks/MCP) | `settings/claude-code/settings.json` *(or similar)* | Decide: global settings vs project settings; secrets stay out |
 | Global skills (`commands/`) | already handled by the skills work | Prior-version globals captured in `import-upstream-skills` artifacts |
 
+## Pending content to fold in when hoisting `CLAUDE.md`
+
+The repo copy of `CLAUDE.md` should not be a verbatim snapshot — there is already drafted guidance
+waiting to be merged into it when it lands:
+
+- [ ] **Quick-helper-mode guidance** (from [`quick-script-over-engineering`](../quick-script-over-engineering/PRD.md)).
+      That scratch root-caused why "quick" script requests still get full production scaffolding and
+      drafted a concrete patch at
+      [`quick-script-over-engineering/artifacts/proposed-CLAUDE-guidance.md`](../quick-script-over-engineering/artifacts/proposed-CLAUDE-guidance.md):
+      a new §9a "quick helper mode" trigger + suppression list, `#Requires` made a justified claim not
+      a badge (§8), an explicit *form ≠ depth* rule, and a value/verdict/legend separation in §9's
+      output convention. Apply it to the live `~/.claude/CLAUDE.md` when hoisting, rather than pasting
+      the current unpatched version — then run that scratch's verification recipe (the two originating
+      prompts) to confirm it fires.
+
 ## Open decisions
 
 1. **Sync direction** — repo SoT → `~/.claude/` via a sync script (like `sync-skills.ps1`), or
