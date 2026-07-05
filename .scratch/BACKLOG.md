@@ -17,7 +17,7 @@ Last updated: 2026-07-04
 | 6    | [profile-improvement](profile-improvement/PRD.md) | medium | high | 4h | 42 | ready-for-human |
 | 7    | [backlog-hygiene-wip-limit](backlog-hygiene-wip-limit/PRD.md) (fable) | medium | high | 1day | 36 | needs-triage |
 | 8    | [gated-work-prd-issue-approval](gated-work-prd-issue-approval/PRD.md) | medium | high | 1day | 36 | needs-triage |
-| 9    | [mail-to-doc](mail-to-doc/PRD.md) | high | high | 1week | 36 | needs-triage |
+| 9    | [mail-to-doc](mail-to-doc/PRD.md) | high | high | 1week | 36 | in-progress |
 | 10   | [harden-github-repo](harden-github-repo/PRD.md) | medium | high | 2days | 30 | needs-triage |
 | 11   | [claude-md-planning-defaults](claude-md-planning-defaults/PRD.md) | medium | medium | 4h | 28 | needs-triage |
 | 12   | [fetch-latest-claude-skills](fetch-latest-claude-skills/PRD.md) | medium | medium | 4h | 28 | needs-triage |
