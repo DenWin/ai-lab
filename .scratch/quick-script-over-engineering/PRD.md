@@ -25,40 +25,16 @@ CLAUDE.md guidance under the existing "Diagnostic Scripts" / "Code Generation" s
 
 ## Root-cause analysis (2026-07-05)
 
-Why the model reaches for the full script even when "quick" is stated — the guidance in the
-[global CLAUDE.md artifact](../incorporate-global-claude-setup/artifacts/global-CLAUDE.md) (§8 Code
-Generation, §9 Diagnostic Scripts, §10 PowerShell) was read to trace each symptom to a cause:
+The full root-cause analysis (five causes traced to the global CLAUDE.md guidance) is a durable
+finding, kept where it survives this scratch:
+**[docs/findings/2026-07-05-quick-script-over-engineering.md](../../docs/findings/2026-07-05-quick-script-over-engineering.md)**.
 
-1. **"Quick" carries no teeth — it isn't defined as a mode.** §9 exists ("Quick & Dirty") but is
-   scoped to *diagnostic/inspection* scripts and their **output convention**; it relaxes input
-   validation and structure but **never lists the scaffolding to drop**. So a *quick helper* (not a
-   probe) isn't recognized as covered by §9 at all, and §8's "maximum rigor" default wins. The word
-   "quick" maps to no concrete suppression rule, so it's ignored.
-
-2. **Rigor is the default and nothing overrides it.** §8 + §10 make `#Requires`, `[CmdletBinding()]`,
-   and `param()` the "correct" PowerShell idiom; with no rule saying "quick ⇒ omit these," the model
-   applies the idiom unconditionally. The scaffolding is emitted as hygiene, not because the task
-   needs it.
-
-3. **`#Requires -Version 7.0` is emitted as a badge, not a claim.** Version pinning is treated as good
-   practice rather than an assertion that must be justified by an actual 7.0-only feature. No rule ties
-   the pin to a real dependency, so it appears reflexively.
-
-4. **Form and depth aren't independent axes.** When a follow-up constrains *form* ("I need both as
-   actionable executables"), the model conflates that with a request to *reduce depth* and strips
-   substance. Nothing in the guidance says form-constraints and depth are orthogonal.
-
-5. **The output convention invites result/interpretation conflation.** §9's "optional: Description,
-   incl. the meaning of the found content" permits appending meaning **inline** with the value
-   (`-> 1  (1 = enabled)`), so it's ambiguous whether the value is `1` or the literal string. §9 never
-   requires separating raw value / verdict / legend into distinct columns.
-
-**Fix:** add a first-class *quick mode* trigger with an explicit suppression list, make version-pinning
-conditional on a real dependency, state that form-constraints don't reduce depth, and tighten the
-output convention to separate value / verdict / legend. Drafted as a concrete patch in
-[artifacts/proposed-CLAUDE-guidance.md](artifacts/proposed-CLAUDE-guidance.md) — it targets the **live
-global CLAUDE.md** (outside this repo); paste it there, or fold it in via
-[[incorporate-global-claude-setup]] when the global config is hoisted into the repo.
+In brief: "quick" is not defined as a mode (§9 covers only diagnostics and never lists the
+scaffolding to drop); rigor is the unconditional default (§8/§10); `#Requires` is a reflexive badge
+not a justified claim; form and depth are conflated on follow-ups; and §9's output convention invites
+inlining the legend with the value. The **fix** is drafted as a concrete patch in
+[artifacts/proposed-CLAUDE-guidance.md](artifacts/proposed-CLAUDE-guidance.md), targeting the live
+global CLAUDE.md — apply it there, or fold it in via [[incorporate-global-claude-setup]].
 
 ## Solution — candidate symptoms to address
 
