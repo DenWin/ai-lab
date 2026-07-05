@@ -1,6 +1,6 @@
 # 03 — Import the coding skills (diagnose, improve-codebase-architecture, zoom-out)
 
-Status: in-progress (diagnose + zoom-out imported + adapted 2026-07-05; improve-codebase-architecture pending)
+Status: done (all three coding skills imported + dual-mode adapted 2026-07-05)
 
 ## What to build
 
@@ -32,8 +32,13 @@ done together here rather than deferring adaptation to issue 06:
   ships **pwsh** (`scripts/hitl-loop.template.ps1`, primary) **+ bash** (`.sh`, cross-platform).
 - ✅ **`zoom-out`** → `shared/skills/coding/zoom-out/` with provenance; `disable-model-invocation`
   preserved; added a one-line "if a filesystem is available… else work from pasted context" note.
-- ⏳ **`improve-codebase-architecture`** (+ DEEPENING / INTERFACE-DESIGN / LANGUAGE / HTML-REPORT) —
-  next increment (HTML-REPORT is the interesting dual-mode case: emit a downloadable report file).
+- ✅ **`improve-codebase-architecture`** → `shared/skills/coding/improve-codebase-architecture/` with
+  provenance + all four resources (DEEPENING / INTERFACE-DESIGN / LANGUAGE / HTML-REPORT). Added a
+  **Modes** section (Explore subagent + temp-file report vs. reason over pasted code + downloadable
+  report; CONTEXT/ADR edits inline vs. proposed-as-text). Repointed the two `../grill-with-docs/`
+  resource links to `../../session/grill-me/` (that skill was absorbed into `grill-me` here).
+
+**Coding cluster (issue 03) complete.** Next clusters: 04 (planning), 05 (setup).
 
 ## Blocked by
 

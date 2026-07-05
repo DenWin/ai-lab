@@ -35,6 +35,7 @@ This table is the human-readable summary.
 | `prototype` | coding | mattpocock `skills/engineering/prototype` | Localized |
 | `diagnose` | coding | mattpocock `skills/engineering/diagnose` | Dual-mode capability contract; HITL loop ships pwsh (primary) + bash templates |
 | `zoom-out` | coding | mattpocock `skills/engineering/zoom-out` | Prompt-only (`disable-model-invocation`); dual-mode note added |
+| `improve-codebase-architecture` | coding | mattpocock `skills/engineering/improve-codebase-architecture` | Dual-mode (report → temp+open vs downloadable file); `grill-with-docs` links repointed to `session/grill-me`; resources DEEPENING/INTERFACE-DESIGN/LANGUAGE/HTML-REPORT |
 | `caveman` | session | mattpocock `skills/productivity/caveman` | Minor edits |
 | `grill-me` | session | mattpocock `skills/productivity/grill-me` | **Absorbed** `engineering/grill-with-docs`; `upstream-path` tracks the `grill-me` lineage only |
 | `handoff` | session | mattpocock `skills/productivity/handoff` | Minor edits |
