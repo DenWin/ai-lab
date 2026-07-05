@@ -9,7 +9,7 @@ Last updated: 2026-07-04
 
 | Rank | Feature | Priority | Importance | Effort | Score | Status |
 |------|---------|----------|------------|--------|-------|--------|
-| 1    | [import-upstream-skills](import-upstream-skills/PRD.md) | high | high | 4h | 63 | ready-for-human |
+| 1    | [import-upstream-skills](import-upstream-skills/PRD.md) | high | high | 4h | 63 | process-delivered (imports pending) |
 | 2    | [public-repo-compliance](public-repo-compliance/PRD.md) (fable) | high | high | 4h | 63 | done |
 | 3    | [quick-script-over-engineering](quick-script-over-engineering/PRD.md) | high | high | 4h | 63 | needs-triage |
 | 4    | [understand-scratch-skill](understand-scratch-skill/PRD.md) | high | high | 4h | 63 | needs-triage |

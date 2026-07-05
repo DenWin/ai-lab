@@ -1,11 +1,28 @@
 # PRD — Import Upstream Skills (Generic Process)
 
-Status: ready-for-human
+Status: process-delivered (imports pending) — see Progress
 
 Define and implement a generic, repeatable process for importing skills from any upstream source
 into this repo as first-class, grouped, provenance-tracked skills. The mattpocock GitHub repo
 (`aaf2453…`) is the first concrete use case that drove the need for this, but the process itself
 must be source-agnostic.
+
+> **Scope decision (2026-07-05):** this feature delivers **the skill that enables importing** — not
+> the actual mattpocock import run. The generic process now lives as a first-class skill,
+> `/setup:import-upstream-skill` (`shared/skills/setup/import-upstream-skill/SKILL.md`). Running the
+> concrete 9-skill mattpocock import stays as follow-up work — issues 03 (coding), 04 (planning), 05
+> (setup) — each executed by invoking the new skill.
+
+## Progress (2026-07-05)
+
+- ✅ **Generic import process extracted as a skill:** `/setup:import-upstream-skill` codifies the
+  8-step process (snapshot → intent group → placement → `upstream-*` provenance → capability-contract
+  adaptation → verify via `write-a-skill` → origin-map update → sync). Source-agnostic; handles
+  GitHub upstreams, local/global copies, and local forks (no dangling `upstream-commit`).
+- ✅ **Origin map updated:** `shared/skills/README.md` lists `import-upstream-skill` as a local original.
+- ⏳ **Actual imports remain:** issues 03/04/05 (import the coding / planning / setup clusters) are the
+  first consumers of the new skill; the config-placement decision (issue 02) is only needed when the
+  planning cluster is actually imported, so it stays deferred until then.
 
 ## Problem Statement
 

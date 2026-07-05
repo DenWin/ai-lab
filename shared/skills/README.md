@@ -38,6 +38,7 @@ This table is the human-readable summary.
 | `write-a-skill` | session | mattpocock `skills/productivity/write-a-skill` | Localized. Known issue: links `REFERENCE.md` but ships `EXAMPLES.md` — see below |
 | `recon` | session | — (local original) | No upstream |
 | `check-skill-updates` | setup | — (local original) | No upstream; the update tool itself |
+| `import-upstream-skill` | setup | — (local original) | No upstream; the generic import process itself |
 | `scratch` | planning | — (local original) | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md` |
 | `scratch-plan` | planning | — (local original) | Backlog ranking companion to `scratch` |
 
