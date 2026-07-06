@@ -55,9 +55,10 @@ code is.*
 - **Build-artifact discipline for skills.** The sync script correctly handles the SKILL.md→command
   layout shift including link rewriting, has a non-clobbering `-IfMissing` bootstrap mode wired to
   a SessionStart hook, and the "never edit the mirror" rule is documented consistently.
-- **Provenance is taken seriously.** `upstream-*` frontmatter with pinned commits, an origin map in
+- **Provenance is taken seriously.** Per-skill `METADATA.md` files, an origin map in
   `shared/skills/README.md`, explicit fork-vs-downstream decisions (the `setup-pre-commit` case),
-  and license/attribution awareness in the import PRD.
+  and license/attribution awareness in the import PRD. Exact upstream checkpoints belong in the
+  individual skill metadata, not summary docs.
 - **Unusual epistemic maturity in the PRDs.** The `[RE-CONFIRM]` annotations on decisions inherited
   from stale chat sessions ("resolved then ≠ frozen now"), the hypothesis gate in
   `agents-md-folder-guides` ("test the premise before building; if it fails → wontfix"), and the

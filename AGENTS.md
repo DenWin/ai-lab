@@ -12,6 +12,7 @@ Canonical reference: [docs/repo-layout.adoc](docs/repo-layout.adoc). Short versi
 - `<vendor>/<harness>/` — harness-specific config (e.g. `anthropic/claude-ai/instructions/`)
 - `docs/harnesses/` — per-harness self-descriptions: instruction surfaces, load models, limits
 - `.scratch/` — committed local-markdown issue tracker (PRDs + issues + ranked `BACKLOG.md`)
+- `.temp/` — gitignored landing zone for transient local working files, downloads, and scratch output
 - `scripts/` — sync tooling
 
 Most-specific wins; folders are created on demand, never pre-scaffolded empty.
@@ -29,6 +30,8 @@ Most-specific wins; folders are created on demand, never pre-scaffolded empty.
   Editing the repo copy changes nothing until it is deployed there.
 - Use `git mv` when moving or renaming tracked files.
 - This repo is **public**. No secrets anywhere — including instruction files and `.scratch/`.
+- Use `.temp/` for temporary files inside the workspace. Its contents are gitignored; promote only
+  durable, redacted, intentionally committed support material into `.scratch/<feature>/artifacts/`.
 
 ## Work tracking (`.scratch/`)
 
@@ -50,10 +53,12 @@ guide [.scratch/AGENTS.md](.scratch/AGENTS.md); structural layout stays in the `
 - Primary environment: Windows, PowerShell 7 (`pwsh`). Write scripts in pwsh unless the target is
   cross-platform.
 - Docs: Markdown by default; AsciiDoc (`docs/*.adoc`) where richer syntax is needed.
+- OKF: durable markdown reference/catalog docs should follow [docs/okf-adoption.md](docs/okf-adoption.md)
+  unless another local format owns the file.
 - Skills follow the **capability contract**: if shell/filesystem is available, take the full
   agentic path; otherwise degrade to a conversational fallback. Write "if shell available" —
   never "if <harness name>".
-- Vendored/imported content carries `upstream-*` provenance frontmatter; the origin map is
+- Vendored/imported skill provenance lives in each skill's `METADATA.md`; the origin map is
   [shared/skills/README.md](shared/skills/README.md).
 - **Single owner per fact:** each fact lives in one canonical file; other docs link to it instead
   of restating (layout → `docs/repo-layout.adoc`, skill origins → `shared/skills/README.md`,

@@ -38,9 +38,9 @@ _Proposed — refine in triage:_
 ## Progress (2026-07-04)
 
 - ✅ **Item 1 — attribution:** both upstreams verified MIT.
-  [THIRD-PARTY/](../../THIRD-PARTY/README.md) created with license copies pinned to the vendored
-  commits (`mattpocock-skills.LICENSE`, `bradautomates-claude-video.LICENSE`) plus a notice map and
-  a "same commit as the vendored content" rule for future imports.
+  [THIRD-PARTY/](../../THIRD-PARTY/README.md) created with license copies for vendored sources
+  (`mattpocock-skills.LICENSE`, `bradautomates-claude-video.LICENSE`) plus a notice map. Exact
+  upstream checkpoints for skills live in each skill's `METADATA.md`, not in summary docs.
 - ✅ **Item 3 — free hardening wins:** secret scanning, push protection, and Dependabot alerts
   enabled via `gh api`. **Branch protection deliberately NOT enabled** — it would block the current
   direct-to-main workflow; decide it together with [[gated-work-prd-issue-approval]] (which wants a

@@ -1,10 +1,7 @@
 ---
 name: diagnose
+version: 1.0.0
 description: Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says "diagnose this" / "debug this", reports a bug, says something is broken/throwing/failing, or describes a performance regression.
-upstream-author: mattpocock
-upstream-repo: https://github.com/mattpocock/skills
-upstream-path: skills/engineering/diagnose/SKILL.md
-upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
 # Diagnose

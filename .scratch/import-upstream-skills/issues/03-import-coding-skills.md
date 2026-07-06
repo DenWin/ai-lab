@@ -4,8 +4,8 @@ Status: done (all three coding skills imported + dual-mode adapted 2026-07-05)
 
 ## What to build
 
-Import these three from Matt's repo into `skills/coding/` with `upstream-*` provenance (commit
-`aaf2453…`), copying bundled resources verbatim, then `scripts/sync-skills.ps1`:
+Import these three from Matt's repo into `shared/skills/coding/` with per-skill `METADATA.md`
+provenance, copying bundled resources verbatim, then `scripts/sync-skills.ps1`:
 
 - `diagnose` (+ `scripts/hitl-loop.template.sh` — keep the file; pwsh equivalent is an adaptation task)
 - `improve-codebase-architecture` (+ DEEPENING, INTERFACE-DESIGN, LANGUAGE, HTML-REPORT)

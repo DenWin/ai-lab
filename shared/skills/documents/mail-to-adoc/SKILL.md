@@ -1,8 +1,8 @@
 ---
 name: mail-to-adoc
+version: 0.1.0
 description: "Convert .msg or .eml email files to AsciiDoc (.adoc) format. Use when: converting msg to asciidoc, converting eml to asciidoc, turning an outlook email into adoc, converting email file to documentation, saving mail as AsciiDoc. Runs mail_to_adoc.py from the project root."
 argument-hint: "path to .msg or .eml file (e.g. mails/my-email.msg or mails/my-email.eml)"
-version:beta
 ---
 
 # Mail to AsciiDoc Converter

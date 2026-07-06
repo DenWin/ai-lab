@@ -1,5 +1,6 @@
 ---
 name: scratch
+version: 1.0.0
 description: >
   Manage .scratch/ feature entries and the backlog. Two modes: with $ARGUMENTS quick-captures a new
   feature idea as a stub PRD; without arguments, lists the ranked backlog. The canonical definition

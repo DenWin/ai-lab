@@ -1,10 +1,7 @@
 ---
 name: tdd
+version: 1.0.0
 description: Test-driven development applied as a workflow across unit, integration, and acceptance levels, with on-demand stack-specific rules for PowerShell, SQL, Python, and C#. Use when building features or fixing bugs test-first, when writing or reviewing tests, when choosing test doubles, when picking a companion technique (property-based, mutation, contract, approval, snapshot testing), or when the user mentions TDD, red-green-refactor, BDD, acceptance tests, or mocking.
-upstream-author: mattpocock
-upstream-repo: https://github.com/mattpocock/skills
-upstream-path: skills/engineering/tdd/SKILL.md
-upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
 # Test-Driven Development

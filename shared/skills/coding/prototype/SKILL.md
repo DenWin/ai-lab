@@ -1,10 +1,7 @@
 ---
 name: prototype
+version: 1.0.0
 description: Build a throwaway prototype to flesh out a design before committing to it. Build a tiny interactive terminal app that drives a state model, data shape, command surface, or output format by hand — pushing it through cases that are hard to reason about on paper. Use when the user wants to prototype, sanity-check a data model or state machine, feel out an API/cmdlet surface or SQL schema, explore an idea, or says "prototype this", "let me play with it", "does this shape feel right".
-upstream-author: mattpocock
-upstream-repo: https://github.com/mattpocock/skills
-upstream-path: skills/engineering/prototype/SKILL.md
-upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
 # Prototype

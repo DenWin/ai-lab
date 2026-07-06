@@ -6,15 +6,17 @@ the `/setup:check-skill-updates` skill, and anything about that process lives in
 
 ## Layout
 
-`shared/skills/<group>/<name>/SKILL.md` (+ bundled resources) is the **single source of truth**. The
-invocable copies under `.claude/commands/<group>/<name>.md` are a **generated mirror** — never edit
-them; edit the source and re-run:
+`shared/skills/<group>/<name>/SKILL.md` (+ bundled runtime resources) is the **single source of
+truth** for skill behavior. `shared/skills/<group>/<name>/METADATA.md` is the OKF-style catalog and
+provenance file for that skill. The invocable copies under generated harness mirrors are build
+artifacts — never edit them; edit the source and re-run:
 
 ```powershell
 pwsh scripts/sync-skills.ps1
 ```
 
-That updates every supported generated skill mirror:
+That updates every supported generated skill mirror. `METADATA.md` files are source catalog files and
+are not deployed as runtime skill resources:
 
 - Claude Code: `.claude/commands/<group>/<name>.md` plus resources
 - Codex: `.agents/skills/<group>-<name>/SKILL.md` plus resources
@@ -33,10 +35,32 @@ Namespacing follows the directory: `shared/skills/coding/tdd/` → `/coding:tdd`
 | `setup`     | Repo tooling and skill maintenance                                |
 | `documents` | Producing / converting documents (e.g. email → AsciiDoc/Markdown) |
 
+## Skill Metadata
+
+Every skill has a `METADATA.md` file with OKF-style frontmatter:
+
+```yaml
+---
+type: Agent Skill Metadata
+title: <skill-name>
+description: <one-line summary>
+resource: ./SKILL.md
+tags: [<group>, skill]
+upstream-author: <author>              # upstream-derived skills only
+upstream-repo: https://github.com/...
+upstream-path: skills/<path>/SKILL.md
+upstream-commit: <40-char SHA>
+---
+```
+
+Runtime `SKILL.md` frontmatter carries harness-facing fields and a SemVer `version`. Upstream
+provenance belongs in `METADATA.md` so agents do not load update bookkeeping as part of the skill
+instructions.
+
 ## Origins
 
-Upstream is recorded in each skill's frontmatter (see [Provenance convention](#provenance-convention)).
-This table is the human-readable summary.
+Upstream is recorded in each skill's `METADATA.md` (see [Skill Metadata](#skill-metadata)). This
+table is the human-readable summary.
 
 | Skill                           | Group     | Upstream                                                      | Notes                                                                                                                                                                                |
 | ------------------------------- | --------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -52,33 +76,22 @@ This table is the human-readable summary.
 | `recon`                         | session   | — (local original)                                            | No upstream                                                                                                                                                                          |
 | `check-skill-updates`           | setup     | — (local original)                                            | No upstream; the update tool itself                                                                                                                                                  |
 | `import-upstream-skill`         | setup     | — (local original)                                            | No upstream; the generic import process itself                                                                                                                                       |
-| `git-guardrails`                | setup     | mattpocock `skills/misc/git-guardrails-claude-code`           | Localized from the global-prior (pwsh + bash guards); Claude-Code-hook skill, N/A in chat. **Forked at `62f43a18`**, not `aaf2453`                                                   |
+| `git-guardrails`                | setup     | mattpocock `skills/misc/git-guardrails-claude-code`           | Localized from the global-prior (pwsh + bash guards); Claude-Code-hook skill, N/A in chat. Exact upstream checkpoint lives only in the skill's `METADATA.md`                         |
 | `setup-pre-commit`              | setup     | mattpocock `skills/misc/setup-pre-commit` (**local fork**)    | Diverged entirely: `pre-commit` framework for PS/MD/AsciiDoc/SQL, not Husky/lint-staged/Prettier. Carries **no** `upstream-*` (lineage in a comment); `check-skill-updates` skips it |
 | `scratch`                       | planning  | — (local original)                                            | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md`                                                                                                                             |
 | `scratch-plan`                  | planning  | — (local original)                                            | Backlog ranking companion to `scratch`                                                                                                                                               |
 | `mail-to-adoc`                  | documents | — (local original)                                            | `.msg`/`.eml` → AsciiDoc; personal-workflow tool (redacted). Rename to `mail-to-doc` + Markdown target is `.scratch/mail-to-doc` issue 03                                            |
 
-All upstream-derived skills were forked at mattpocock/skills commit
-`aaf2453fbdfe7a15c07f11d861224f34ab4b53cb` — **except `git-guardrails`** (`misc/`), reconciled to
-`62f43a18177be6ec82da242e59ffbc490a4c22ea`. Per-skill `upstream-commit` frontmatter is authoritative.
-
-## Provenance convention
-
-Each upstream-derived skill carries these frontmatter fields so tooling can read its origin directly:
-
-```yaml
-upstream-author: mattpocock
-upstream-repo: https://github.com/mattpocock/skills
-upstream-path: skills/<author-folder>/<name>/SKILL.md # path WITHIN the upstream repo
-upstream-commit: <40-char SHA this copy was last reconciled to>
-```
+For upstream-derived skills, the exact upstream checkpoint is recorded only in that skill's
+`METADATA.md`. Summary docs should not duplicate pinned commits; they drift and create a second owner
+for update state.
 
 - `upstream-path` keeps the *author's* folder structure (`engineering/`, `productivity/`), independent
   of our intent grouping.
 - Local originals (`recon`, `check-skill-updates`, `import-upstream-skill`, `scratch`, `scratch-plan`)
-  carry **no** `upstream-*` fields. **Local forks** that share only a name with upstream
-  (`setup-pre-commit`) also omit them, recording lineage in a comment instead — the staleness check
-  skips both.
+  carry **no** `upstream-*` fields in `METADATA.md`. **Local forks** that share only a name with
+  upstream (`setup-pre-commit`) also omit them, recording lineage in the metadata body instead — the
+  staleness check skips both.
 - To check these against upstream, run `/setup:check-skill-updates`.
 
 ## Known content issues (carried over verbatim)

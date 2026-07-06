@@ -26,7 +26,7 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 ## 2. Storage split
 
 - **Repo-scoped (committed):** `CLAUDE.md`, `AGENTS.md`, `.claude/settings.json`,
-  `skills/<group>/<name>/`, `.mcp.json`
+  `shared/skills/<group>/<name>/`, `.mcp.json`
 - **Machine-local (gitignored):** `CLAUDE.local.md`, `.claude/settings.local.json`,
   `~/.claude/projects/<project>/memory/` (auto-memory)
 - **User-global (all repos):** `~/.claude/CLAUDE.md`, `~/.claude/settings.json`,
@@ -74,8 +74,9 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 - **`applyTo`:** not natively supported for `CLAUDE.md`/`AGENTS.md` — path-scoping is via directory
   nesting (subdir `CLAUDE.md` applies to that subtree)
 - **`@import` / include:** `@path/to/file` syntax in CLAUDE.md injects another file's content inline
-- **Frontmatter:** skills carry YAML frontmatter (`name`, `description`, `argument-hint`,
-  `disable-model-invocation`, `upstream-*` for provenance)
+- **Frontmatter:** skills carry YAML frontmatter (`name`, `description`, `version`,
+  `argument-hint`, `disable-model-invocation`); source-skill provenance lives in sibling
+  `METADATA.md`
 - **Merge:** settings files merge across tiers (user → project → local); later/more-specific wins
 
 ## 7. Activation + load model

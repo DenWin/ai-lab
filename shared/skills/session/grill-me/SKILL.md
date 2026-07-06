@@ -1,10 +1,7 @@
 ---
 name: grill-me
+version: 1.0.0
 description: Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Optionally challenges the plan against the project's existing language and drafts/revises documentation (CONTEXT.md, ADRs). Use when the user wants to stress-test a plan, get grilled on a design, says "grill me", or wants a plan checked against documented decisions and terminology.
-upstream-author: mattpocock
-upstream-repo: https://github.com/mattpocock/skills
-upstream-path: skills/productivity/grill-me/SKILL.md
-upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
 <environment>

@@ -117,10 +117,31 @@ function Get-FrontmatterValue {
 
     if ($Document -notmatch "(?s)\A---\r?\n(.*?)\r?\n---\r?\n") { return $null }
     $frontmatter = $Matches[1]
-    $match = [regex]::Match($frontmatter, "(?m)^$([regex]::Escape($Key)):\s*(.+?)\s*$")
+    $match = [regex]::Match($frontmatter, "(?m)^$([regex]::Escape($Key)):\s*(.*)$")
     if (-not $match.Success) { return $null }
 
     $value = $match.Groups[1].Value.Trim()
+    if ($value -in @('>', '|', '>-', '|-', '>+', '|+')) {
+        $lines = $frontmatter -split "\r?\n"
+        $startIndex = [Array]::IndexOf($lines, $match.Value)
+        if ($startIndex -lt 0) { return $null }
+
+        $blockLines = [System.Collections.Generic.List[string]]::new()
+        for ($i = $startIndex + 1; $i -lt $lines.Count; $i++) {
+            $line = $lines[$i]
+            if ($line -match '^\S[^:]*:\s*') { break }
+            if ($line -match '^\s*$') {
+                $blockLines.Add('')
+                continue
+            }
+            $blockLines.Add(($line -replace '^\s{1,}', ''))
+        }
+
+        if ($value.StartsWith('|')) {
+            return ($blockLines -join "`n").Trim()
+        }
+        return (($blockLines | Where-Object { $_ -ne '' }) -join ' ').Trim()
+    }
     if (($value.StartsWith('"') -and $value.EndsWith('"')) -or
         ($value.StartsWith("'") -and $value.EndsWith("'"))) {
         $value = $value.Substring(1, $value.Length - 2)
@@ -146,12 +167,14 @@ function ConvertTo-CodexSkill {
 
     $description = Get-FrontmatterValue -Document $SourceDocument -Key 'description'
     if (-not $description) { $description = "Repo skill mirrored from $SourceRelPath." }
+    $version = Get-FrontmatterValue -Document $SourceDocument -Key 'version'
 
     $body = Get-SkillBody -Document $SourceDocument
     $frontmatter = @(
         '---'
         "name: $(ConvertTo-YamlScalar $CodexName)"
         "description: $(ConvertTo-YamlScalar $description)"
+        $(if ($version) { "version: $(ConvertTo-YamlScalar $version)" })
         '---'
         ''
         "<!-- GENERATED from $SourceRelPath. Edit shared/skills and run scripts/sync-skills.ps1. -->"
@@ -209,7 +232,8 @@ function Sync-ClaudeSkills {
             continue
         }
 
-        $resources = @(Get-ChildItem $dir.FullName -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' })
+        $resources = @(Get-ChildItem $dir.FullName -Recurse -File |
+            Where-Object { $_.Name -notin @('SKILL.md', 'METADATA.md') })
         $resRelPaths = $resources | ForEach-Object {
             $_.FullName.Substring($dir.FullName.Length).TrimStart('\').Replace('\', '/')
         }
@@ -317,7 +341,8 @@ function Sync-CodexSkills {
             $warnings.Add($warning)
         }
 
-        $resources = @(Get-ChildItem $dir.FullName -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' })
+        $resources = @(Get-ChildItem $dir.FullName -Recurse -File |
+            Where-Object { $_.Name -notin @('SKILL.md', 'METADATA.md') })
 
         if ($ReadOnlyCheck) {
             $state = 'UP-TO-DATE'

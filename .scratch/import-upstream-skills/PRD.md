@@ -3,8 +3,8 @@
 Status: process-delivered (imports pending) — see Progress
 
 Define and implement a generic, repeatable process for importing skills from any upstream source
-into this repo as first-class, grouped, provenance-tracked skills. The mattpocock GitHub repo
-(`aaf2453…`) is the first concrete use case that drove the need for this, but the process itself
+into this repo as first-class, grouped, provenance-tracked skills. The mattpocock GitHub repo at a
+pinned upstream checkpoint is the first concrete use case that drove the need for this, but the process itself
 must be source-agnostic.
 
 > **Scope decision (2026-07-05):** this feature delivers **the skill that enables importing** — not
@@ -16,7 +16,7 @@ must be source-agnostic.
 ## Progress (2026-07-05)
 
 - ✅ **Generic import process extracted as a skill:** `/setup:import-upstream-skill` codifies the
-  8-step process (snapshot → intent group → placement → `upstream-*` provenance → capability-contract
+  8-step process (snapshot → intent group → placement → `METADATA.md` provenance → capability-contract
   adaptation → verify via `write-a-skill` → origin-map update → sync). Source-agnostic; handles
   GitHub upstreams, local/global copies, and local forks (no dangling `upstream-commit`).
 - ✅ **Origin map updated:** `shared/skills/README.md` lists `import-upstream-skill` as a local original.
@@ -33,8 +33,8 @@ bash flavored, not adapted to Claude Code on Windows/pwsh), and one of them — 
 
 ## Solution
 
-Import each missing skill into `skills/<group>/<name>/` under my intent-based grouping, with
-`upstream-*` provenance pointing at Matt's repo/path/commit, then run the Claude Code
+Import each missing skill into `shared/skills/<group>/<name>/` under my intent-based grouping, with
+`METADATA.md` provenance pointing at Matt's repo/path/checkpoint, then run the Claude Code
 capability-contract adaptation pass on them. Resolve two design decisions first (grouping + the
 config-distribution question) because they shape where things land.
 
@@ -83,7 +83,7 @@ worth carrying into the import (especially `setup-pre-commit`, which diverges ha
 
 1. As a Claude Code user, I want Matt's engineering skills available as `/coding:diagnose`,
    `/planning:to-issues`, etc., grouped by my intent scheme, so they fit alongside my existing set.
-2. As a Claude Code user, I want each imported skill to carry `upstream-*` provenance, so
+2. As a Claude Code user, I want each imported skill to carry `METADATA.md` provenance, so
    `/setup:check-skill-updates` tracks them against Matt's GitHub repo.
 3. As a Claude Code user, I want the issue/PRD/triage skills wired to *this* repo's tracker
    (local-markdown `.scratch/`), so they work without GitHub Issues setup.
@@ -97,9 +97,9 @@ worth carrying into the import (especially `setup-pre-commit`, which diverges ha
 
 ## Implementation Decisions
 
-- **Source of truth = Matt's repo** for these skills; provenance frontmatter:
-  `upstream-author: mattpocock`, `upstream-repo: https://github.com/mattpocock/skills`,
-  `upstream-path: skills/<engineering|misc>/<name>/SKILL.md`, `upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`.
+- **Source of truth = Matt's repo** for these skills; each imported skill's `METADATA.md` records
+  `upstream-author`, `upstream-repo`, `upstream-path`, and `upstream-commit`. Do not duplicate the
+  exact upstream checkpoint in summary docs.
 - **New `planning` group** for to-issues / to-prd / triage. Update `.gitignore` (add
   `/.claude/commands/planning/`) and re-run `scripts/sync-skills.ps1`.
 - **Capability-contract adaptation** (same principle as pass 1): shell/tool path where available,
@@ -160,7 +160,8 @@ comment, omit `upstream-commit` so the staleness check skips it (it's no longer 
 - For pwsh-converted scripts (diagnose HITL loop, git-guardrails block hook): run them on a throwaway
   target and confirm they behave (and that the guardrail actually blocks a dangerous git command).
 - Structural review of each via `/session:write-a-skill`.
-- `/setup:check-skill-updates` lists every newly-imported skill with `UP-TO-DATE` against `aaf2453…`.
+- `/setup:check-skill-updates` lists every newly-imported skill with `UP-TO-DATE` against the
+  checkpoint recorded in its own `METADATA.md`.
 
 ## Out of Scope
 
@@ -168,20 +169,21 @@ comment, omit `upstream-commit` so the staleness check skips it (it's no longer 
 - The wider `ai-lab` repo scaffold (AGENTS.md root, compatibility matrix, instructions/, mcp/) —
   separate handoff. (But decision 2 touches `AGENTS.md`; coordinate.)
 - Deciding the GitHub-Issues-vs-local tracker globally — here we default to local-markdown `.scratch/`.
-- **Other mattpocock skills not adopted now** (recoverable from the repo @ `aaf2453…`, not copied):
+- **Other mattpocock skills not adopted now** (recoverable from the upstream repo, not copied):
   `in-progress/{review, teach, writing-beats, writing-fragments, writing-shape}`,
   `personal/{edit-article, obsidian-vault}`, `misc/{migrate-to-shoehorn, scaffold-exercises}`,
   `deprecated/*`. Candidates for a future adoption pass — evaluate per intent before pulling in.
 
 ## Attribution
 
-These skills derive from [mattpocock/skills](https://github.com/mattpocock/skills) (commit
-`aaf2453…`). Per-skill provenance is in frontmatter; consider adding upstream's `LICENSE` to this repo
+These skills derive from [mattpocock/skills](https://github.com/mattpocock/skills). Per-skill
+provenance is in `METADATA.md`; consider adding upstream's `LICENSE` to this repo
 (e.g. `THIRD-PARTY/mattpocock-skills.LICENSE`) before publishing, since the repo redistributes adapted
 copies of his work.
 
 ## Further Notes
 
-- Upstream snapshot: `.temp/github.com_mattpocock/skills`, commit `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`.
-- Provenance convention + origin map: `skills/README.md`. Update flow: the `/setup:check-skill-updates` skill.
+- Upstream snapshot: `.temp/github.com_mattpocock/skills`; exact checkpoints belong in each imported
+  skill's `METADATA.md`.
+- Provenance convention + origin map: `shared/skills/README.md`. Update flow: the `/setup:check-skill-updates` skill.
 - Claude Code adaptation principles & pass-1 backlog: `.scratch/claude-code-skill-adaptation/`.

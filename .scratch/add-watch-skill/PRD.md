@@ -11,7 +11,7 @@ Import the `watch` skill from the upstream `claude-video` project so Claude can 
 from captions (Whisper API fallback), then reason over frames + transcript to answer questions.
 
 - Upstream repo: https://github.com/bradautomates/claude-video
-- Pin commit: `c333c2289e57bf040b32846f18d669e3f8edad9b`
+- Pin the upstream checkpoint in the imported skill's `METADATA.md`.
 - Author: bradautomates · License: MIT
 - Upstream source vendored to [artifacts/watch/](artifacts/watch/) (SKILL.md + `scripts/` Python
   tooling + `scripts/build-skill.sh` + `.codex-plugin/plugin.json`).
@@ -21,8 +21,8 @@ from captions (Whisper API fallback), then reason over frames + transcript to an
 - This is a Python + external-binary skill (yt-dlp, ffmpeg, Whisper API) — a different shape from the
   repo's existing PowerShell/markdown skills. Decide where it lands in the `skills/<group>/` taxonomy
   and how the dual-format deployment (`.claude/commands/`, `copilot/prompts/`) applies, if at all.
-- Add upstream-tracking frontmatter (`upstream-author`, `upstream-repo`, `upstream-path`,
-  `upstream-commit: c333c22…`) so [[check-updates-detection-scope]] / check-skill-updates picks it up.
+- Add upstream tracking in `METADATA.md` (`upstream-author`, `upstream-repo`, `upstream-path`,
+  `upstream-commit`) so [[check-updates-detection-scope]] / check-skill-updates picks it up.
 - Dependency/runtime story (Python env, yt-dlp/ffmpeg install, Whisper API key) needs a decision.
 - Relationship to `import-upstream-skills` (existing batch import flow) — fold in or keep separate?
 

@@ -1,10 +1,7 @@
 ---
 name: write-a-skill
+version: 1.0.0
 description: Create, update, or improve agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, build, revise, update, or improve a skill or SKILL.md file.
-upstream-author: mattpocock
-upstream-repo: https://github.com/mattpocock/skills
-upstream-path: skills/productivity/write-a-skill/SKILL.md
-upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
 # Writing Skills

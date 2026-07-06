@@ -27,9 +27,9 @@ Status: done (git-guardrails + setup-pre-commit imported 2026-07-05; setup clust
   Wrote the **pwsh guard** `scripts/block-dangerous-git.ps1` (uses `ConvertFrom-Json`, no `jq`
   dependency; same regex pattern list as the bash guard) alongside the bash one. Added an
   **Applicability** note — it configures a Claude Code PreToolUse hook, so it's N/A in chat-only envs.
-  Provenance tracks `misc/git-guardrails-claude-code` at **`62f43a18`** (the global-prior's commit,
-  not `aaf2453`); README blanket-commit note corrected. Bash guard smoke-tested: `git push` → exit 2,
-  `git status` → exit 0; pwsh mirrors the same patterns.
+  Provenance tracks `misc/git-guardrails-claude-code` in the skill's `METADATA.md`; README no longer
+  duplicates exact upstream checkpoints. Bash guard smoke-tested: `git push` → exit 2, `git status`
+  → exit 0; pwsh mirrors the same patterns.
 - ✅ **setup-pre-commit** → `shared/skills/setup/setup-pre-commit/`. **Decision 3 resolved:** imported
   the global-prior (pre-commit framework for PS/MD/AsciiDoc/SQL) as a **local fork** — SoT = mine,
   lineage recorded in an HTML comment, **no `upstream-*` frontmatter** so `/setup:check-skill-updates`

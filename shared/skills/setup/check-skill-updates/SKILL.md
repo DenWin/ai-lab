@@ -1,21 +1,22 @@
 ---
 name: check-skill-updates
+version: 1.0.0
 description: Check whether the skills in this repo are stale against their upstream source on GitHub, and file a work item (GitHub issue or .scratch entry) for each stale one. It never edits or merges skills itself. Use when user wants to check for new skill versions, run "check-skill-updates", or sync with upstream changes.
 ---
 
 # Check Skill Updates
 
-Skills carry their origin in frontmatter (`upstream-author`, `upstream-repo`, `upstream-path`,
-`upstream-commit`). This skill reads those fields, compares each skill against its upstream **directly
-on GitHub**, and for every stale skill **files a work item** in the active tracker. It does **not**
-merge or edit any skill — the actual update is triaged and done later (by a human or an agent picking
-up the filed item), preserving local customizations under review rather than auto-overwriting.
+Skills carry their origin in `METADATA.md` next to the runtime `SKILL.md`. The metadata file uses
+OKF-style frontmatter (`type`, `title`, `description`, plus producer-defined `upstream-*` fields).
+This skill reads those fields, compares each skill against its upstream **directly on GitHub**, and
+for every stale skill **files a work item** in the active tracker. It does **not** merge or edit any
+skill — the actual update is triaged and done later (by a human or an agent picking up the filed
+item), preserving local customizations under review rather than auto-overwriting.
 
 - No local clone of any upstream is needed, and it works for **any** `upstream-repo`.
-- Source of truth is `skills/<group>/<name>/SKILL.md`; the `.claude/commands/` copies are a generated
-  mirror (`scripts/sync-skills.ps1`).
-- Skills with no `upstream-commit` (local originals like `session/recon`, `setup/check-skill-updates`)
-  are skipped.
+- Source of truth is `shared/skills/<group>/<name>/SKILL.md`; generated mirrors are rebuilt by
+  `scripts/sync-skills.ps1`.
+- Skills whose `METADATA.md` has no `upstream-commit` are skipped.
 
 ## Prerequisite — GitHub CLI, authenticated
 
@@ -32,10 +33,10 @@ changes count, not just `SKILL.md`) and compare to `upstream-commit`.
 $ErrorActionPreference = 'Stop'
 
 $repoRoot   = Resolve-Path (Join-Path $PSScriptRoot '..\..\..')
-$skillsRoot = Join-Path $repoRoot 'skills'
+$skillsRoot = Join-Path $repoRoot 'shared\skills'
 
-$results = foreach ($skill in Get-ChildItem $skillsRoot -Recurse -Filter 'SKILL.md') {
-    $content = Get-Content $skill.FullName -Raw
+$results = foreach ($metadata in Get-ChildItem $skillsRoot -Recurse -Filter 'METADATA.md') {
+    $content = Get-Content $metadata.FullName -Raw
     if ($content -notmatch '(?m)^upstream-commit:\s*(\S+)') { continue }
     $storedCommit = $Matches[1]
     if ($content -notmatch '(?m)^upstream-repo:\s*(\S+)') { continue }
@@ -44,14 +45,14 @@ $results = foreach ($skill in Get-ChildItem $skillsRoot -Recurse -Filter 'SKILL.
     $upstreamPath = $Matches[1].Trim()
 
     if ($upstreamRepo -notmatch 'github\.com[:/]+([^/]+)/([^/.\s]+)') {
-        [PSCustomObject]@{ Skill=$skill.Directory.Name; Status='BAD-REPO-URL'; Stored=$storedCommit.Substring(0,8); Latest='n/a'; Repo=$upstreamRepo; Path=$upstreamPath }
+        [PSCustomObject]@{ Skill=$metadata.Directory.Name; Status='BAD-REPO-URL'; Stored=$storedCommit.Substring(0,8); Latest='n/a'; Repo=$upstreamRepo; Path=$upstreamPath }
         continue
     }
     $owner = $Matches[1]; $repo = $Matches[2]
     $dir = $upstreamPath -replace '/SKILL\.md$', ''
 
     $latestCommit = (& gh api "repos/$owner/$repo/commits?path=$dir&per_page=1" --jq '.[0].sha' 2>$null)
-    $rel = $skill.Directory.FullName.Substring($skillsRoot.Length).TrimStart('\').Replace('\','/')
+    $rel = $metadata.Directory.FullName.Substring($skillsRoot.Length).TrimStart('\').Replace('\','/')
     if (-not $latestCommit) {
         [PSCustomObject]@{ Skill=$rel; Status='PATH-NOT-FOUND'; Stored=$storedCommit.Substring(0,8); Latest='n/a'; Repo=$upstreamRepo; Path=$upstreamPath }
         continue
@@ -91,9 +92,10 @@ Upstream has moved past the commit this skill was last reconciled to.
 ## Action
 
 Review the upstream changes and merge the worthwhile ones into
-`skills/<group>/<name>/SKILL.md` (and resources), preserving local customizations, then bump
-`upstream-commit` and re-run `scripts/sync-skills.ps1`. See "Appendix: actioning an update" in the
-check-skill-updates skill for the three-way procedure.
+`shared/skills/<group>/<name>/SKILL.md` (and resources), preserving local customizations, then bump
+`upstream-commit` in `shared/skills/<group>/<name>/METADATA.md` and re-run
+`scripts/sync-skills.ps1`. See "Appendix: actioning an update" in the check-skill-updates skill for
+the three-way procedure.
 ```
 
 ## Step 3 — Report
@@ -112,17 +114,17 @@ $owner = '<owner>'; $repo = '<repo>'
 $upstreamPath = '<upstream-path>'; $storedCommit = '<stored-commit>'
 
 $baseline    = (& gh api -H 'Accept: application/vnd.github.raw' "repos/$owner/$repo/contents/$upstreamPath`?ref=$storedCommit")
-$installed   = Get-Content '<repo>\skills\<group>\<name>\SKILL.md' -Raw
+$installed   = Get-Content '<repo>\shared\skills\<group>\<name>\SKILL.md' -Raw
 $newUpstream = (& gh api -H 'Accept: application/vnd.github.raw' "repos/$owner/$repo/contents/$upstreamPath")
 ```
 
 `$baseline` vs `$installed` = local customizations to keep. `$baseline` vs `$newUpstream` = upstream
 changes to consider. Apply upstream fixes/improvements; keep local substitutions and intentional
-merges; skip conflicting upstream changes and note them. Then bump `upstream-commit`, write to the
-source of truth, and re-run `scripts/sync-skills.ps1`.
+merges; skip conflicting upstream changes and note them. Then bump `upstream-commit` in
+`METADATA.md`, write to the source of truth, and re-run `scripts/sync-skills.ps1`.
 
 ## Notes
 
 - `PATH-NOT-FOUND` ⇒ the skill moved/renamed upstream — find it by `name:` and update `upstream-path`.
 - `BAD-REPO-URL` ⇒ `upstream-repo` isn't a parseable `github.com/<owner>/<repo>` URL — fix it.
-- Local-only skills (no `upstream-commit`) are skipped.
+- Local-only skills (no `upstream-commit` in `METADATA.md`) are skipped.

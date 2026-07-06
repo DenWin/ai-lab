@@ -43,6 +43,7 @@ ai-lab/
 ├── eval/                     # vendor-agnostic: INSTRUCTION-EVAL.md + the eval harness
 ├── scripts/                  # sync-skills.ps1, …
 ├── .scratch/                 # local-markdown issue tracker (PRDs + issues; committed)
+├── .temp/                    # gitignored transient local working files; keep only .gitkeep
 ├── .claude/commands/         # GENERATED Claude Code skill mirror — never edit; rebuild via sync-skills.ps1
 └── .agents/skills/           # GENERATED Codex skill mirror — never edit; rebuild via sync-skills.ps1
 ....
@@ -55,9 +56,14 @@ only when it has content, not pre-scaffolded empty.
 * *skills* — usually `shared/` (they are methodology, not vendor-specific). Drop to `<vendor>/` or
   `<vendor>/<harness>/` only for a skill that genuinely is specific. Skills follow the
   *capability contract* (detect shell/filesystem → full path; else conversational fallback) so one
-  copy works across harnesses — avoid per-harness copies unless behavior truly diverges.
+  copy works across harnesses — avoid per-harness copies unless behavior truly diverges. Each skill's
+  runtime instructions live in `SKILL.md`; catalog/provenance facts live in sibling `METADATA.md`
+  using the repo's OKF convention.
 * *instructions, settings, mcp, hooks, output-styles* — almost always `<vendor>/<harness>/`. A Claude
   Code `settings.json` is meaningless to Codex; the claude-ai profile is not the Claude Code `CLAUDE.md`.
+* *temporary working files* — `.temp/` at repo root. Its contents are gitignored and may be deleted at
+  any time. Promote only durable, redacted, intentionally committed support material to
+  `.scratch/<feature>/artifacts/`.
 
 == Reaching each harness (sync)
 
@@ -75,6 +81,12 @@ deploys from here to there.
 * *Other harnesses (Copilot, ChatGPT, …)* — added incrementally through the cross-harness review loop
   (see `docs/harnesses/`): each harness, on its turn, records where *it* expects its files; sync grows
   to target it only then. No multi-harness sync engine is built ahead of that need.
+
+== OKF metadata
+
+Markdown knowledge/catalog files use Open Knowledge Format conventions where they do not conflict
+with a harness-owned file format. The current concrete use is per-skill `METADATA.md`; see
+`docs/okf-adoption.md` for the adoption boundary and minimal frontmatter.
 
 == Not the same file (common confusion)
 

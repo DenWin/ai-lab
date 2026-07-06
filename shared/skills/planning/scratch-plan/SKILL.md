@@ -1,5 +1,6 @@
 ---
 name: scratch-plan
+version: 1.0.0
 description: >
   Review .scratch/ features one by one via a structured grill-me to calibrate or update each
   feature's priority, importance, and effort estimate — then rewrite .scratch/BACKLOG.md in ranked
