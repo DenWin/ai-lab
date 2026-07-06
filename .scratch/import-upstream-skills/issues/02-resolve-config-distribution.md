@@ -48,6 +48,14 @@ every agentic skill).
 - [ ] `setup-matt-pocock-skills` resolved: dropped or replaced by a minimal `init` — not imported as-is
 - [ ] `to-issues` / `to-prd` / `triage` / `check-skill-updates` read these paths, no per-skill copies
 
+## Note — domain docs are a *soft* dependency (from `understand-scratch-skill` §3a)
+
+The planning cluster reads `CONTEXT.md` + `docs/adr/` for the domain glossary, and neither exists in
+the repo today. That is **non-blocking**: the upstream `domain.md` explicitly says to "proceed
+silently if absent" (the docs are created lazily by `/session:grill-me` when terms/decisions actually
+resolve). So this issue can scaffold the *operational* config without waiting on domain docs — just
+confirm the `CONTEXT.md`/`docs/adr/` home so the skills know where to look once it exists.
+
 ## Blocked by
 
 None to start the grill-me. Gates the planning-cluster import (04).

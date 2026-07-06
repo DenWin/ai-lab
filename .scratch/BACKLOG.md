@@ -12,7 +12,7 @@ Last updated: 2026-07-04
 | 1    | [import-upstream-skills](import-upstream-skills/PRD.md) | high | high | 4h | 63 | process-delivered (imports pending) |
 | 2    | [public-repo-compliance](public-repo-compliance/PRD.md) (fable) | high | high | 4h | 63 | done |
 | 3    | [quick-script-over-engineering](quick-script-over-engineering/PRD.md) | high | high | 4h | 63 | ready-for-human |
-| 4    | [understand-scratch-skill](understand-scratch-skill/PRD.md) | high | high | 4h | 63 | needs-triage |
+| 4    | [understand-scratch-skill](understand-scratch-skill/PRD.md) | high | high | 4h | 63 | done |
 | 5    | [claude-code-skill-adaptation](claude-code-skill-adaptation/PRD.md) | medium | high | 4h | 42 | ready-for-human |
 | 6    | [profile-improvement](profile-improvement/PRD.md) | medium | high | 4h | 42 | ready-for-human |
 | 7    | [backlog-hygiene-wip-limit](backlog-hygiene-wip-limit/PRD.md) (fable) | medium | high | 1day | 36 | needs-triage |
