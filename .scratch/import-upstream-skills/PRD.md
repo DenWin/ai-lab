@@ -46,17 +46,17 @@ merge). Their Claude Code adaptation is tracked in `.scratch/claude-code-skill-a
 
 To import (source → proposed group):
 
-| Upstream | Skill | Proposed group | Notes |
-| --- | --- | --- | --- |
-| `engineering/diagnose` | diagnose | `coding` | Ships `scripts/hitl-loop.template.sh` — needs a pwsh equivalent |
-| `engineering/improve-codebase-architecture` | improve-codebase-architecture | `coding` | Resources: DEEPENING, INTERFACE-DESIGN, LANGUAGE, HTML-REPORT |
-| `engineering/zoom-out` | zoom-out | `coding` | `disable-model-invocation: true` — preserve |
-| `engineering/to-issues` | to-issues | `planning` *(new group)* | Reads the issue tracker (see decision 2) |
-| `engineering/to-prd` | to-prd | `planning` | Reads the issue tracker |
-| `engineering/triage` | triage | `planning` | Resources: AGENT-BRIEF, OUT-OF-SCOPE; reads triage labels |
-| `engineering/setup-matt-pocock-skills` | *(see decision 2)* | `setup` | Subject of redesign — do not import as-is |
-| `misc/git-guardrails-claude-code` | git-guardrails | `setup` | Ships `scripts/block-dangerous-git.sh` — needs pwsh equivalent; reconcile with existing global version |
-| `misc/setup-pre-commit` | setup-pre-commit | `setup` | **Diverges hard:** Matt's = Husky/lint-staged (JS); my prior version = pre-commit framework for PS/MD/AsciiDoc/SQL. See decision 3 |
+| Upstream                                    | Skill                         | Proposed group           | Notes                                                                                                                              |
+| ------------------------------------------- | ----------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `engineering/diagnose`                      | diagnose                      | `coding`                 | Ships `scripts/hitl-loop.template.sh` — needs a pwsh equivalent                                                                    |
+| `engineering/improve-codebase-architecture` | improve-codebase-architecture | `coding`                 | Resources: DEEPENING, INTERFACE-DESIGN, LANGUAGE, HTML-REPORT                                                                      |
+| `engineering/zoom-out`                      | zoom-out                      | `coding`                 | `disable-model-invocation: true` — preserve                                                                                        |
+| `engineering/to-issues`                     | to-issues                     | `planning` *(new group)* | Reads the issue tracker (see decision 2)                                                                                           |
+| `engineering/to-prd`                        | to-prd                        | `planning`               | Reads the issue tracker                                                                                                            |
+| `engineering/triage`                        | triage                        | `planning`               | Resources: AGENT-BRIEF, OUT-OF-SCOPE; reads triage labels                                                                          |
+| `engineering/setup-matt-pocock-skills`      | *(see decision 2)*            | `setup`                  | Subject of redesign — do not import as-is                                                                                          |
+| `misc/git-guardrails-claude-code`           | git-guardrails                | `setup`                  | Ships `scripts/block-dangerous-git.sh` — needs pwsh equivalent; reconcile with existing global version                             |
+| `misc/setup-pre-commit`                     | setup-pre-commit              | `setup`                  | **Diverges hard:** Matt's = Husky/lint-staged (JS); my prior version = pre-commit framework for PS/MD/AsciiDoc/SQL. See decision 3 |
 
 This introduces a new top-level group: **`planning`** (issue/PRD/triage workflow).
 
@@ -69,14 +69,14 @@ worth carrying into the import (especially `setup-pre-commit`, which diverges ha
 
 ### Issue coverage
 
-| Skill | Issue |
-| --- | --- |
-| diagnose, improve-codebase-architecture, zoom-out | 03 |
-| to-issues, to-prd, triage | 04 |
-| setup-matt-pocock-skills (config docs; skill itself replaced/dropped) | 02 |
-| git-guardrails, setup-pre-commit | 05 |
-| grouping + `planning` group (all) | 01 |
-| Claude Code adaptation (all imported) | 06 |
+| Skill                                                                   | Issue      |
+| ----------------------------------------------------------------------- | ---------- |
+| diagnose, improve-codebase-architecture, zoom-out                       | 03         |
+| to-issues, to-prd, triage                                               | 04         |
+| setup-matt-pocock-skills (config docs; skill itself replaced/dropped)   | 02         |
+| git-guardrails, setup-pre-commit                                        | 05         |
+| grouping + `planning` group (all)                                       | 01         |
+| Claude Code adaptation (all imported)                                   | 06         |
 | `/planning:scratch` + `/planning:scratch-plan` (local-markdown tracker) | 07 ✅ done |
 
 ## User Stories

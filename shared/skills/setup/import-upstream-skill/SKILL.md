@@ -32,12 +32,14 @@ The single source of truth is `shared/skills/<group>/<name>/SKILL.md` (+ bundled
    care if you are relocating something already tracked.
 
 4. **Write provenance frontmatter** so `/setup:check-skill-updates` can read the origin directly:
+
    ```yaml
    upstream-author: <author>
    upstream-repo: https://github.com/<owner>/<repo>
    upstream-path: skills/<author-folder>/<name>/SKILL.md   # path WITHIN the upstream repo
    upstream-commit: <40-char SHA this copy was reconciled to>
    ```
+
    - `upstream-path` keeps the *author's* folder structure, independent of our intent grouping.
    - **Local fork** (heavily diverged, or a local original that only borrows lineage): record the
      lineage in a comment but **omit `upstream-commit`** so the staleness check skips it. A skill with

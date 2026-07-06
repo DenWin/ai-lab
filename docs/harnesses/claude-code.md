@@ -1,9 +1,9 @@
 # Harness: Claude Code + Cowork (Anthropic desktop harnesses)
 
-**Vendor:** Anthropic  
-**Source:** Claude Code self-described from inside; Cowork section from shared-engine knowledge + external observation, 2026-06  
+**Vendor:** Anthropic
+**Source:** Claude Code self-described from inside; Cowork section from shared-engine knowledge + external observation, 2026-06
 **Covers:** Claude Code CLI, Desktop Code tab, Cowork Desktop — all three share the same engine
-and `~/.claude/` tree. Differences are in [the Cowork section](#cowork-differences-from-claude-code).  
+and `~/.claude/` tree. Differences are in [the Cowork section](#cowork-differences-from-claude-code).
 **Not covered here:** Desktop Chat tab — see [claude-ai.md](claude-ai.md).
 
 ---
@@ -34,31 +34,31 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 
 ## 3. Disk locations
 
-| Tier | Windows | macOS / Linux |
-|---|---|---|
-| User-global Claude config | `%USERPROFILE%\.claude\` | `~/.claude/` |
-| Global instruction file | `%USERPROFILE%\.claude\CLAUDE.md` | `~/.claude/CLAUDE.md` |
-| Global skills mirror | `%USERPROFILE%\.claude\commands\` | `~/.claude/commands/` |
-| Auto-memory | `%USERPROFILE%\.claude\projects\<slug>\memory\MEMORY.md` | `~/.claude/projects/<slug>/memory/MEMORY.md` |
-| Global settings | `%USERPROFILE%\.claude\settings.json` | `~/.claude/settings.json` |
-| Project instruction | `<repo>\CLAUDE.md` or `<repo>\AGENTS.md` | same |
-| Project-local override | `<repo>\CLAUDE.local.md` | same |
-| Project settings | `<repo>\.claude\settings.json` | same |
-| Project-local settings | `<repo>\.claude\settings.local.json` | same |
-| Project MCP config | `<repo>\.mcp.json` | same |
+| Tier                      | Windows                                                  | macOS / Linux                                |
+| ------------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| User-global Claude config | `%USERPROFILE%\.claude\`                                 | `~/.claude/`                                 |
+| Global instruction file   | `%USERPROFILE%\.claude\CLAUDE.md`                        | `~/.claude/CLAUDE.md`                        |
+| Global skills mirror      | `%USERPROFILE%\.claude\commands\`                        | `~/.claude/commands/`                        |
+| Auto-memory               | `%USERPROFILE%\.claude\projects\<slug>\memory\MEMORY.md` | `~/.claude/projects/<slug>/memory/MEMORY.md` |
+| Global settings           | `%USERPROFILE%\.claude\settings.json`                    | `~/.claude/settings.json`                    |
+| Project instruction       | `<repo>\CLAUDE.md` or `<repo>\AGENTS.md`                 | same                                         |
+| Project-local override    | `<repo>\CLAUDE.local.md`                                 | same                                         |
+| Project settings          | `<repo>\.claude\settings.json`                           | same                                         |
+| Project-local settings    | `<repo>\.claude\settings.local.json`                     | same                                         |
+| Project MCP config        | `<repo>\.mcp.json`                                       | same                                         |
 
 ## 4. Artifact mapping
 
-| Artifact type | Support |
-|---|---|
-| Instruction docs (`AGENTS.md`, `CLAUDE.md`, rules) | **Native** — file-based, auto-loaded, path-scoped |
-| Skills / slash commands | **Native** — `commands/<group>/<name>.md`; `!cmd` preprocessing, `$ARGUMENTS`, `/group:name` invocation |
-| Subagents | **Native** — `agents/*.md` |
-| Hooks | **Native** — `settings.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, etc.) |
-| MCP servers | **Native** — `.mcp.json` (project), `~/.claude.json` (global), Desktop `claude_desktop_config.json` |
-| Output styles | **Native** — `output-styles/` (referenced in settings) |
-| Settings / permissions | **Native** — `settings.json` / `settings.local.json` |
-| Plugins / bundles | **Native** — `.claude-plugin/plugin.json` wrapping skills/agents/hooks/mcp |
+| Artifact type                                      | Support                                                                                                 |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Instruction docs (`AGENTS.md`, `CLAUDE.md`, rules) | **Native** — file-based, auto-loaded, path-scoped                                                       |
+| Skills / slash commands                            | **Native** — `commands/<group>/<name>.md`; `!cmd` preprocessing, `$ARGUMENTS`, `/group:name` invocation |
+| Subagents                                          | **Native** — `agents/*.md`                                                                              |
+| Hooks                                              | **Native** — `settings.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, etc.)                        |
+| MCP servers                                        | **Native** — `.mcp.json` (project), `~/.claude.json` (global), Desktop `claude_desktop_config.json`     |
+| Output styles                                      | **Native** — `output-styles/` (referenced in settings)                                                  |
+| Settings / permissions                             | **Native** — `settings.json` / `settings.local.json`                                                    |
+| Plugins / bundles                                  | **Native** — `.claude-plugin/plugin.json` wrapping skills/agents/hooks/mcp                              |
 
 ## 5. Cross-compatibility
 
@@ -80,14 +80,14 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 
 ## 7. Activation + load model
 
-| Surface | Load model |
-|---|---|
-| `CLAUDE.md` / `AGENTS.md` | Auto, every session start (loaded into system prompt) |
-| Auto-memory (`MEMORY.md`) | Auto-injected, first ~200 lines only |
-| Skills (`commands/`) | Description-match OR explicit `/group:name` invocation |
-| Hooks | Event-triggered (pre/post tool, session start, stop, etc.) — run shell commands |
-| MCP servers | On-demand tool calls |
-| Subagents | Spawned explicitly by the model or via hooks |
+| Surface                   | Load model                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| `CLAUDE.md` / `AGENTS.md` | Auto, every session start (loaded into system prompt)                           |
+| Auto-memory (`MEMORY.md`) | Auto-injected, first ~200 lines only                                            |
+| Skills (`commands/`)      | Description-match OR explicit `/group:name` invocation                          |
+| Hooks                     | Event-triggered (pre/post tool, session start, stop, etc.) — run shell commands |
+| MCP servers               | On-demand tool calls                                                            |
+| Subagents                 | Spawned explicitly by the model or via hooks                                    |
 
 Skills are **not** loaded into context every turn — they are resolved on invocation. `CLAUDE.md`
 is loaded every turn and competes with code for context budget — keep it concise.
@@ -126,19 +126,19 @@ is loaded every turn and competes with code for context budget — keep it conci
 - **Not yet answered:** the newer TEMPLATE questions 12–13 (command + argument mapping, capability
   contract) postdate this doc — answer them at the next full re-verification rather than guessing now.
 
-| Section | Confidence | Why |
-|---|---|---|
-| 1. Instruction surfaces + precedence | high | Load order observed in-session; managed/enterprise tier not exercised (`?` on exact path) |
-| 2. Storage split | high | Paths confirmed on this machine |
-| 3. Disk locations | high | Standard stable paths; auto-memory location confirmed in-session 2026-07 |
-| 4. Artifact mapping | high | All types exercised in this repo except output styles / plugins (medium) |
-| 5. Cross-compatibility | medium | `AGENTS.md` auto-load is documented behavior; other harnesses' reads are external observation |
-| 6. Composition mechanics | medium | `@import` / frontmatter used; tier-merge semantics not systematically tested |
-| 7. Activation + load model | high | Observed in-session: skills resolve on invocation, hooks fire on events |
-| 8. Validation | high | Commands verified |
-| 9. Security / secrets boundary | high | Matches documented settings behavior |
-| 10. Capability limits | medium | Fast-moving (line limits, known issues); re-verify per the TEMPLATE decay contract |
-| Cowork section | low–medium | External observation + shared-engine knowledge — never self-described from inside Cowork |
+| Section                              | Confidence | Why                                                                                           |
+| ------------------------------------ | ---------- | --------------------------------------------------------------------------------------------- |
+| 1. Instruction surfaces + precedence | high       | Load order observed in-session; managed/enterprise tier not exercised (`?` on exact path)     |
+| 2. Storage split                     | high       | Paths confirmed on this machine                                                               |
+| 3. Disk locations                    | high       | Standard stable paths; auto-memory location confirmed in-session 2026-07                      |
+| 4. Artifact mapping                  | high       | All types exercised in this repo except output styles / plugins (medium)                      |
+| 5. Cross-compatibility               | medium     | `AGENTS.md` auto-load is documented behavior; other harnesses' reads are external observation |
+| 6. Composition mechanics             | medium     | `@import` / frontmatter used; tier-merge semantics not systematically tested                  |
+| 7. Activation + load model           | high       | Observed in-session: skills resolve on invocation, hooks fire on events                       |
+| 8. Validation                        | high       | Commands verified                                                                             |
+| 9. Security / secrets boundary       | high       | Matches documented settings behavior                                                          |
+| 10. Capability limits                | medium     | Fast-moving (line limits, known issues); re-verify per the TEMPLATE decay contract            |
+| Cowork section                       | low–medium | External observation + shared-engine knowledge — never self-described from inside Cowork      |
 
 ## 12. Validation smoke tests
 
@@ -156,14 +156,14 @@ is loaded every turn and competes with code for context budget — keep it conci
 
 ## Cross-compatibility
 
-| Artifact | Cross-compat position | Notes |
-|---|---|---|
-| `AGENTS.md` | **Primary cross-compat file** — also read by Codex CLI | Prefer over `CLAUDE.md` when writing for portability |
-| `CLAUDE.md` | Claude-family only | Not read as a native instruction file by other harnesses |
-| MCP (`.mcp.json`) | Cross-vendor | Config location differs; servers are vendor-neutral |
-| Skills (`commands/`) | Claude-family only | No equivalent in other harnesses without adaptation |
-| Hooks (`settings.json`) | Claude Code only | Represent as `.vscode/tasks.json` for Copilot; CI for others |
-| Plugins | Claude Code only | No cross-harness packaging format |
+| Artifact                | Cross-compat position                                  | Notes                                                        |
+| ----------------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
+| `AGENTS.md`             | **Primary cross-compat file** — also read by Codex CLI | Prefer over `CLAUDE.md` when writing for portability         |
+| `CLAUDE.md`             | Claude-family only                                     | Not read as a native instruction file by other harnesses     |
+| MCP (`.mcp.json`)       | Cross-vendor                                           | Config location differs; servers are vendor-neutral          |
+| Skills (`commands/`)    | Claude-family only                                     | No equivalent in other harnesses without adaptation          |
+| Hooks (`settings.json`) | Claude Code only                                       | Represent as `.vscode/tasks.json` for Copilot; CI for others |
+| Plugins                 | Claude Code only                                       | No cross-harness packaging format                            |
 
 **Design principle:** `AGENTS.md` at root is the cross-compat anchor. `CLAUDE.md` carries
 Claude-specific config. MCP is the only natively cross-vendor artifact type.
@@ -201,16 +201,16 @@ is Cowork's **sandboxed VM** — it has no shell, no git, no terminal.
 
 ### Capability differences
 
-| Capability | Claude Code | Cowork |
-|---|---|---|
-| Shell / terminal | ✅ full | ❌ sandboxed VM — defining constraint |
-| Git | ✅ | ❌ |
-| File access | local-full | local-granted (granted folders only) |
-| Hooks (`settings.json`) | ✅ full lifecycle | `?` — likely limited without shell |
-| Scheduled tasks | ❌ (unless external) | ✅ while app is open |
-| Document generation (xlsx/pptx/docx/pdf) | ❌ | ✅ |
-| Connectors (Google Workspace, Slack, …) | via MCP | ✅ native + MCP |
-| Skills with `!command` preprocessing | ✅ | ❌ — shell not available; `!command` lines don't execute |
+| Capability                               | Claude Code          | Cowork                                                   |
+| ---------------------------------------- | -------------------- | -------------------------------------------------------- |
+| Shell / terminal                         | ✅ full              | ❌ sandboxed VM — defining constraint                    |
+| Git                                      | ✅                   | ❌                                                       |
+| File access                              | local-full           | local-granted (granted folders only)                     |
+| Hooks (`settings.json`)                  | ✅ full lifecycle    | `?` — likely limited without shell                       |
+| Scheduled tasks                          | ❌ (unless external) | ✅ while app is open                                     |
+| Document generation (xlsx/pptx/docx/pdf) | ❌                   | ✅                                                       |
+| Connectors (Google Workspace, Slack, …)  | via MCP              | ✅ native + MCP                                          |
+| Skills with `!command` preprocessing     | ✅                   | ❌ — shell not available; `!command` lines don't execute |
 
 ### Skills in Cowork
 

@@ -14,14 +14,23 @@ them; edit the source and re-run:
 pwsh scripts/sync-skills.ps1
 ```
 
+That updates every supported generated skill mirror:
+
+- Claude Code: `.claude/commands/<group>/<name>.md` plus resources
+- Codex: `.agents/skills/<group>-<name>/SKILL.md` plus resources
+
+Both generated trees are gitignored; never edit either directly. Use
+`pwsh scripts/sync-skills.ps1 -Target Claude` or `-Target Codex` only when you intentionally want a
+single mirror.
+
 Namespacing follows the directory: `shared/skills/coding/tdd/` → `/coding:tdd`.
 
-| Group | Intent |
-| --- | --- |
-| `coding`    | Used while writing/changing code |
-| `planning`  | Backlog / PRD / issue workflow (the `.scratch/` tracker) |
-| `session`   | Conversational / process skills that shape a working session |
-| `setup`     | Repo tooling and skill maintenance |
+| Group       | Intent                                                            |
+| ----------- | ----------------------------------------------------------------- |
+| `coding`    | Used while writing/changing code                                  |
+| `planning`  | Backlog / PRD / issue workflow (the `.scratch/` tracker)          |
+| `session`   | Conversational / process skills that shape a working session      |
+| `setup`     | Repo tooling and skill maintenance                                |
 | `documents` | Producing / converting documents (e.g. email → AsciiDoc/Markdown) |
 
 ## Origins
@@ -29,25 +38,25 @@ Namespacing follows the directory: `shared/skills/coding/tdd/` → `/coding:tdd`
 Upstream is recorded in each skill's frontmatter (see [Provenance convention](#provenance-convention)).
 This table is the human-readable summary.
 
-| Skill | Group | Upstream | Notes |
-| --- | --- | --- | --- |
-| `tdd` | coding | mattpocock `skills/engineering/tdd` | Heavily localized: stack rules (PowerShell/SQL/Python/C#), reworked resources |
-| `prototype` | coding | mattpocock `skills/engineering/prototype` | Localized |
-| `diagnose` | coding | mattpocock `skills/engineering/diagnose` | Dual-mode capability contract; HITL loop ships pwsh (primary) + bash templates |
-| `zoom-out` | coding | mattpocock `skills/engineering/zoom-out` | Prompt-only (`disable-model-invocation`); dual-mode note added |
-| `improve-codebase-architecture` | coding | mattpocock `skills/engineering/improve-codebase-architecture` | Dual-mode (report → temp+open vs downloadable file); `grill-with-docs` links repointed to `session/grill-me`; resources DEEPENING/INTERFACE-DESIGN/LANGUAGE/HTML-REPORT |
-| `caveman` | session | mattpocock `skills/productivity/caveman` | Minor edits |
-| `grill-me` | session | mattpocock `skills/productivity/grill-me` | **Absorbed** `engineering/grill-with-docs`; `upstream-path` tracks the `grill-me` lineage only |
-| `handoff` | session | mattpocock `skills/productivity/handoff` | Minor edits |
-| `write-a-skill` | session | mattpocock `skills/productivity/write-a-skill` | Localized. Known issue: links `REFERENCE.md` but ships `EXAMPLES.md` — see below |
-| `recon` | session | — (local original) | No upstream |
-| `check-skill-updates` | setup | — (local original) | No upstream; the update tool itself |
-| `import-upstream-skill` | setup | — (local original) | No upstream; the generic import process itself |
-| `git-guardrails` | setup | mattpocock `skills/misc/git-guardrails-claude-code` | Localized from the global-prior (pwsh + bash guards); Claude-Code-hook skill, N/A in chat. **Forked at `62f43a18`**, not `aaf2453` |
-| `setup-pre-commit` | setup | mattpocock `skills/misc/setup-pre-commit` (**local fork**) | Diverged entirely: `pre-commit` framework for PS/MD/AsciiDoc/SQL, not Husky/lint-staged/Prettier. Carries **no** `upstream-*` (lineage in a comment); `check-skill-updates` skips it |
-| `scratch` | planning | — (local original) | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md` |
-| `scratch-plan` | planning | — (local original) | Backlog ranking companion to `scratch` |
-| `mail-to-adoc` | documents | — (local original) | `.msg`/`.eml` → AsciiDoc; personal-workflow tool (redacted). Rename to `mail-to-doc` + Markdown target is `.scratch/mail-to-doc` issue 03 |
+| Skill                           | Group     | Upstream                                                      | Notes                                                                                                                                                                                |
+| ------------------------------- | --------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `tdd`                           | coding    | mattpocock `skills/engineering/tdd`                           | Heavily localized: stack rules (PowerShell/SQL/Python/C#), reworked resources                                                                                                        |
+| `prototype`                     | coding    | mattpocock `skills/engineering/prototype`                     | Localized                                                                                                                                                                            |
+| `diagnose`                      | coding    | mattpocock `skills/engineering/diagnose`                      | Dual-mode capability contract; HITL loop ships pwsh (primary) + bash templates                                                                                                       |
+| `zoom-out`                      | coding    | mattpocock `skills/engineering/zoom-out`                      | Prompt-only (`disable-model-invocation`); dual-mode note added                                                                                                                       |
+| `improve-codebase-architecture` | coding    | mattpocock `skills/engineering/improve-codebase-architecture` | Dual-mode (report → temp+open vs downloadable file); `grill-with-docs` links repointed to `session/grill-me`; resources DEEPENING/INTERFACE-DESIGN/LANGUAGE/HTML-REPORT              |
+| `caveman`                       | session   | mattpocock `skills/productivity/caveman`                      | Minor edits                                                                                                                                                                          |
+| `grill-me`                      | session   | mattpocock `skills/productivity/grill-me`                     | **Absorbed** `engineering/grill-with-docs`; `upstream-path` tracks the `grill-me` lineage only                                                                                       |
+| `handoff`                       | session   | mattpocock `skills/productivity/handoff`                      | Minor edits                                                                                                                                                                          |
+| `write-a-skill`                 | session   | mattpocock `skills/productivity/write-a-skill`                | Localized. Known issue: links `REFERENCE.md` but ships `EXAMPLES.md` — see below                                                                                                     |
+| `recon`                         | session   | — (local original)                                            | No upstream                                                                                                                                                                          |
+| `check-skill-updates`           | setup     | — (local original)                                            | No upstream; the update tool itself                                                                                                                                                  |
+| `import-upstream-skill`         | setup     | — (local original)                                            | No upstream; the generic import process itself                                                                                                                                       |
+| `git-guardrails`                | setup     | mattpocock `skills/misc/git-guardrails-claude-code`           | Localized from the global-prior (pwsh + bash guards); Claude-Code-hook skill, N/A in chat. **Forked at `62f43a18`**, not `aaf2453`                                                   |
+| `setup-pre-commit`              | setup     | mattpocock `skills/misc/setup-pre-commit` (**local fork**)    | Diverged entirely: `pre-commit` framework for PS/MD/AsciiDoc/SQL, not Husky/lint-staged/Prettier. Carries **no** `upstream-*` (lineage in a comment); `check-skill-updates` skips it |
+| `scratch`                       | planning  | — (local original)                                            | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md`                                                                                                                             |
+| `scratch-plan`                  | planning  | — (local original)                                            | Backlog ranking companion to `scratch`                                                                                                                                               |
+| `mail-to-adoc`                  | documents | — (local original)                                            | `.msg`/`.eml` → AsciiDoc; personal-workflow tool (redacted). Rename to `mail-to-doc` + Markdown target is `.scratch/mail-to-doc` issue 03                                            |
 
 All upstream-derived skills were forked at mattpocock/skills commit
 `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb` — **except `git-guardrails`** (`misc/`), reconciled to
@@ -60,7 +69,7 @@ Each upstream-derived skill carries these frontmatter fields so tooling can read
 ```yaml
 upstream-author: mattpocock
 upstream-repo: https://github.com/mattpocock/skills
-upstream-path: skills/<author-folder>/<name>/SKILL.md   # path WITHIN the upstream repo
+upstream-path: skills/<author-folder>/<name>/SKILL.md # path WITHIN the upstream repo
 upstream-commit: <40-char SHA this copy was last reconciled to>
 ```
 

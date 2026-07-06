@@ -9,9 +9,13 @@
 /.temp/*
 !/.temp/.gitkeep
 
-# Generated skill mirror — the live, invocable copies. Source of truth is skills/.
+# Generated Claude Code skill mirror. Source of truth is shared/skills/.
 # Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
 /.claude/commands/*
+
+# Generated Codex skill mirror. Source of truth is shared/skills/.
+# Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
+/.agents/skills/*
 
 # Python bytecode caches (e.g. from running the mail-to-doc tool's test suite)
 __pycache__/

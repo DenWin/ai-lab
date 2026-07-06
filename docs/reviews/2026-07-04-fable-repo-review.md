@@ -10,13 +10,13 @@
 **Outcomes** — the review's improvements were captured as five "fable" scratches, and several were
 executed the same day:
 
-| Scratch | State after the review session |
-|---|---|
-| [sync-skills-drift-check](../../.scratch/sync-skills-drift-check/PRD.md) | ✅ done — `-Check` mode + hook |
-| [docs-integrity-pass](../../.scratch/docs-integrity-pass/PRD.md) | ✅ done — 4 drift fixes + decay contract |
-| [public-repo-compliance](../../.scratch/public-repo-compliance/PRD.md) | ⏳ ready-for-human — attribution + protections done; profile go/no-go open |
-| [backlog-hygiene-wip-limit](../../.scratch/backlog-hygiene-wip-limit/PRD.md) | needs-triage |
-| [repo-scope-strays](../../.scratch/repo-scope-strays/PRD.md) | needs-triage |
+| Scratch                                                                      | State after the review session                                             |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [sync-skills-drift-check](../../.scratch/sync-skills-drift-check/PRD.md)     | ✅ done — `-Check` mode + hook                                             |
+| [docs-integrity-pass](../../.scratch/docs-integrity-pass/PRD.md)             | ✅ done — 4 drift fixes + decay contract                                   |
+| [public-repo-compliance](../../.scratch/public-repo-compliance/PRD.md)       | ⏳ ready-for-human — attribution + protections done; profile go/no-go open |
+| [backlog-hygiene-wip-limit](../../.scratch/backlog-hygiene-wip-limit/PRD.md) | needs-triage                                                               |
+| [repo-scope-strays](../../.scratch/repo-scope-strays/PRD.md)                 | needs-triage                                                               |
 
 Also executed on the back of the review: `repo-scaffold` completed (root `AGENTS.md` authored).
 

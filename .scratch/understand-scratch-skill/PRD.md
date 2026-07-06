@@ -39,6 +39,7 @@ relationship, against the committed mattpocock upstream artifacts of `to-issues`
 Mode is chosen by whether `$ARGUMENTS` is present.
 
 **Mode A — Quick capture** (`/planning:scratch <idea>`):
+
 1. Derive `<feature-slug>` from the argument — lowercase, hyphenated, ≤ 5 words.
 2. Check `.scratch/` for a folder with a similar name; confirm before creating a duplicate.
 3. Create `.scratch/<feature-slug>/PRD.md` from the stub template (see §2).

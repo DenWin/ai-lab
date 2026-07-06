@@ -103,4 +103,3 @@ issue 06).
 - `check-skill-updates`' comparison source is settled (GitHub-remote, multi-repo); only script
   extraction remains — see issue 06.
   <!-- [RE-CONFIRM] claude.ai-origin decision; confirm GitHub-remote/multi-repo still holds before script work. -->
-

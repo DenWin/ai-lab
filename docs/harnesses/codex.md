@@ -34,6 +34,8 @@ For repo-specific working conventions, `AGENTS.md` is the active project contrac
 - **Repo-scoped (committed):** `AGENTS.md`, `docs/harnesses/*.md`, shared skills under
   `shared/skills/`, repo scripts, and any future Codex-specific repo config under `openai/codex/`
   if added.
+- **Repo-scoped generated (gitignored):** `.agents/skills/`, rebuilt from `shared/skills/` by
+  `pwsh scripts/sync-skills.ps1`.
 - **Machine-local:** Codex home and plugin/skill caches under the user's profile, local approval
   state, local settings, and sandbox/session metadata. These are not committed to this repo.
 - **User-global:** account/session-level Codex instructions, installed skills/plugins/connectors,
@@ -47,6 +49,7 @@ For repo-specific working conventions, `AGENTS.md` is the active project contrac
 | -------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
 | Repo root                        | `C:\GIT\DenWin\ai-lab` in this session                   | `<repo>`                                    |
 | Repo instruction file            | `<repo>\AGENTS.md`                                       | `<repo>/AGENTS.md`                          |
+| Repo Codex skill mirror          | `<repo>\.agents\skills\`                                 | `<repo>/.agents/skills/`                    |
 | Suggested Codex repo config home | `<repo>\openai\codex\` if needed                         | `<repo>/openai/codex/` if needed            |
 | User Codex home                  | `%USERPROFILE%\.codex\` observed from skill/plugin paths | `~/.codex/` presumed (`?`)                  |
 | User skills                      | `%USERPROFILE%\.codex\skills\` observed                  | `~/.codex/skills/` presumed (`?`)           |
@@ -61,7 +64,7 @@ session or documented by the active runtime.
 | Artifact type                                       | Support                                                                                         |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Instruction docs (`AGENTS.md`, custom instructions) | **Native** — root `AGENTS.md` is supplied as repo instructions                                  |
-| Skills / slash commands                             | **Native** — skill registry is exposed in-session; selected skills are read from `SKILL.md`     |
+| Skills / slash commands                             | **Native** — repo skills are mirrored to `.agents/skills/<group>-<name>/SKILL.md`               |
 | Subagents                                           | **Native / optional** — multi-agent tools may be available through deferred tool discovery      |
 | Hooks                                               | **Unsupported / ?** — no Codex lifecycle hook surface is visible in this session                |
 | MCP servers                                         | **Native / optional** — MCP resources/tools and app connectors may be available when configured |
@@ -91,15 +94,15 @@ session or documented by the active runtime.
 
 ## 7. Activation + load model
 
-| Surface                       | Load model                                                             |
-| ----------------------------- | ---------------------------------------------------------------------- |
-| System/developer instructions | Auto, every turn                                                       |
-| `AGENTS.md`                   | Auto-supplied for the workspace/session                                |
-| Skills                        | Description-match or explicit user mention; `SKILL.md` read before use |
-| Shell/filesystem tools        | Model-invoked, subject to sandbox and approval policy                  |
-| MCP resources/tools           | On-demand when configured and exposed                                  |
-| Plugins/connectors            | Available through installed capabilities or deferred tool discovery    |
-| Web browsing                  | On-demand, subject to browsing policy and network/tool availability    |
+| Surface                       | Load model                                                                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| System/developer instructions | Auto, every turn                                                                                              |
+| `AGENTS.md`                   | Auto-supplied for the workspace/session                                                                       |
+| Skills                        | Description-match or explicit user mention; mirrored `.agents/skills/<group>-<name>/SKILL.md` read before use |
+| Shell/filesystem tools        | Model-invoked, subject to sandbox and approval policy                                                         |
+| MCP resources/tools           | On-demand when configured and exposed                                                                         |
+| Plugins/connectors            | Available through installed capabilities or deferred tool discovery                                           |
+| Web browsing                  | On-demand, subject to browsing policy and network/tool availability                                           |
 
 Context behavior observed from this session:
 
@@ -107,7 +110,7 @@ Context behavior observed from this session:
   the context budget.
 - A context compaction mechanism may summarize older conversation state when needed.
 - Skill files are not assumed to be fully loaded until selected; when selected, the relevant
-  `SKILL.md` must be read before task actions.
+  `.agents/skills/<group>-<name>/SKILL.md` must be read before task actions.
 - File contents are not automatically re-read after edits unless the model uses filesystem tools.
 - Exact context window size, truncation thresholds, and prefix-caching behavior are `?`.
 
@@ -115,7 +118,8 @@ Context behavior observed from this session:
 
 - Ask the model which repo instructions are active and compare against `AGENTS.md`.
 - Read `AGENTS.md` directly with filesystem tools and verify behavior follows it.
-- For skills, check that the selected `SKILL.md` was read before task actions.
+- For skills, run `pwsh scripts/sync-skills.ps1 -Target Codex -Check` and check that the selected
+  `.agents/skills/<group>-<name>/SKILL.md` was read before task actions.
 - For shell/tool access, run a harmless command such as `Get-Content AGENTS.md` or `rg --files`.
 - For sandbox behavior, attempt an operation that should require approval and confirm the harness
   requests escalation rather than silently bypassing policy.
@@ -179,11 +183,11 @@ Codex workflow invocation patterns:
 - **Plain chat request:** primary interface. Arguments are natural-language task details, file paths,
   constraints, and follow-up corrections.
 - **Skill mention:** user names a skill or the task matches a skill description. The model reads the
-  skill file and follows it for that turn.
+  mirrored `.agents/skills/<group>-<name>/SKILL.md` file and follows it for that turn.
 - **Tool calls:** arguments are structured by each tool schema, for example shell command, working
   directory, timeout, and escalation request.
 - **Plugin/app connectors:** discovered tools expose their own schemas when installed.
-- **Repo scripts:** invoked through shell tools, for example `pwsh scripts/sync-claude-skills.ps1`.
+- **Repo scripts:** invoked through shell tools, for example `pwsh scripts/sync-skills.ps1`.
 
 Fallback pattern when no native command system exists: write a short prompt template with explicit
 placeholders, have the user fill it in chat, then treat the filled prompt as the workflow invocation.
@@ -221,7 +225,7 @@ through the harness escalation mechanism rather than bypassing the sandbox.
 - Pass signal: names `AGENTS.md` and identifies `# ai-lab`.
 - Fail signal: misses `AGENTS.md` or invents another repo instruction file.
 
-2. **Scoped-rule check**
+1. **Scoped-rule check**
 
 - Setup: add or inspect a nested `AGENTS.md` in a subdirectory only if the repo intentionally uses
   one.
@@ -229,7 +233,7 @@ through the harness escalation mechanism rather than bypassing the sandbox.
 - Pass signal: accurately distinguishes root `AGENTS.md` from any nested file that was supplied.
 - Fail signal: claims path-scoped rules without an actual file or loader evidence.
 
-3. **Tool integration check**
+1. **Tool integration check**
 
 - Action: run `Get-Content AGENTS.md` or `rg --files` through the shell tool.
 - Pass signal: command returns real repo content/file paths.
@@ -262,9 +266,9 @@ Operational expectations:
 
 ## 16. Operational edge cases
 
-- **Generated vs source artifacts:** In this repo, `.claude/commands/` is a generated mirror. Edit
-  `shared/skills/<group>/<name>/` and rebuild with `pwsh scripts/sync-claude-skills.ps1`; never edit the
-  mirror directly.
+- **Generated vs source artifacts:** In this repo, `.claude/commands/` and `.agents/skills/` are
+  generated mirrors. Edit `shared/skills/<group>/<name>/`, then rebuild with
+  `pwsh scripts/sync-skills.ps1`; never edit the mirrors directly.
 - **Bootstrap requirements:** A fresh clone or sandbox may not have generated mirrors or local
   harness settings. Use repo scripts and docs to materialize generated state instead of inventing it.
 - **Persistence:** Files written under the repo persist in the working tree. Conversation context,

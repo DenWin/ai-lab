@@ -1,86 +1,52 @@
 #Requires -Version 7.0
 <#
 .SYNOPSIS
-    Mirror the source-of-truth skills under skills/ into a Claude Code commands/ tree.
+    Sync generated skill mirrors for supported local harnesses.
 
 .DESCRIPTION
-    The repo stores skills in folder form (shared/skills/<group>/<name>/SKILL.md + bundled
-    resources) as the single source of truth. Claude Code surfaces namespaced slash
-    commands (/coding:tdd, /session:recon) from a commands/<group>/<name>.md tree.
+    shared/skills/ is the source of truth. This script refreshes generated harness mirrors:
 
-    This script generates that tree:
-      shared/skills/<group>/<name>/SKILL.md   ->  <target>/commands/<group>/<name>.md
-      shared/skills/<group>/<name>/<res...>   ->  <target>/commands/<group>/<name>/<res...>
+      Claude Code -> .claude/commands/
+      Codex       -> .agents/skills/
 
-    Because the SKILL.md moves up one level (into <name>.md) while its resources move
-    into a <name>/ subfolder, the script rewrites the SKILL.md body's resource links
-    from sibling form  ](res)  /  ](./res)  to subfolder form  ](<name>/res).
-    Resource files are copied verbatim (their cross-references stay siblings).
+    By default it updates both. Use -Target to limit the sync to one harness.
 
-    The generated commands/ tree is a build artifact. Never edit it directly: edit the
-    source under skills/ and re-run this script.
+.PARAMETER Target
+    All (default), Claude, or Codex.
 
 .PARAMETER Scope
-    Project (default) -> <repo>/.claude/commands  (repo-level; shadows global while in this repo)
-    User              -> $env:USERPROFILE/.claude/commands  (global; all projects)
+    Claude target only. Project (default) writes <repo>/.claude/commands; User writes
+    $env:USERPROFILE/.claude/commands. Codex is always repo-local.
 
 .PARAMETER Skill
-    Optional. Mirror only the skill with this name (e.g. "tdd"). Default: all skills.
+    Optional. Mirror only the source skill with this name (e.g. "tdd"). Default: all skills.
 
 .PARAMETER IfMissing
-    Bootstrap mode: only write a skill whose target command file does not already exist
-    ("does not exist -> copy; else leave alone"). Use for a SessionStart hook that materializes
-    the gitignored mirror on a fresh clone without clobbering an existing one. Does NOT refresh
-    skills you have edited — re-run without this switch after editing a skill (pair the hook
-    with -Check so that staleness is visible instead of silent).
+    Bootstrap mode: only write a missing generated skill. Does not refresh existing generated files.
 
 .PARAMETER Check
-    Read-only drift check: computes each skill's expected mirror output (including rewritten
-    resource links) and compares it against the actual commands tree. Reports UP-TO-DATE /
-    STALE / MISSING per skill, never writes, and exits 1 if anything is stale or missing.
-    Combine with -Skill to check a single skill; cannot be combined with -IfMissing.
-    Intended as a second SessionStart hook entry after -IfMissing, so an edited-but-unsynced
-    skill produces a visible warning at session start.
+    Read-only drift check. Reports UP-TO-DATE / STALE / MISSING and exits 1 if any target differs.
 
 .PARAMETER RepoRoot
     Repo root. Defaults to the parent of this script's folder.
 
 .EXAMPLE
-    ./scripts/sync-skills.ps1
-    Mirror every skill into the repo-level .claude/commands tree.
+    pwsh scripts/sync-skills.ps1
+    Rebuild Claude Code and Codex skill mirrors from shared/skills.
 
 .EXAMPLE
-    ./scripts/sync-skills.ps1 -Skill tdd -Scope User
-    Push just the tdd skill to the global ~/.claude/commands tree.
+    pwsh scripts/sync-skills.ps1 -Check
+    Check every generated mirror for drift.
 
-.NOTES
-    OPTIONAL AUTOMATION — SessionStart hook (opt-in per machine, not committed)
-
-    To auto-materialize the gitignored mirror on session start without clobbering existing files,
-    add this snippet to .claude/settings.local.json (machine-local, gitignored — NOT settings.json):
-
-        {
-          "hooks": {
-            "SessionStart": [
-              {
-                "hooks": [
-                  { "type": "command", "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -IfMissing" },
-                  { "type": "command", "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -Check" }
-                ]
-              }
-            ]
-          }
-        }
-
-    The second entry is the drift check: it exits nonzero when a source skill was edited without
-    re-running the sync, so the staleness shows up at session start instead of failing silently.
-
-    This runs silently without a per-execution prompt — hooks are pre-authorized by being in the file.
-    Accepting it = adding it to settings.local.json on a given machine. Remove to disable.
-    Without it: run `pwsh scripts/sync-skills.ps1` manually after a fresh clone.
+.EXAMPLE
+    pwsh scripts/sync-skills.ps1 -Target Claude -Skill tdd -Scope User
+    Push only the tdd skill to the user-global Claude command mirror.
 #>
 [CmdletBinding()]
 param(
+    [ValidateSet('All', 'Claude', 'Codex')]
+    [string]$Target = 'All',
+
     [ValidateSet('Project', 'User')]
     [string]$Scope = 'Project',
 
@@ -95,123 +61,350 @@ param(
 
 $ErrorActionPreference = 'Stop'
 if ($Check -and $IfMissing) { throw "-Check is read-only; do not combine it with -IfMissing." }
+if ($Scope -eq 'User' -and $Target -ne 'Claude') {
+    throw "-Scope User applies only to Claude. Use -Target Claude -Scope User."
+}
 
 $skillsRoot = Join-Path $RepoRoot 'shared\skills'
 if (-not (Test-Path $skillsRoot)) { throw "shared/skills root not found at: $skillsRoot" }
+$script:LastSyncExitCode = 0
 
-$commandsRoot = switch ($Scope) {
-    'Project' { Join-Path $RepoRoot '.claude\commands' }
-    'User'    { Join-Path $env:USERPROFILE '.claude\commands' }
+function Get-SkillDirectories {
+    param(
+        [string]$Root,
+        [string]$Name
+    )
+
+    $dirs = Get-ChildItem $Root -Recurse -Filter 'SKILL.md' -File |
+        ForEach-Object { $_.Directory } |
+        Where-Object { -not $Name -or $_.Name -eq $Name }
+
+    if (-not $dirs) {
+        if ($Name) { throw "No skill named '$Name' found under $Root" }
+        throw "No SKILL.md files found under $Root"
+    }
+
+    return @($dirs)
 }
-Write-Verbose "Source : $skillsRoot"
-Write-Verbose "Target : $commandsRoot (scope=$Scope)"
 
-# Rewrite a SKILL.md body so resource links point into the <name>/ subfolder.
 function Convert-ResourceLinks {
     param(
         [string]$Body,
         [string]$Name,
-        [string[]]$ResourceRelPaths   # forward-slash, relative to the skill folder
+        [string[]]$ResourceRelPaths
     )
-    foreach ($p in $ResourceRelPaths) {
-        # Markdown links: ](p) and ](./p)  ->  ](name/p)
-        $Body = $Body.Replace("](./$p)", "]($Name/$p)")
-        $Body = $Body.Replace("]($p)",   "]($Name/$p)")
-        # @-style file references: @p  ->  @name/p  (only when p is a real resource path)
-        $Body = $Body -replace ("(?<=@)" + [regex]::Escape($p) + "\b"), "$Name/$p"
+
+    foreach ($path in $ResourceRelPaths) {
+        $Body = $Body.Replace("](./$path)", "]($Name/$path)")
+        $Body = $Body.Replace("]($path)", "]($Name/$path)")
+        $Body = $Body -replace ("(?<=@)" + [regex]::Escape($path) + "\b"), "$Name/$path"
     }
     return $Body
 }
 
-# Discover skills: skills/<group>/<name>/SKILL.md
-$skillDirs = Get-ChildItem $skillsRoot -Recurse -Filter 'SKILL.md' -File |
-    ForEach-Object { $_.Directory } |
-    Where-Object { -not $Skill -or $_.Name -eq $Skill }
+function ConvertTo-YamlScalar {
+    param([string]$Value)
 
-if (-not $skillDirs) {
-    if ($Skill) { throw "No skill named '$Skill' found under $skillsRoot" }
-    throw "No SKILL.md files found under $skillsRoot"
+    if ($null -eq $Value) { return '""' }
+    return '"' + ($Value -replace '\\', '\\' -replace '"', '\"') + '"'
 }
 
-$report = [System.Text.StringBuilder]::new()
-$driftCount = 0
-foreach ($dir in $skillDirs) {
-    $name  = $dir.Name
-    $group = $dir.Parent.Name
-    $groupDir = Join-Path $commandsRoot $group
+function Get-FrontmatterValue {
+    param(
+        [string]$Document,
+        [string]$Key
+    )
 
-    $targetMd  = Join-Path $groupDir "$name.md"
-    $targetRes = Join-Path $groupDir $name
+    if ($Document -notmatch "(?s)\A---\r?\n(.*?)\r?\n---\r?\n") { return $null }
+    $frontmatter = $Matches[1]
+    $match = [regex]::Match($frontmatter, "(?m)^$([regex]::Escape($Key)):\s*(.+?)\s*$")
+    if (-not $match.Success) { return $null }
 
-    if ($IfMissing -and (Test-Path $targetMd)) {
-        [void]$report.AppendLine(("  /{0}:{1,-18} present — skipped (-IfMissing)" -f $group, $name))
-        continue
+    $value = $match.Groups[1].Value.Trim()
+    if (($value.StartsWith('"') -and $value.EndsWith('"')) -or
+        ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+        $value = $value.Substring(1, $value.Length - 2)
+    }
+    return $value
+}
+
+function Get-SkillBody {
+    param([string]$Document)
+
+    if ($Document -match "(?s)\A---\r?\n.*?\r?\n---\r?\n(.*)\z") {
+        return $Matches[1].TrimStart()
+    }
+    return $Document.TrimStart()
+}
+
+function ConvertTo-CodexSkill {
+    param(
+        [string]$SourceDocument,
+        [string]$CodexName,
+        [string]$SourceRelPath
+    )
+
+    $description = Get-FrontmatterValue -Document $SourceDocument -Key 'description'
+    if (-not $description) { $description = "Repo skill mirrored from $SourceRelPath." }
+
+    $body = Get-SkillBody -Document $SourceDocument
+    $frontmatter = @(
+        '---'
+        "name: $(ConvertTo-YamlScalar $CodexName)"
+        "description: $(ConvertTo-YamlScalar $description)"
+        '---'
+        ''
+        "<!-- GENERATED from $SourceRelPath. Edit shared/skills and run scripts/sync-skills.ps1. -->"
+        ''
+    ) -join "`n"
+
+    return $frontmatter + $body
+}
+
+function Get-CodexCompatibilityWarnings {
+    param(
+        [string]$Document,
+        [string]$SkillName
+    )
+
+    $patterns = [ordered]@{
+        'claude-path'     = '\.claude|CLAUDE_PROJECT_DIR'
+        'claude-command'  = '(^|\s)/[A-Za-z0-9_-]+:[A-Za-z0-9_-]+|\$ARGUMENTS|!command'
+        'codex-case'      = '\.Codex'
+        'old-skills-root' = 'skills/<group>/<name>|(?<!shared/)skills/'
     }
 
-    # Enumerate bundled resources (everything except SKILL.md)
-    $resources = @(Get-ChildItem $dir.FullName -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' })
-    $resRelPaths = $resources | ForEach-Object {
-        $_.FullName.Substring($dir.FullName.Length).TrimStart('\').Replace('\', '/')
+    foreach ($entry in $patterns.GetEnumerator()) {
+        if ($Document -match $entry.Value) { "$SkillName $($entry.Key)" }
+    }
+}
+
+function Sync-ClaudeSkills {
+    param(
+        [System.IO.DirectoryInfo[]]$SkillDirs,
+        [string]$Root,
+        [string]$ClaudeScope,
+        [switch]$OnlyIfMissing,
+        [switch]$ReadOnlyCheck
+    )
+
+    $commandsRoot = switch ($ClaudeScope) {
+        'Project' { Join-Path $RepoRoot '.claude\commands' }
+        'User'    { Join-Path $env:USERPROFILE '.claude\commands' }
     }
 
-    # Expected command-file body: source SKILL.md with rewritten resource links
-    $body = Get-Content (Join-Path $dir.FullName 'SKILL.md') -Raw
-    if ($resRelPaths) { $body = Convert-ResourceLinks -Body $body -Name $name -ResourceRelPaths $resRelPaths }
+    $report = [System.Text.StringBuilder]::new()
+    $driftCount = 0
+    $script:LastSyncExitCode = 0
 
-    if ($Check) {
-        # Read-only: compare expected output against the actual mirror; never write.
-        $state = 'UP-TO-DATE'
-        if (-not (Test-Path $targetMd)) { $state = 'MISSING' }
-        elseif ((Get-Content $targetMd -Raw) -cne $body) { $state = 'STALE' }
-        else {
-            foreach ($res in $resources) {
-                $rel  = $res.FullName.Substring($dir.FullName.Length).TrimStart('\')
-                $dest = Join-Path $targetRes $rel
-                if (-not (Test-Path $dest) -or
-                    (Get-FileHash $res.FullName).Hash -ne (Get-FileHash $dest).Hash) {
-                    $state = 'STALE'; break
+    foreach ($dir in $SkillDirs) {
+        $name = $dir.Name
+        $group = $dir.Parent.Name
+        $groupDir = Join-Path $commandsRoot $group
+        $targetMd = Join-Path $groupDir "$name.md"
+        $targetRes = Join-Path $groupDir $name
+
+        if ($OnlyIfMissing -and (Test-Path $targetMd)) {
+            [void]$report.AppendLine(("  /{0}:{1,-18} present - skipped (-IfMissing)" -f $group, $name))
+            continue
+        }
+
+        $resources = @(Get-ChildItem $dir.FullName -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' })
+        $resRelPaths = $resources | ForEach-Object {
+            $_.FullName.Substring($dir.FullName.Length).TrimStart('\').Replace('\', '/')
+        }
+
+        $body = Get-Content (Join-Path $dir.FullName 'SKILL.md') -Raw
+        if ($resRelPaths) {
+            $body = Convert-ResourceLinks -Body $body -Name $name -ResourceRelPaths $resRelPaths
+        }
+
+        if ($ReadOnlyCheck) {
+            $state = 'UP-TO-DATE'
+            if (-not (Test-Path $targetMd)) { $state = 'MISSING' }
+            elseif ((Get-Content $targetMd -Raw) -cne $body) { $state = 'STALE' }
+            else {
+                foreach ($res in $resources) {
+                    $rel = $res.FullName.Substring($dir.FullName.Length).TrimStart('\')
+                    $dest = Join-Path $targetRes $rel
+                    if (-not (Test-Path $dest) -or
+                        (Get-FileHash $res.FullName).Hash -ne (Get-FileHash $dest).Hash) {
+                        $state = 'STALE'
+                        break
+                    }
+                }
+                if ($state -eq 'UP-TO-DATE') {
+                    $mirrored = if (Test-Path $targetRes) { @(Get-ChildItem $targetRes -Recurse -File).Count } else { 0 }
+                    if ($mirrored -ne $resources.Count) { $state = 'STALE' }
                 }
             }
-            if ($state -eq 'UP-TO-DATE') {
-                # Extra files in the mirror (deleted from source) also count as drift
-                $mirrored = if (Test-Path $targetRes) { @(Get-ChildItem $targetRes -Recurse -File).Count } else { 0 }
-                if ($mirrored -ne $resources.Count) { $state = 'STALE' }
+
+            if ($state -ne 'UP-TO-DATE') { $driftCount++ }
+            [void]$report.AppendLine(("  /{0}:{1,-18} {2}" -f $group, $name, $state))
+            continue
+        }
+
+        if (Test-Path $targetMd) { Remove-Item $targetMd -Force }
+        if (Test-Path $targetRes) { Remove-Item $targetRes -Recurse -Force }
+        New-Item -ItemType Directory -Path $groupDir -Force | Out-Null
+        Set-Content -Path $targetMd -Value $body -Encoding utf8 -NoNewline
+
+        foreach ($res in $resources) {
+            $rel = $res.FullName.Substring($dir.FullName.Length).TrimStart('\')
+            $dest = Join-Path $targetRes $rel
+            New-Item -ItemType Directory -Path (Split-Path $dest -Parent) -Force | Out-Null
+            Copy-Item $res.FullName $dest -Force
+        }
+
+        [void]$report.AppendLine(("  /{0}:{1,-18} {2} resource file(s)" -f $group, $name, $resources.Count))
+    }
+
+    if ($ReadOnlyCheck) {
+        Write-Output "Drift check: $Root -> $commandsRoot (target=Claude, scope=$ClaudeScope)"
+        Write-Output $report.ToString().TrimEnd()
+        if ($driftCount) {
+            Write-Output "STALE MIRROR: $driftCount Claude skill(s) stale or missing - rebuild with: pwsh scripts/sync-skills.ps1 -Target Claude"
+            $script:LastSyncExitCode = 1
+            return
+        }
+        Write-Output "Claude skills up to date."
+        return
+    }
+
+    Write-Output "Synced Claude skills -> $commandsRoot (scope=$ClaudeScope)"
+    Write-Output $report.ToString().TrimEnd()
+    return
+}
+
+function Sync-CodexSkills {
+    param(
+        [System.IO.DirectoryInfo[]]$SkillDirs,
+        [string]$Root,
+        [string]$SelectedSkill,
+        [switch]$OnlyIfMissing,
+        [switch]$ReadOnlyCheck
+    )
+
+    $agentsRoot = Join-Path $RepoRoot '.agents\skills'
+    $report = [System.Text.StringBuilder]::new()
+    $warnings = [System.Collections.Generic.List[string]]::new()
+    $expectedSkillNames = [System.Collections.Generic.HashSet[string]]::new()
+    $driftCount = 0
+    $script:LastSyncExitCode = 0
+
+    if (-not $ReadOnlyCheck -and -not $OnlyIfMissing -and -not $SelectedSkill -and (Test-Path $agentsRoot)) {
+        Remove-Item $agentsRoot -Recurse -Force
+    }
+
+    foreach ($dir in $SkillDirs) {
+        $sourceName = $dir.Name
+        $group = $dir.Parent.Name
+        $codexName = "$group-$sourceName"
+        [void]$expectedSkillNames.Add($codexName)
+        $targetDir = Join-Path $agentsRoot $codexName
+        $targetSkill = Join-Path $targetDir 'SKILL.md'
+
+        if ($OnlyIfMissing -and (Test-Path $targetSkill)) {
+            [void]$report.AppendLine(("  {0,-36} present - skipped (-IfMissing)" -f $codexName))
+            continue
+        }
+
+        $sourceSkill = Join-Path $dir.FullName 'SKILL.md'
+        $sourceRelPath = "shared/skills/$group/$sourceName/SKILL.md"
+        $sourceDocument = Get-Content $sourceSkill -Raw
+        $expectedSkill = ConvertTo-CodexSkill -SourceDocument $sourceDocument -CodexName $codexName -SourceRelPath $sourceRelPath
+        foreach ($warning in Get-CodexCompatibilityWarnings -Document $sourceDocument -SkillName $codexName) {
+            $warnings.Add($warning)
+        }
+
+        $resources = @(Get-ChildItem $dir.FullName -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' })
+
+        if ($ReadOnlyCheck) {
+            $state = 'UP-TO-DATE'
+            if (-not (Test-Path $targetSkill)) { $state = 'MISSING' }
+            elseif ((Get-Content $targetSkill -Raw) -cne $expectedSkill) { $state = 'STALE' }
+            else {
+                foreach ($res in $resources) {
+                    $rel = $res.FullName.Substring($dir.FullName.Length).TrimStart('\')
+                    $dest = Join-Path $targetDir $rel
+                    if (-not (Test-Path $dest) -or
+                        (Get-FileHash $res.FullName).Hash -ne (Get-FileHash $dest).Hash) {
+                        $state = 'STALE'
+                        break
+                    }
+                }
+                if ($state -eq 'UP-TO-DATE') {
+                    $mirrored = @(Get-ChildItem $targetDir -Recurse -File | Where-Object { $_.Name -ne 'SKILL.md' }).Count
+                    if ($mirrored -ne $resources.Count) { $state = 'STALE' }
+                }
+            }
+
+            if ($state -ne 'UP-TO-DATE') { $driftCount++ }
+            [void]$report.AppendLine(("  {0,-36} {1}" -f $codexName, $state))
+            continue
+        }
+
+        if (Test-Path $targetDir) { Remove-Item $targetDir -Recurse -Force }
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+        Set-Content -Path $targetSkill -Value $expectedSkill -Encoding utf8 -NoNewline
+
+        foreach ($res in $resources) {
+            $rel = $res.FullName.Substring($dir.FullName.Length).TrimStart('\')
+            $dest = Join-Path $targetDir $rel
+            New-Item -ItemType Directory -Path (Split-Path $dest -Parent) -Force | Out-Null
+            Copy-Item $res.FullName $dest -Force
+        }
+
+        [void]$report.AppendLine(("  {0,-36} {1} resource file(s)" -f $codexName, $resources.Count))
+    }
+
+    if ($ReadOnlyCheck -and -not $SelectedSkill -and (Test-Path $agentsRoot)) {
+        foreach ($dir in Get-ChildItem $agentsRoot -Directory) {
+            if (-not $expectedSkillNames.Contains($dir.Name)) {
+                $driftCount++
+                [void]$report.AppendLine(("  {0,-36} EXTRA" -f $dir.Name))
             }
         }
-        if ($state -ne 'UP-TO-DATE') { $driftCount++ }
-        [void]$report.AppendLine(("  /{0}:{1,-18} {2}" -f $group, $name, $state))
-        continue
     }
 
-    # Clean only this skill's own targets (leaves unmanaged siblings, e.g. bootstrap.md, intact)
-    if (Test-Path $targetMd)  { Remove-Item $targetMd -Force }
-    if (Test-Path $targetRes) { Remove-Item $targetRes -Recurse -Force }
-    New-Item -ItemType Directory -Path $groupDir -Force | Out-Null
-
-    # Write the command file with rewritten resource links
-    Set-Content -Path $targetMd -Value $body -Encoding utf8 -NoNewline
-
-    # Copy resources verbatim into <name>/
-    foreach ($res in $resources) {
-        $rel    = $res.FullName.Substring($dir.FullName.Length).TrimStart('\')
-        $dest   = Join-Path $targetRes $rel
-        New-Item -ItemType Directory -Path (Split-Path $dest -Parent) -Force | Out-Null
-        Copy-Item $res.FullName $dest -Force
+    if ($ReadOnlyCheck) {
+        Write-Output "Drift check: $Root -> $agentsRoot (target=Codex)"
+        Write-Output $report.ToString().TrimEnd()
+        if ($warnings.Count) {
+            Write-Output "Compatibility warnings:"
+            $warnings | Sort-Object -Unique | ForEach-Object { Write-Output "  $_" }
+        }
+        if ($driftCount) {
+            Write-Output "STALE MIRROR: $driftCount Codex skill(s) stale or missing - rebuild with: pwsh scripts/sync-skills.ps1 -Target Codex"
+            $script:LastSyncExitCode = 1
+            return
+        }
+        Write-Output "Codex skills up to date."
+        return
     }
 
-    [void]$report.AppendLine(("  /{0}:{1,-18} {2} resource file(s)" -f $group, $name, $resources.Count))
-}
-
-if ($Check) {
-    Write-Output "Drift check: $skillsRoot -> $commandsRoot (scope=$Scope)"
+    Write-Output "Synced Codex skills -> $agentsRoot"
     Write-Output $report.ToString().TrimEnd()
-    if ($driftCount) {
-        Write-Output "STALE MIRROR: $driftCount skill(s) stale or missing — rebuild with: pwsh scripts/sync-skills.ps1"
-        exit 1
+    if ($warnings.Count) {
+        Write-Output "Compatibility warnings:"
+        $warnings | Sort-Object -Unique | ForEach-Object { Write-Output "  $_" }
     }
-    Write-Output "All skills up to date."
-    exit 0
+    return
 }
 
-Write-Output "Synced skills -> $commandsRoot (scope=$Scope)"
-Write-Output $report.ToString().TrimEnd()
+$skillDirs = Get-SkillDirectories -Root $skillsRoot -Name $Skill
+$exitCodes = [System.Collections.Generic.List[int]]::new()
+
+if ($Target -in @('All', 'Claude')) {
+    Write-Output "== Claude Code skill mirror =="
+    Sync-ClaudeSkills -SkillDirs $skillDirs -Root $skillsRoot -ClaudeScope $Scope -OnlyIfMissing:$IfMissing -ReadOnlyCheck:$Check
+    $exitCodes.Add($script:LastSyncExitCode)
+}
+
+if ($Target -in @('All', 'Codex')) {
+    Write-Output "== Codex skill mirror =="
+    Sync-CodexSkills -SkillDirs $skillDirs -Root $skillsRoot -SelectedSkill $Skill -OnlyIfMissing:$IfMissing -ReadOnlyCheck:$Check
+    $exitCodes.Add($script:LastSyncExitCode)
+}
+
+if ($exitCodes | Where-Object { $_ -ne 0 }) { exit 1 }

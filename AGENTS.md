@@ -20,7 +20,9 @@ Most-specific wins; folders are created on demand, never pre-scaffolded empty.
 
 - **Never edit `.claude/commands/`** — it is a generated, gitignored mirror. Edit the source under
   `shared/skills/<group>/<name>/`, then rebuild: `pwsh scripts/sync-skills.ps1`.
-- On a fresh clone or a cloud/sandbox session the mirror does not exist. Run the sync script once —
+- **Never edit `.agents/skills/`** — it is the generated Codex skill mirror. Edit the source under
+  `shared/skills/<group>/<name>/`, then rebuild: `pwsh scripts/sync-skills.ps1`.
+- On a fresh clone or a cloud/sandbox session the generated mirrors may not exist. Run the sync script once —
   the SessionStart hook that does this locally lives in machine-local settings and won't be there.
 - Files under `instructions/` and `anthropic/*/instructions/` are repo copies for editing; the live
   version sits in each harness's own surface (see [instructions/README.md](instructions/README.md)).

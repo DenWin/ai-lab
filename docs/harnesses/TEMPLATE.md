@@ -13,7 +13,7 @@ section within each harness doc — not in a shared file — so each harness is 
 
 > I am setting up a multi-harness AI workspace (Claude Code, Copilot, Codex, ChatGPT, etc.)
 > and I need you to document yourself as a harness — from the inside, with concrete facts you
-> actually know to be true. Answer the 14 questions below as precisely as possible.
+> actually know to be true. Answer the 16 questions below as precisely as possible.
 > Mark anything uncertain as `?` rather than guessing. Answer from inside your own context
 > (you know your own load mechanics better than any external observer).
 >
@@ -49,11 +49,15 @@ section within each harness doc — not in a shared file — so each harness is 
 >    `@import` / include / transclusion, merge directives, frontmatter metadata? State exact
 >    mechanisms with examples.
 > 7. **Activation + load model** — For each artifact type: auto-loaded every turn, command-invoked
->    (`/name`), description-match (model decides), user-pick at runtime, or other?
+>    (`/name`), description-match (model decides), user-pick at runtime, or other? Include context
+>    budget behavior when known: truncation, retrieval, prefix caching, and whether files are
+>    re-read or cached.
 > 8. **Validation** — How do you (or the user) verify that instructions/skills/hooks actually
->    loaded? Diagnostics, `/context`, test prompts, logs?
+>    loaded? Diagnostics, `/context`, test prompts, logs? Include at least one precedence/conflict
+>    check when the harness supports multiple instruction layers.
 > 9. **Security / secrets boundary** — Where must secrets never be stored in your harness?
->    How are secrets injected (env vars, vault, OAuth tokens managed externally)?
+>    How are secrets injected (env vars, vault, OAuth tokens managed externally)? If known, state
+>    what repo/chat/tool content may be sent to remote services, logs, telemetry, or connectors.
 > 10. **Capability limits / notable absences** — What can you NOT do that a sibling harness can?
 >     Focus on: shell/git access, background/scheduled tasks, write access to user's filesystem,
 >     persistent cross-session state, MCP availability.
@@ -62,15 +66,24 @@ section within each harness doc — not in a shared file — so each harness is 
 >     use `?`.
 > 12. **Command + argument mapping** — How are reusable workflows invoked in your harness
 >     (slash commands, prompts, files, UI actions)? Show how arguments are passed and what
->     fallback pattern to use when no native command system exists.
+>     fallback pattern to use when no native command system exists. Include prompting patterns for
+>     reusable workflows, not just literal commands.
 > 13. **Capability contract** — Classify each as `required`, `optional`, or `unavailable`:
 >     filesystem read, filesystem write, shell/terminal execution, network access, external
->     tool calls (MCP/plugins), background/long-running tasks.
+>     tool calls (MCP/plugins), background/long-running tasks. State how instructions/skills should
+>     degrade when an optional capability is missing.
 > 14. **Validation smoke tests** — Provide copy-paste checks for:
 >     - instruction load verification,
 >     - path-scoped/scoped-rule verification,
 >     - one tool-call/integration verification.
 >       Include expected signals for pass/fail.
+> 15. **Agentic work model** — How should users steer you during coding, debugging, planning,
+>     exploratory/vibe work, prompting, and autonomous execution? Include planning expectations,
+>     interruption/correction, approval moments, retry behavior, testing/checkpointing, and when you
+>     should stop and ask.
+> 16. **Operational edge cases** — Document generated-vs-source artifacts, bootstrap requirements,
+>     persistence across sessions, sandbox/approval behavior, local caches, generated outputs/logs,
+>     version-discovery steps, and known drift risks. Mark unknowns as `?`.
 >
 > After answering, add a brief **"What I need from instruction files"** section: what makes
 > instructions work well for you (length, format, placement, things to avoid).
@@ -84,12 +97,12 @@ section within each harness doc — not in a shared file — so each harness is 
 | claude.ai (web/mobile/Desktop Chat)      | [claude-ai.md](claude-ai.md)     | Self-described (inside claude.ai)                                       | 2026-06       |
 | Claude Code + Cowork (Anthropic desktop) | [claude-code.md](claude-code.md) | Claude Code self-described; Cowork section from shared-engine knowledge | 2026-07 (Cowork section: 2026-06, external) |
 | GitHub Copilot (VS Code)                 | [copilot.md](copilot.md)         | Self-described (inside Copilot)                                         | 2026-06       |
-| Codex CLI                                | _(pending)_                      | —                                                                       | —             |
-| ChatGPT (Projects)                       | _(pending)_                      | —                                                                       | —             |
+| Codex CLI / Codex coding agent           | [codex.md](codex.md)             | Self-described (inside Codex)                                           | 2026-07       |
+| ChatGPT (Projects)                       | *(pending)*                      | —                                                                       | —             |
 
 ## Format note
 
-Each harness doc answers the 14 questions, then has a **Cross-compatibility** section and a
+Each harness doc answers the 16 questions, then has a **Cross-compatibility** section and a
 **What I need from instruction files** section. No other structure required. Mark uncertain
 cells `?` — a precise `?` is better than a confident wrong answer.
 
@@ -105,8 +118,8 @@ first:
 3. The verified-on date is more than ~6 months old.
 
 Update the **Last verified** column in the table above in the same pass. Sections older docs never
-answered (e.g. questions 12–14 in pre-14-question docs) are filled at the next full re-verification
-— never from memory.
+answered (for example, questions added after the doc's last verification) are filled at the next
+full re-verification — never from memory.
 
 **Authoring restriction:** Describe only your own behavior. Do not explain or reference what
 another harness does or does not do — that belongs in the Cross-compatibility section only,
