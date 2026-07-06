@@ -50,6 +50,12 @@
             "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -IfMissing",
             "shell": "powershell",
             "statusMessage": "Materializing skill mirror…"
+          },
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File scripts/sync-skills.ps1 -Check",
+            "shell": "powershell",
+            "statusMessage": "Checking skill mirror for drift…"
           }
         ]
       }
