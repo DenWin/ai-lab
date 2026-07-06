@@ -43,12 +43,14 @@ This table is the human-readable summary.
 | `recon` | session | — (local original) | No upstream |
 | `check-skill-updates` | setup | — (local original) | No upstream; the update tool itself |
 | `import-upstream-skill` | setup | — (local original) | No upstream; the generic import process itself |
+| `git-guardrails` | setup | mattpocock `skills/misc/git-guardrails-claude-code` | Localized from the global-prior (pwsh + bash guards); Claude-Code-hook skill, N/A in chat. **Forked at `62f43a18`**, not `aaf2453` |
 | `scratch` | planning | — (local original) | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md` |
 | `scratch-plan` | planning | — (local original) | Backlog ranking companion to `scratch` |
 | `mail-to-adoc` | documents | — (local original) | `.msg`/`.eml` → AsciiDoc; personal-workflow tool (redacted). Rename to `mail-to-doc` + Markdown target is `.scratch/mail-to-doc` issue 03 |
 
 All upstream-derived skills were forked at mattpocock/skills commit
-`aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`.
+`aaf2453fbdfe7a15c07f11d861224f34ab4b53cb` — **except `git-guardrails`** (`misc/`), reconciled to
+`62f43a18177be6ec82da242e59ffbc490a4c22ea`. Per-skill `upstream-commit` frontmatter is authoritative.
 
 ## Provenance convention
 
