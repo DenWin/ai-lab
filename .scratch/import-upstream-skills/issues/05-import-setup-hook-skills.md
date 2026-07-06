@@ -1,6 +1,6 @@
 # 05 — Import/reconcile setup hook skills (git-guardrails, setup-pre-commit)
 
-Status: in-progress (git-guardrails imported + pwsh guard done 2026-07-05; setup-pre-commit pending)
+Status: done (git-guardrails + setup-pre-commit imported 2026-07-05; setup cluster complete)
 
 ## What to build
 
@@ -30,8 +30,14 @@ Status: in-progress (git-guardrails imported + pwsh guard done 2026-07-05; setup
   Provenance tracks `misc/git-guardrails-claude-code` at **`62f43a18`** (the global-prior's commit,
   not `aaf2453`); README blanket-commit note corrected. Bash guard smoke-tested: `git push` → exit 2,
   `git status` → exit 0; pwsh mirrors the same patterns.
-- ⏳ **setup-pre-commit** — next: treat my toolchain version (pre-commit framework, PS/MD/AsciiDoc/SQL)
-  as a **local fork** (SoT = mine, lineage noted, no `upstream-commit` so the staleness check skips it).
+- ✅ **setup-pre-commit** → `shared/skills/setup/setup-pre-commit/`. **Decision 3 resolved:** imported
+  the global-prior (pre-commit framework for PS/MD/AsciiDoc/SQL) as a **local fork** — SoT = mine,
+  lineage recorded in an HTML comment, **no `upstream-*` frontmatter** so `/setup:check-skill-updates`
+  skips it (it shares only a name with Matt's Husky/lint-staged version). Added an Applicability note
+  (repo-setup skill → N/A in chat-only; degrade to handing over the config files). README fork row +
+  provenance note added.
+
+**Setup cluster (issue 05) complete.** Remaining import cluster: 04 (planning: to-issues/to-prd/triage).
 
 ## Blocked by
 
