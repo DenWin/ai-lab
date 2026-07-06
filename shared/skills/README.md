@@ -44,6 +44,7 @@ This table is the human-readable summary.
 | `check-skill-updates` | setup | — (local original) | No upstream; the update tool itself |
 | `import-upstream-skill` | setup | — (local original) | No upstream; the generic import process itself |
 | `git-guardrails` | setup | mattpocock `skills/misc/git-guardrails-claude-code` | Localized from the global-prior (pwsh + bash guards); Claude-Code-hook skill, N/A in chat. **Forked at `62f43a18`**, not `aaf2453` |
+| `setup-pre-commit` | setup | mattpocock `skills/misc/setup-pre-commit` (**local fork**) | Diverged entirely: `pre-commit` framework for PS/MD/AsciiDoc/SQL, not Husky/lint-staged/Prettier. Carries **no** `upstream-*` (lineage in a comment); `check-skill-updates` skips it |
 | `scratch` | planning | — (local original) | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md` |
 | `scratch-plan` | planning | — (local original) | Backlog ranking companion to `scratch` |
 | `mail-to-adoc` | documents | — (local original) | `.msg`/`.eml` → AsciiDoc; personal-workflow tool (redacted). Rename to `mail-to-doc` + Markdown target is `.scratch/mail-to-doc` issue 03 |
@@ -65,8 +66,10 @@ upstream-commit: <40-char SHA this copy was last reconciled to>
 
 - `upstream-path` keeps the *author's* folder structure (`engineering/`, `productivity/`), independent
   of our intent grouping.
-- Local originals (`recon`, `check-skill-updates`, `scratch`, `scratch-plan`) carry **no**
-  `upstream-*` fields.
+- Local originals (`recon`, `check-skill-updates`, `import-upstream-skill`, `scratch`, `scratch-plan`)
+  carry **no** `upstream-*` fields. **Local forks** that share only a name with upstream
+  (`setup-pre-commit`) also omit them, recording lineage in a comment instead — the staleness check
+  skips both.
 - To check these against upstream, run `/setup:check-skill-updates`.
 
 ## Known content issues (carried over verbatim)
