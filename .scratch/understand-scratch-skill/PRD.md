@@ -143,6 +143,17 @@ conventions from `LAYOUT.md` directly plus a small triage-label map.
   absent (gitignored; `pwsh scripts/sync-skills.ps1` not yet run) — so the *source* behavior above is
   authoritative, but the slash command itself may be unavailable until sync runs.
 
+### Reevaluation (2026-07-06)
+
+User-requested recheck of the last open question ("how does it relate to the sibling skills?"):
+**confirmed answered** by §3 + §3a above — `scratch-plan` division of labour is documented, and the
+`to-issues`/`to-prd`/`triage` compatibility analysis (four gaps) is already propagated as the
+"Tracker-contract prerequisites" checklist on
+[`import-upstream-skills` issue 04](../import-upstream-skills/issues/04-import-planning-cluster.md).
+Verified against the repo today: the three siblings are still not imported
+(`shared/skills/planning/` = `scratch` + `scratch-plan` only), so the §3a answer stands unchanged.
+Nothing remains in this scratch; follow-up work lives in [[import-upstream-skills]] issues 02/04.
+
 ### Verdict
 
 The `scratch` skill does exactly what its SKILL.md says: a two-mode capture/list tool that owns the
