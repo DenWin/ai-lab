@@ -92,13 +92,14 @@ section within each harness doc — not in a shared file — so each harness is 
 
 ## Known harness docs in this repo
 
-| Harness                                  | File                             | Source                                                                  | Last verified |
-| ---------------------------------------- | -------------------------------- | ----------------------------------------------------------------------- | ------------- |
-| claude.ai (web/mobile/Desktop Chat)      | [claude-ai.md](claude-ai.md)     | Self-described (inside claude.ai)                                       | 2026-06       |
-| Claude Code + Cowork (Anthropic desktop) | [claude-code.md](claude-code.md) | Claude Code self-described; Cowork section from shared-engine knowledge | 2026-07 (Cowork section: 2026-06, external) |
-| GitHub Copilot (VS Code)                 | [copilot.md](copilot.md)         | Self-described (inside Copilot)                                         | 2026-06       |
-| Codex CLI / Codex coding agent           | [codex.md](codex.md)             | Self-described (inside Codex)                                           | 2026-07       |
-| ChatGPT (Projects)                       | *(pending)*                      | —                                                                       | —             |
+| Harness                                  | File                                   | Source                                                                  | Last verified |
+| ---------------------------------------- | -------------------------------------- | ----------------------------------------------------------------------- | ------------- |
+| claude.ai (web/mobile/Desktop Chat)      | [claude-ai.md](claude-ai.md)           | Self-described (inside claude.ai)                                       | 2026-06       |
+| Claude Code + Cowork (Anthropic desktop) | [claude-code.md](claude-code.md)       | Claude Code self-described; Cowork section from shared-engine knowledge | 2026-07 (Cowork section: 2026-06, external) |
+| GitHub Copilot (VS Code)                 | [copilot.md](copilot.md)               | Self-described (inside Copilot)                                         | 2026-06       |
+| GitHub Copilot CLI (desktop app)         | [copilot-cli.md](copilot-cli.md)       | Self-described (inside Copilot CLI)                                     | 2026-07       |
+| Codex CLI / Codex coding agent           | [codex.md](codex.md)                   | Self-described (inside Codex)                                           | 2026-07       |
+| ChatGPT (Projects)                       | *(pending)*                            | —                                                                       | —             |
 
 ## Format note
 

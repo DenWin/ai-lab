@@ -130,6 +130,8 @@ Verification metadata for this document:
 - **Verified on:** 2026-06-09
 - **Harness/App:** VS Code + GitHub Copilot extension
 - **Extension version:** `?` (capture from local extension details when re-verifying)
+- **Not yet answered:** TEMPLATE questions 15–16 (Agentic work model, Operational edge cases)
+  postdate this doc — answer them at the next full re-verification rather than guessing now.
 
 Confidence by section:
 
