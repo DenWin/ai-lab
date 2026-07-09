@@ -58,10 +58,11 @@ jobs:
           New-Item -ItemType Directory -Force -Path reports | Out-Null
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
-          $files = @(
-            git ls-files '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**'
-          )
-          $results = Invoke-ScriptAnalyzer -Path $files -Severity Warning,Error
+          $files = git ls-files '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+          $results = foreach ($file in $files) {
+            Invoke-ScriptAnalyzer -Path $file -Severity Warning,Error
+          }
           if ($results) {
             $formatted = $results | Format-Table -AutoSize | Out-String
             $formatted | Tee-Object -FilePath reports/psscriptanalyzer.txt

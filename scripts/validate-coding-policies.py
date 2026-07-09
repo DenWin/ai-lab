@@ -112,8 +112,8 @@ def validate_workflow_bash_policy(errors: list[str]) -> None:
                 lookahead_end = min(len(lines), idx + 6)
                 before = lines[lookback_start:idx]
                 after = lines[idx:lookahead_end]
-                has_set_plus_e = any(re.search(r"^\s*set\s+\+e\b", l) for l in before)
-                has_pipe_status_check = any("PIPESTATUS[" in l for l in after)
+                has_set_plus_e = any(re.search(r"^\s*set\s+\+e\b", line_text) for line_text in before)
+                has_pipe_status_check = any("PIPESTATUS[" in line_text for line_text in after)
                 if not has_set_plus_e:
                     errors.append(
                         f"{path.relative_to(REPO_ROOT)}:{idx}: "

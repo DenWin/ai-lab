@@ -7,5 +7,5 @@ if (-not $repoRoot) {
 }
 
 git config core.hooksPath .githooks
-Write-Host "Configured core.hooksPath to .githooks"
-Write-Host "Git hooks are now active for this clone."
+Write-Output "Configured core.hooksPath to .githooks"
+Write-Output "Git hooks are now active for this clone."
