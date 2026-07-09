@@ -1,0 +1,95 @@
+name: powershell-quality
+
+on:
+  pull_request:
+    paths:
+      - "**/*.ps1"
+      - "**/*.psm1"
+      - "**/*.psd1"
+      - "coding-policies/polyglot-policy.yaml"
+      - "coding-policies/languages/powershell-policy.yaml"
+      - ".github/workflows/powershell-quality.yml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.ps1"
+      - "**/*.psm1"
+      - "**/*.psd1"
+      - "coding-policies/polyglot-policy.yaml"
+      - "coding-policies/languages/powershell-policy.yaml"
+      - ".github/workflows/powershell-quality.yml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  powershell-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find PowerShell files
+        id: psfiles
+        shell: bash
+        run: |
+          set +e
+          count=$(git ls-files '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' | wc -l | tr -d ' ')
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Failed to enumerate PowerShell files (rc=$rc)."
+            exit "$rc"
+          fi
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Run PSScriptAnalyzer
+        if: steps.psfiles.outputs.count != '0'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path reports | Out-Null
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
+          $files = @(
+            git ls-files '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**'
+          )
+          $results = Invoke-ScriptAnalyzer -Path $files -Severity Warning,Error
+          if ($results) {
+            $formatted = $results | Format-Table -AutoSize | Out-String
+            $formatted | Tee-Object -FilePath reports/psscriptanalyzer.txt
+            throw "PSScriptAnalyzer found issues."
+          } else {
+            "No PSScriptAnalyzer issues found." | Out-File -FilePath reports/psscriptanalyzer.txt -Encoding utf8
+            Write-Host "No PSScriptAnalyzer issues found."
+          }
+
+      - name: Upload PowerShell reports
+        if: always() && steps.psfiles.outputs.count != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: powershell-quality-reports
+          path: reports
+
+      - name: Add job summary
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          {
+            echo "## powershell-quality summary"
+            echo "- PowerShell files found: ${{ steps.psfiles.outputs.count }}"
+            echo "- Analyzer report: reports/psscriptanalyzer.txt"
+          } >> "$GITHUB_STEP_SUMMARY"
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Failed to write powershell-quality job summary (rc=$rc)."
+            exit "$rc"
+          fi

@@ -1,0 +1,112 @@
+name: python-quality
+
+on:
+  pull_request:
+    paths:
+      - "**/*.py"
+      - "pyproject.toml"
+      - "ruff.toml"
+      - "setup.cfg"
+      - ".github/workflows/python-quality.yml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.py"
+      - "pyproject.toml"
+      - "ruff.toml"
+      - "setup.cfg"
+      - ".github/workflows/python-quality.yml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  python-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Find Python files
+        id: pyfiles
+        shell: bash
+        run: |
+          set +e
+          count=$(git ls-files '*.py' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' | wc -l | tr -d ' ')
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Failed to enumerate Python files (rc=$rc)."
+            exit "$rc"
+          fi
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Ruff check
+        if: steps.pyfiles.outputs.count != '0'
+        shell: bash
+        run: |
+          mkdir -p reports
+          files=$(git ls-files '*.py' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          set +e
+          echo "$files" | xargs -I{} ruff check "{}" | tee reports/ruff-check.txt
+          rc=${PIPESTATUS[1]}
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::ruff check failed (rc=$rc). See reports/ruff-check.txt."
+            exit "$rc"
+          fi
+
+      - name: Ruff format check
+        if: steps.pyfiles.outputs.count != '0'
+        shell: bash
+        run: |
+          mkdir -p reports
+          files=$(git ls-files '*.py' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          set +e
+          echo "$files" | xargs -I{} ruff format --check "{}" | tee reports/ruff-format-check.txt
+          rc=${PIPESTATUS[1]}
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::ruff format check failed (rc=$rc). See reports/ruff-format-check.txt."
+            exit "$rc"
+          fi
+
+      - name: Upload python reports
+        if: always() && steps.pyfiles.outputs.count != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-quality-reports
+          path: reports
+
+      - name: Add job summary
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          {
+            echo "## python-quality summary"
+            echo "- Python files found: ${{ steps.pyfiles.outputs.count }}"
+            echo "- Ruff check report: reports/ruff-check.txt"
+            echo "- Ruff format report: reports/ruff-format-check.txt"
+          } >> "$GITHUB_STEP_SUMMARY"
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Failed to write python-quality job summary (rc=$rc)."
+            exit "$rc"
+          fi

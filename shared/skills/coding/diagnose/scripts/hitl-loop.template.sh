@@ -12,8 +12,6 @@
 #
 # At the end, captured values are printed as KEY=VALUE for the agent to parse.
 
-set -euo pipefail
-
 step() {
   printf '\n>>> %s\n' "$1"
   read -r -p "    [Enter when done] " _

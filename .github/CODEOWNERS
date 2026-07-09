@@ -1,0 +1,13 @@
+# Default owner for all paths.
+* @DenWin
+
+# Sensitive policy and automation areas.
+.github/workflows/* @DenWin
+.github/CODEOWNERS @DenWin
+.github/pull_request_template.md @DenWin
+AGENTS.md @DenWin
+coding-policies/** @DenWin
+shared/skills/** @DenWin
+scripts/** @DenWin
+instructions/** @DenWin
+anthropic/** @DenWin

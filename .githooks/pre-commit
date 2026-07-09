@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+staged="$(git diff --cached --name-only --diff-filter=ACMRTUXB)"
+if [ -z "${staged}" ]; then
+  exit 0
+fi
+
+failed=0
+
+# Keep scratch artifacts "as-is" for linting; safety scans still run in CI.
+filtered="$(echo "${staged}" | grep -Ev '^\.scratch/[^/]+/(artefacts|artifacts)/' || true)"
+if [ -z "${filtered}" ]; then
+  exit 0
+fi
+
+need_tool() {
+  local tool="$1"
+  local hint="$2"
+  if ! command -v "${tool}" >/dev/null 2>&1; then
+    echo "Missing required tool: ${tool}. ${hint}" >&2
+    exit 1
+  fi
+}
+
+matches() {
+  local pattern="$1"
+  echo "${filtered}" | grep -E "${pattern}" >/dev/null 2>&1
+}
+
+if matches '\.(yml|yaml)$'; then
+  need_tool "yamllint" "Install with: pip install yamllint"
+  echo "${filtered}" | grep -E '\.(yml|yaml)$' | xargs -I{} yamllint -s "{}" || failed=1
+fi
+
+if matches '\.json$'; then
+  need_tool "python" "Install Python 3 and add it to PATH."
+  echo "${filtered}" | grep -E '\.json$' | xargs -I{} python -m json.tool "{}" >/dev/null || failed=1
+fi
+
+if matches '\.md$'; then
+  need_tool "markdownlint" "Install with: npm install -g markdownlint-cli"
+  echo "${filtered}" | grep -E '\.md$' | xargs -I{} markdownlint "{}" --config .markdownlint.json || failed=1
+fi
+
+if matches '\.(adoc|asciidoc)$'; then
+  need_tool "asciidoctor" "Install with: gem install asciidoctor asciidoctor-lint"
+  need_tool "asciidoctor-lint" "Install with: gem install asciidoctor asciidoctor-lint"
+  echo "${filtered}" | grep -E '\.(adoc|asciidoc)$' | xargs -I{} asciidoctor -o /dev/null "{}" || failed=1
+  echo "${filtered}" | grep -E '\.(adoc|asciidoc)$' | xargs -I{} asciidoctor-lint "{}" || failed=1
+fi
+
+if matches '\.py$'; then
+  need_tool "ruff" "Install with: pip install ruff"
+  py_files="$(echo "${filtered}" | grep -E '\.py$' || true)"
+  if [ -n "${py_files}" ]; then
+    echo "${py_files}" | xargs -I{} ruff check "{}" || failed=1
+    echo "${py_files}" | xargs -I{} ruff format --check "{}" || failed=1
+  fi
+fi
+
+if matches '\.(ps1|psm1|psd1)$'; then
+  need_tool "pwsh" "Install PowerShell 7 and PSScriptAnalyzer module."
+  ps_files="$(echo "${filtered}" | grep -E '\.(ps1|psm1|psd1)$' || true)"
+  if [ -n "${ps_files}" ]; then
+    while IFS= read -r file; do
+      pwsh -NoProfile -Command "
+        Set-PSRepository PSGallery -InstallationPolicy Trusted
+        if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
+        }
+        \$results = Invoke-ScriptAnalyzer -Path '${file}' -Severity Warning,Error
+        if (\$results) {
+          \$results | Format-Table -AutoSize
+          throw 'PSScriptAnalyzer found issues in ${file}.'
+        }
+      " || failed=1
+    done <<< "${ps_files}"
+  fi
+fi
+
+if matches '\.sh$'; then
+  need_tool "shellcheck" "Install shellcheck and add it to PATH."
+  echo "${filtered}" | grep -E '\.sh$' | xargs -I{} shellcheck "{}" || failed=1
+fi
+
+if matches '\.js$'; then
+  need_tool "node" "Install Node.js and add it to PATH."
+  echo "${filtered}" | grep -E '\.js$' | xargs -I{} node --check "{}" || failed=1
+fi
+
+exit $failed

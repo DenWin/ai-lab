@@ -1,0 +1,209 @@
+name: config-lint
+
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+      - "**/*.adoc"
+      - "**/*.asciidoc"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "**/*.json"
+      - ".github/workflows/config-lint.yml"
+      - ".markdownlint.json"
+      - ".asciidoctor-lint.yml"
+      - "AGENTS.md"
+      - "docs/**"
+      - "instructions/**"
+      - "shared/**"
+      - "anthropic/**"
+      - "scripts/**"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.md"
+      - "**/*.adoc"
+      - "**/*.asciidoc"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "**/*.json"
+      - ".github/workflows/config-lint.yml"
+      - ".markdownlint.json"
+      - ".asciidoctor-lint.yml"
+      - "AGENTS.md"
+      - "docs/**"
+      - "instructions/**"
+      - "shared/**"
+      - "anthropic/**"
+      - "scripts/**"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  config-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (for markdownlint)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Ruby (for AsciiDoc lint)
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9
+        with:
+          ruby-version: "3.3"
+
+      - name: Install linters
+        run: |
+          python -m pip install --upgrade pip
+          pip install yamllint
+          npm install -g markdownlint-cli
+          gem install asciidoctor asciidoctor-lint
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Lint YAML
+        shell: bash
+        run: |
+          mkdir -p reports
+          set +e
+          yamllint -s . -i ".scratch/*/artefacts/**" -i ".scratch/*/artifacts/**" | tee reports/yamllint.txt
+          rc=${PIPESTATUS[0]}
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::yamllint failed (rc=$rc). See reports/yamllint.txt."
+            exit "$rc"
+          fi
+
+      - name: Validate JSON syntax
+        shell: bash
+        run: |
+          mkdir -p reports
+          files=$(git ls-files '*.json' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          if [ -n "${files}" ]; then
+            set +e
+            echo "$files" | xargs -I{} python -m json.tool "{}" > /dev/null
+            rc=${PIPESTATUS[1]}
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::JSON syntax validation failed (rc=$rc)."
+              exit "$rc"
+            fi
+            printf "Validated %s JSON files.\n" "$(echo "$files" | wc -l | tr -d ' ')" > reports/jsonlint.txt
+          else
+            echo "No JSON files found." > reports/jsonlint.txt
+          fi
+
+      - name: Lint Markdown
+        shell: bash
+        run: |
+          mkdir -p reports
+          files=$(git ls-files '*.md' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          if [ -n "${files}" ]; then
+            set +e
+            echo "$files" | xargs -I{} markdownlint "{}" --config .markdownlint.json | tee reports/markdownlint.txt
+            rc=${PIPESTATUS[1]}
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::markdownlint failed (rc=$rc). See reports/markdownlint.txt."
+              exit "$rc"
+            fi
+          else
+            echo "No Markdown files found." > reports/markdownlint.txt
+          fi
+
+      - name: Lint AsciiDoc
+        shell: bash
+        run: |
+          mkdir -p reports
+          files=$(git ls-files '*.adoc' '*.asciidoc' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          if [ -n "${files}" ]; then
+            # asciidoctor validates document structure/parsing
+            set +e
+            echo "$files" | xargs -I{} asciidoctor -o /dev/null "{}" | tee reports/asciidoctor-parse.txt
+            parse_rc=${PIPESTATUS[1]}
+            if [ "$parse_rc" -ne 0 ]; then
+              echo "::error::asciidoctor parse validation failed (rc=$parse_rc). See reports/asciidoctor-parse.txt."
+              exit "$parse_rc"
+            fi
+            # asciidoctor-lint style/lint checks
+            echo "$files" | xargs -I{} asciidoctor-lint "{}" | tee reports/asciidoctor-lint.txt
+            lint_rc=${PIPESTATUS[1]}
+            if [ "$lint_rc" -ne 0 ]; then
+              echo "::error::asciidoctor-lint failed (rc=$lint_rc). See reports/asciidoctor-lint.txt."
+              exit "$lint_rc"
+            fi
+          else
+            echo "No AsciiDoc files found." > reports/asciidoctor-lint.txt
+          fi
+
+      - name: Lint shell scripts
+        shell: bash
+        run: |
+          mkdir -p reports
+          files=$(git ls-files '*.sh' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          if [ -n "${files}" ]; then
+            set +e
+            echo "$files" | xargs -I{} shellcheck "{}" | tee reports/shellcheck.txt
+            rc=${PIPESTATUS[1]}
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::shellcheck failed (rc=$rc). See reports/shellcheck.txt."
+              exit "$rc"
+            fi
+          else
+            echo "No shell scripts found." > reports/shellcheck.txt
+          fi
+
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          mkdir -p reports
+          files=$(git ls-files '*.js' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          if [ -n "${files}" ]; then
+            set +e
+            echo "$files" | xargs -I{} node --check "{}" | tee reports/js-syntax.txt
+            rc=${PIPESTATUS[1]}
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::JavaScript syntax validation failed (rc=$rc). See reports/js-syntax.txt."
+              exit "$rc"
+            fi
+          else
+            echo "No JavaScript files found." > reports/js-syntax.txt
+          fi
+
+      - name: Upload lint reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-lint-reports
+          path: reports
+
+      - name: Add job summary
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          {
+            echo "## config-lint summary"
+            echo "- YAML: see reports/yamllint.txt"
+            echo "- JSON: see reports/jsonlint.txt"
+            echo "- Markdown: see reports/markdownlint.txt"
+            echo "- AsciiDoc: see reports/asciidoctor-lint.txt"
+            echo "- Shell: see reports/shellcheck.txt"
+            echo "- JavaScript syntax: see reports/js-syntax.txt"
+          } >> "$GITHUB_STEP_SUMMARY"
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Failed to write config-lint job summary (rc=$rc)."
+            exit "$rc"
+          fi

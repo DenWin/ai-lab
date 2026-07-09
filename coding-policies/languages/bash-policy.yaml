@@ -1,0 +1,31 @@
+BASH_POLICY:
+  version: "1.0"
+  depends_on: "../polyglot-policy.yaml"
+
+  RULES:
+    - id: no_global_strict_mode
+      type: coding
+      rule: "Do NOT apply global strict mode ('set -e', 'set -u', or 'set -euo pipefail') as a blanket; replace blanket strict mode with robust explicit failure handling (prefer `set +e` in guarded blocks, capture exit codes, branch expected non-zero paths, and return non-zero for true failures). For pipelines (especially with `tee`), capture and check `PIPESTATUS`."
+      rationale: "This rule is not 'remove strictness'; it is 'replace brittle implicit failure semantics with deterministic explicit failure semantics' so scripts stay safe without breaking legitimate control flow."
+    - id: feature_detection
+      type: coding
+      rule: "Prefer capability checks over brittle version checks when practical."
+      rationale: "Feature checks survive distro/version variance better than version gates and avoid false confidence from mismatched patch-level behavior."
+    - id: read_safely
+      type: coding
+      rule: "For line input, use: while IFS= read -r line; do ...; done."
+      rationale: "Preserves whitespace and backslashes and avoids common input corruption bugs."
+    - id: array_iteration
+      type: coding
+      rule: 'Iterate arrays with quoted "${arr[@]}" only.'
+      rationale: "Prevents element splitting/globbing bugs during iteration."
+
+  FORBIDDEN:
+    - id: no_ls_parsing_loop
+      type: coding
+      rule: "Do not iterate files with for f in $(ls ...)."
+      rationale: "ls parsing breaks on spaces/newlines and is not machine-safe."
+    - id: no_backticks
+      type: coding
+      rule: "Do not use backticks for command substitution."
+      rationale: "$(...) is safer, nestable, and less error-prone."

@@ -1,0 +1,12 @@
+# Keep lint practical for docs-heavy repos.
+# Adjust as your conventions mature.
+rules:
+  # Example style-focused defaults
+  line-length:
+    enabled: false
+
+  trailing-whitespace:
+    enabled: true
+
+  final-newline:
+    enabled: true

@@ -1,0 +1,150 @@
+name: policy-check
+
+on:
+  pull_request:
+    paths:
+      - "**/*.ps1"
+      - "**/*.psm1"
+      - "**/*.psd1"
+      - "**/*.py"
+      - "**/*.sh"
+      - "**/*.md"
+      - "**/*.adoc"
+      - "**/*.asciidoc"
+      - "**/*.json"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - ".github/**"
+      - "AGENTS.md"
+      - "coding-policies/**"
+      - "shared/**"
+      - "instructions/**"
+      - "anthropic/**"
+      - "scripts/**"
+      - "docs/**"
+      - ".scratch/**"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.ps1"
+      - "**/*.psm1"
+      - "**/*.psd1"
+      - "**/*.py"
+      - "**/*.sh"
+      - "**/*.md"
+      - "**/*.adoc"
+      - "**/*.asciidoc"
+      - "**/*.json"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - ".github/**"
+      - "AGENTS.md"
+      - "coding-policies/**"
+      - "shared/**"
+      - "instructions/**"
+      - "anthropic/**"
+      - "scripts/**"
+      - "docs/**"
+      - ".scratch/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  policy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enforce repo guardrails
+        shell: bash
+        run: |
+          set +e
+          mkdir -p reports
+
+          # 1) Block obvious hardcoded secrets in tracked repo files.
+          files=$(git ls-files)
+          list_rc=$?
+          if [ "$list_rc" -ne 0 ]; then
+            echo "::error::Failed to list tracked files for guardrails (rc=$list_rc)."
+            exit "$list_rc"
+          fi
+          if [ -n "${files}" ] && echo "${files}" | xargs -I{} grep -IInE "(api[_-]?key|secret|token|password)\s*[:=]\s*['\"][^'\"]+['\"]" "{}"; then
+            echo "Potential hardcoded secret detected."
+            exit 1
+          fi
+
+          # 2) Ensure PowerShell scripts use strict mode, excluding scratch artifacts.
+          ps_files=$(git ls-files '*.ps1' '*.psm1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          ps_list_rc=$?
+          if [ "$ps_list_rc" -ne 0 ]; then
+            echo "::error::Failed to enumerate PowerShell files for guardrails (rc=$ps_list_rc)."
+            exit "$ps_list_rc"
+          fi
+          if [ -n "${ps_files}" ]; then
+            missing=$(echo "${ps_files}" | xargs -I{} sh -c "grep -q 'Set-StrictMode' '{}' || echo '{}'")
+            if [ -n "${missing}" ]; then
+              echo "Missing Set-StrictMode in:"
+              echo "${missing}"
+              exit 1
+            fi
+          fi
+
+          echo "Policy checks passed." > reports/policy-check.txt
+
+      - name: Setup Python (policy validation)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate coding policies
+        shell: bash
+        run: |
+          set +e
+          python -m pip install --upgrade pip
+          pip_up_rc=$?
+          if [ "$pip_up_rc" -ne 0 ]; then
+            echo "::error::pip upgrade failed (rc=$pip_up_rc)."
+            exit "$pip_up_rc"
+          fi
+          pip install pyyaml
+          pyyaml_rc=$?
+          if [ "$pyyaml_rc" -ne 0 ]; then
+            echo "::error::pyyaml installation failed (rc=$pyyaml_rc)."
+            exit "$pyyaml_rc"
+          fi
+          python scripts/validate-coding-policies.py
+          policy_rc=$?
+          if [ "$policy_rc" -ne 0 ]; then
+            echo "::error::coding policy validation failed (rc=$policy_rc)."
+            exit "$policy_rc"
+          fi
+
+      - name: Upload policy reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-check-reports
+          path: reports
+
+      - name: Add job summary
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          {
+            echo "## policy-check summary"
+            echo "- Guardrail log: reports/policy-check.txt"
+            echo "- Coding policy log: reports/coding-policy-check.txt"
+          } >> "$GITHUB_STEP_SUMMARY"
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Failed to write policy-check job summary (rc=$rc)."
+            exit "$rc"
+          fi
