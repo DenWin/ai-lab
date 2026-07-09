@@ -37,13 +37,33 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine diff range
+        id: diff
+        shell: bash
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          if [ -z "${base}" ]; then
+            base="${{ github.event.before }}"
+          fi
+          if [ -z "${head}" ]; then
+            head="${{ github.sha }}"
+          fi
+          if [ -z "${base}" ] || [ "${base}" = "0000000000000000000000000000000000000000" ]; then
+            base=$(git rev-list --max-parents=0 "${head}" | tail -n 1)
+          fi
+          echo "base=${base}" >> "$GITHUB_OUTPUT"
+          echo "head=${head}" >> "$GITHUB_OUTPUT"
 
       - name: Find PowerShell files
         id: psfiles
         shell: bash
         run: |
           set +e
-          count=$(git ls-files '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' | wc -l | tr -d ' ')
+          count=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' | wc -l | tr -d ' ')
           rc=${PIPESTATUS[0]}
           if [ "$rc" -ne 0 ]; then
             echo "::error::Failed to enumerate PowerShell files (rc=$rc)."
@@ -58,7 +78,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path reports | Out-Null
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
-          $files = git ls-files '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' |
+          $files = git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' |
             Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
           $results = foreach ($file in $files) {
             Invoke-ScriptAnalyzer -Path $file -Severity Warning,Error

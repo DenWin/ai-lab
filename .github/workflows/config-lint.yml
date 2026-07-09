@@ -55,6 +55,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine diff range
+        id: diff
+        shell: bash
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          if [ -z "${base}" ]; then
+            base="${{ github.event.before }}"
+          fi
+          if [ -z "${head}" ]; then
+            head="${{ github.sha }}"
+          fi
+          if [ -z "${base}" ] || [ "${base}" = "0000000000000000000000000000000000000000" ]; then
+            base=$(git rev-list --max-parents=0 "${head}" | tail -n 1)
+          fi
+          echo "base=${base}" >> "$GITHUB_OUTPUT"
+          echo "head=${head}" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node (for markdownlint)
         uses: actions/setup-node@v4
@@ -79,19 +99,24 @@ jobs:
         shell: bash
         run: |
           mkdir -p reports
-          set +e
-          yamllint -s . 2>&1 | tee reports/yamllint.txt
-          rc=${PIPESTATUS[0]}
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::yamllint failed (rc=$rc). See reports/yamllint.txt."
-            exit "$rc"
+          files=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.yml' '*.yaml' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          if [ -n "${files}" ]; then
+            set +e
+            echo "$files" | xargs -I{} yamllint -s "{}" 2>&1 | tee reports/yamllint.txt
+            rc=${PIPESTATUS[1]}
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::yamllint failed (rc=$rc). See reports/yamllint.txt."
+              exit "$rc"
+            fi
+          else
+            echo "No YAML files found." > reports/yamllint.txt
           fi
 
       - name: Validate JSON syntax
         shell: bash
         run: |
           mkdir -p reports
-          files=$(git ls-files '*.json' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          files=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.json' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             set +e
             echo "$files" | xargs -I{} python -m json.tool "{}" > /dev/null
@@ -109,7 +134,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p reports
-          files=$(git ls-files '*.md' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          files=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.md' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             set +e
             echo "$files" | xargs -I{} markdownlint "{}" --config .markdownlint.json 2>&1 | tee reports/markdownlint.txt
@@ -126,7 +151,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p reports
-          files=$(git ls-files '*.adoc' '*.asciidoc' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          files=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.adoc' '*.asciidoc' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             # asciidoctor validates document structure/parsing
             set +e
@@ -145,7 +170,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p reports
-          files=$(git ls-files '*.sh' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          files=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.sh' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             set +e
             echo "$files" | xargs -I{} shellcheck "{}" 2>&1 | tee reports/shellcheck.txt
@@ -162,7 +187,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p reports
-          files=$(git ls-files '*.js' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
+          files=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.js' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             set +e
             echo "$files" | xargs -I{} node --check "{}" 2>&1 | tee reports/js-syntax.txt
