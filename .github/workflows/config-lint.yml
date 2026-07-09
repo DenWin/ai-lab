@@ -80,7 +80,7 @@ jobs:
         run: |
           mkdir -p reports
           set +e
-          yamllint -s . | tee reports/yamllint.txt
+          yamllint -s . 2>&1 | tee reports/yamllint.txt
           rc=${PIPESTATUS[0]}
           if [ "$rc" -ne 0 ]; then
             echo "::error::yamllint failed (rc=$rc). See reports/yamllint.txt."
@@ -112,7 +112,7 @@ jobs:
           files=$(git ls-files '*.md' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             set +e
-            echo "$files" | xargs -I{} markdownlint "{}" --config .markdownlint.json | tee reports/markdownlint.txt
+            echo "$files" | xargs -I{} markdownlint "{}" --config .markdownlint.json 2>&1 | tee reports/markdownlint.txt
             rc=${PIPESTATUS[1]}
             if [ "$rc" -ne 0 ]; then
               echo "::error::markdownlint failed (rc=$rc). See reports/markdownlint.txt."
@@ -130,7 +130,7 @@ jobs:
           if [ -n "${files}" ]; then
             # asciidoctor validates document structure/parsing
             set +e
-            echo "$files" | xargs -I{} asciidoctor -o /dev/null "{}" | tee reports/asciidoctor-parse.txt
+            echo "$files" | xargs -I{} asciidoctor -o /dev/null "{}" 2>&1 | tee reports/asciidoctor-parse.txt
             parse_rc=${PIPESTATUS[1]}
             if [ "$parse_rc" -ne 0 ]; then
               echo "::error::asciidoctor parse validation failed (rc=$parse_rc). See reports/asciidoctor-parse.txt."
@@ -148,7 +148,7 @@ jobs:
           files=$(git ls-files '*.sh' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             set +e
-            echo "$files" | xargs -I{} shellcheck "{}" | tee reports/shellcheck.txt
+            echo "$files" | xargs -I{} shellcheck "{}" 2>&1 | tee reports/shellcheck.txt
             rc=${PIPESTATUS[1]}
             if [ "$rc" -ne 0 ]; then
               echo "::error::shellcheck failed (rc=$rc). See reports/shellcheck.txt."
@@ -165,7 +165,7 @@ jobs:
           files=$(git ls-files '*.js' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           if [ -n "${files}" ]; then
             set +e
-            echo "$files" | xargs -I{} node --check "{}" | tee reports/js-syntax.txt
+            echo "$files" | xargs -I{} node --check "{}" 2>&1 | tee reports/js-syntax.txt
             rc=${PIPESTATUS[1]}
             if [ "$rc" -ne 0 ]; then
               echo "::error::JavaScript syntax validation failed (rc=$rc). See reports/js-syntax.txt."

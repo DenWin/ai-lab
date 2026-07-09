@@ -66,7 +66,7 @@ jobs:
           mkdir -p reports
           files=$(git ls-files '*.py' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           set +e
-          echo "$files" | xargs -I{} ruff check "{}" | tee reports/ruff-check.txt
+          echo "$files" | xargs -I{} ruff check "{}" 2>&1 | tee reports/ruff-check.txt
           rc=${PIPESTATUS[1]}
           if [ "$rc" -ne 0 ]; then
             echo "::error::ruff check failed (rc=$rc). See reports/ruff-check.txt."
@@ -80,7 +80,7 @@ jobs:
           mkdir -p reports
           files=$(git ls-files '*.py' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
           set +e
-          echo "$files" | xargs -I{} ruff format --check "{}" | tee reports/ruff-format-check.txt
+          echo "$files" | xargs -I{} ruff format --check "{}" 2>&1 | tee reports/ruff-format-check.txt
           rc=${PIPESTATUS[1]}
           if [ "$rc" -ne 0 ]; then
             echo "::error::ruff format check failed (rc=$rc). See reports/ruff-format-check.txt."
