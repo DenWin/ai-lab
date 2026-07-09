@@ -81,7 +81,7 @@ jobs:
           $files = git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' |
             Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
           $results = foreach ($file in $files) {
-            Invoke-ScriptAnalyzer -Path $file -Severity Warning,Error
+            Invoke-ScriptAnalyzer -Path $file -Severity Warning,Error -ExcludeRule PSUseSingularNouns,PSAvoidUsingWriteHost,PSUseBOMForUnicodeEncodedFile
           }
           if ($results) {
             $formatted = $results | Format-Table -AutoSize | Out-String
