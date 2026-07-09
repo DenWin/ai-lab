@@ -26,7 +26,7 @@ in a future run."** Don't assume it's true — test it.
 
 ## Notes / open questions (for triage, not to action now)
 
-- What counts as "significant"? Threshold by depth, file count, or role (e.g. `skills/`, `shared/`,
+- What counts as "significant"? Threshold by depth, file count, or role (e.g. `ai-artifacts/skills/`, `shared/`,
   `.claude/`, `src/`, `docs/`) — not every leaf folder.
 - `AGENTS.md` as the chosen filename (cross-tool convention) vs. reusing the repo's existing
   README/CLAUDE.md pattern — pick one and be consistent.

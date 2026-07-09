@@ -8,15 +8,15 @@ Origin: fable (Claude Fable 5 repo review, 2026-07-04)
 Facts are stated in more than one place and have started to drift. Concrete instances found in the
 2026-07-04 review:
 
-1. [shared/skills/README.md](../../shared/skills/README.md) — group table lists only
+1. [ai-artifacts/skills/shared/README.md](../../ai-artifacts/skills/shared/README.md) — group table lists only
    `coding`/`session`/`setup` (missing `planning`), and body text still says `skills/<group>/…`
-   paths (actual: `shared/skills/`).
+   paths (actual: `ai-artifacts/skills/shared/`).
 2. [testing-methodologies-foundation/PRD.md](../testing-methodologies-foundation/PRD.md) — still says
    "**Blocked:** this repo is not yet a git repository"; `git init` was done 2026-06-04 per
    [repo-scaffold](../repo-scaffold/PRD.md). The blocker is stale and the issue it points at is
    unblocked.
 3. "Not the same file (common confusion)" exists near-verbatim in both
-   [instructions/README.md](../../instructions/README.md) and
+   [ai-artifacts/instructions/README.md](../../ai-artifacts/instructions/README.md) and
    [docs/repo-layout.adoc](../../docs/repo-layout.adoc) — two owners for one fact.
 4. [docs/harnesses/claude-code.md](../../docs/harnesses/claude-code.md) lacks the per-section
    confidence table and validation smoke tests that [copilot.md](../../docs/harnesses/copilot.md)
@@ -38,7 +38,7 @@ _Proposed — refine in triage:_
 
 ## Progress (2026-07-04 — all items closed)
 
-1. ✅ skills README: paths corrected to `shared/skills/…`, `planning` group added to the group
+1. ✅ skills README: paths corrected to `ai-artifacts/skills/shared/…`, `planning` group added to the group
    table, `scratch`/`scratch-plan` added to the origin map as local originals.
 2. ✅ Stale git-init blocker removed from the testing PRD **and** its issue 01 (in-place dated fix —
    consistent with the repo's existing `[RESOLVED …]` house style; the immutability question was
@@ -47,7 +47,7 @@ _Proposed — refine in triage:_
 3. ✅ "Not the same file" now owned solely by repo-layout.adoc; instructions/README links to it.
    The dedupe surfaced and resolved a real contradiction: instructions/README said the future
    CLAUDE.md repo copy goes to `instructions/claude-code/`, canon is
-   `anthropic/claude-code/instructions/` — one more instance of why single-owner matters.
+   `instructions/anthropic/claude-code/` — one more instance of why single-owner matters.
    (Same stale path still appears as a *proposal* inside `incorporate-global-claude-setup`'s
    PRD table — left for that scratch to fix when it builds.)
 4. ✅ claude-code.md gained §11 evidence metadata (per-section confidence, verified 2026-07-04 from

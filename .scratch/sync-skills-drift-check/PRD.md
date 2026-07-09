@@ -7,7 +7,7 @@ Origin: fable (Claude Fable 5 repo review, 2026-07-04)
 
 The SessionStart hook runs `sync-skills.ps1 -IfMissing`, which by design never refreshes a skill
 whose target already exists. There is no drift detection between the source of truth
-(`shared/skills/`) and the generated mirror (`.claude/commands/`). Consequence: after editing a
+(`ai-artifacts/skills/shared/`) and the generated mirror (`.claude/commands/`). Consequence: after editing a
 skill, the stale-mirror failure mode is the **default** path — the hook silently skips, and the
 session keeps invoking the old version until someone remembers to re-run the sync manually.
 

@@ -14,7 +14,7 @@ skill — the actual update is triaged and done later (by a human or an agent pi
 item), preserving local customizations under review rather than auto-overwriting.
 
 - No local clone of any upstream is needed, and it works for **any** `upstream-repo`.
-- Source of truth is `shared/skills/<group>/<name>/SKILL.md`; generated mirrors are rebuilt by
+- Source of truth is `ai-artifacts/skills/shared/<group>/<name>/SKILL.md`; generated mirrors are rebuilt by
   `scripts/sync-skills.ps1`.
 - Skills whose `METADATA.md` has no `upstream-commit` are skipped.
 
@@ -33,7 +33,7 @@ changes count, not just `SKILL.md`) and compare to `upstream-commit`.
 $ErrorActionPreference = 'Stop'
 
 $repoRoot   = Resolve-Path (Join-Path $PSScriptRoot '..\..\..')
-$skillsRoot = Join-Path $repoRoot 'shared\skills'
+$skillsRoot = Join-Path $repoRoot 'ai-artifacts\skills\shared'
 
 $results = foreach ($metadata in Get-ChildItem $skillsRoot -Recurse -Filter 'METADATA.md') {
     $content = Get-Content $metadata.FullName -Raw
@@ -92,8 +92,8 @@ Upstream has moved past the commit this skill was last reconciled to.
 ## Action
 
 Review the upstream changes and merge the worthwhile ones into
-`shared/skills/<group>/<name>/SKILL.md` (and resources), preserving local customizations, then bump
-`upstream-commit` in `shared/skills/<group>/<name>/METADATA.md` and re-run
+`ai-artifacts/skills/shared/<group>/<name>/SKILL.md` (and resources), preserving local customizations, then bump
+`upstream-commit` in `ai-artifacts/skills/shared/<group>/<name>/METADATA.md` and re-run
 `scripts/sync-skills.ps1`. See "Appendix: actioning an update" in the check-skill-updates skill for
 the three-way procedure.
 ```
@@ -114,7 +114,7 @@ $owner = '<owner>'; $repo = '<repo>'
 $upstreamPath = '<upstream-path>'; $storedCommit = '<stored-commit>'
 
 $baseline    = (& gh api -H 'Accept: application/vnd.github.raw' "repos/$owner/$repo/contents/$upstreamPath`?ref=$storedCommit")
-$installed   = Get-Content '<repo>\shared\skills\<group>\<name>\SKILL.md' -Raw
+$installed   = Get-Content '<repo>\ai-artifacts\skills\shared\<group>\<name>\SKILL.md' -Raw
 $newUpstream = (& gh api -H 'Accept: application/vnd.github.raw' "repos/$owner/$repo/contents/$upstreamPath")
 ```
 

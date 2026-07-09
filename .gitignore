@@ -1,3 +1,20 @@
+# OS-generated files
+.DS_Store
+.DS_Store?
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100/
+.Trashes/
+._*
+
+# Editor / IDE metadata
+/.idea/
+*.iml
+*.swp
+*.swo
+*~
+
 # VS Code Local History extension
 /.history/
 
@@ -9,11 +26,11 @@
 /.temp/*
 !/.temp/.gitkeep
 
-# Generated Claude Code skill mirror. Source of truth is shared/skills/.
+# Generated Claude Code skill mirror. Source of truth is ai-artifacts/skills/shared/.
 # Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
 /.claude/commands/*
 
-# Generated Codex skill mirror. Source of truth is shared/skills/.
+# Generated Codex skill mirror. Source of truth is ai-artifacts/skills/shared/.
 # Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
 /.agents/skills/*
 

@@ -2,7 +2,7 @@
 
 Status: ready-for-human
 
-The claude.ai profile is now repo-managed (`instructions/claude-ai/profile.md`). The **Claude Code**
+The claude.ai profile is now repo-managed (`ai-artifacts/instructions/anthropic/claude-ai/profile.md`). The **Claude Code**
 global setup (`~/.claude/`) is the other half and is not yet in the repo. Bring the relevant parts
 in as harness-scoped source-of-truth copies, the same way skills are managed.
 
@@ -28,8 +28,8 @@ instead of being maintained twice.
 
 | Source (`~/.claude/`)                   | Proposed repo location                              | Notes                                                                |
 | --------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
-| `CLAUDE.md` (global instructions)       | `instructions/claude-code/CLAUDE.md`                | Harness-scoped; overlaps with the profile                            |
-| `settings.json` (permissions/hooks/MCP) | `settings/claude-code/settings.json` *(or similar)* | Decide: global settings vs project settings; secrets stay out        |
+| `CLAUDE.md` (global instructions)       | `ai-artifacts/instructions/claude-code/CLAUDE.md`                | Harness-scoped; overlaps with the profile                            |
+| `settings.json` (permissions/hooks/MCP) | `ai-artifacts/mcp-config/claude-code/settings.json` *(or similar)* | Decide: global settings vs project settings; secrets stay out        |
 | Global skills (`commands/`)             | already handled by the skills work                  | Prior-version globals captured in `import-upstream-skills` artifacts |
 
 ## Pending content to fold in when hoisting `CLAUDE.md`
@@ -62,7 +62,7 @@ waiting to be merged into it when it lands:
 ## Out of Scope
 
 - Credentials, chat history, sessions — never copied or versioned.
-- The claude.ai profile itself (already in `instructions/claude-ai/`).
+- The claude.ai profile itself (already in `ai-artifacts/instructions/anthropic/claude-ai/`).
 - The full instructions/settings taxonomy (vendor tag, other harnesses) — repo-scaffold handoff.
 
 ## Further Notes

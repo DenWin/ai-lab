@@ -26,7 +26,7 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 ## 2. Storage split
 
 - **Repo-scoped (committed):** `CLAUDE.md`, `AGENTS.md`, `.claude/settings.json`,
-  `shared/skills/<group>/<name>/`, `.mcp.json`
+  `ai-artifacts/skills/shared/<group>/<name>/`, `.mcp.json`
 - **Machine-local (gitignored):** `CLAUDE.local.md`, `.claude/settings.local.json`,
   `~/.claude/projects/<project>/memory/` (auto-memory)
 - **User-global (all repos):** `~/.claude/CLAUDE.md`, `~/.claude/settings.json`,
@@ -56,7 +56,7 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 | Subagents                                          | **Native** — `agents/*.md`                                                                              |
 | Hooks                                              | **Native** — `settings.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, etc.)                        |
 | MCP servers                                        | **Native** — `.mcp.json` (project), `~/.claude.json` (global), Desktop `claude_desktop_config.json`     |
-| Output styles                                      | **Native** — `output-styles/` (referenced in settings)                                                  |
+| Output styles                                      | **Native** — `ai-artifacts/output-styles/` (referenced in settings)                                                  |
 | Settings / permissions                             | **Native** — `settings.json` / `settings.local.json`                                                    |
 | Plugins / bundles                                  | **Native** — `.claude-plugin/plugin.json` wrapping skills/agents/hooks/mcp                              |
 

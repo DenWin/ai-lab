@@ -1,19 +1,21 @@
 = Repository Layout
 
-How artifacts (skills, instructions, settings, MCP defs, hooks, output styles, agents) are
-organized in this repo, and how they reach each harness.
+How AI-assisted-work artifacts (skills, instructions, hooks, MCP defs,
+output styles, agents, prompts, plugins, and similar harness assets) are organized in this
+repo, and how they reach each harness.
 
-== Organizing principle: specificity, keyed by who an artifact is for
+== Organizing principle: artifact type first, then specificity
 
-Every artifact lives at the *most general* level it is valid for. More-specific levels *override*
-more-general ones (most-specific wins).
+Top-level folders are keyed by *artifact type*. Beneath each artifact type, content is keyed by the
+most general scope it is valid for. More-specific levels *override* more-general ones
+(most-specific wins).
 
 [cols="1,3a",options="header"]
 |===
 | Tier | Meaning
 
 | `shared/`
-| Vendor- and harness-agnostic. Runs anywhere. The default home — almost everything lives here.
+| Vendor- and harness-agnostic. Runs anywhere. The default scope within an artifact-type folder.
 
 | `<vendor>/`
 | Specific to one vendor (e.g. `anthropic/`, `openai/`), but cross-harness within it.
@@ -22,25 +24,28 @@ more-general ones (most-specific wins).
 | Specific to one harness (e.g. `anthropic/claude-code/`, `anthropic/claude-ai/`).
 |===
 
-`shared/skills/coding/tdd` is the cross-everything copy; `anthropic/claude-code/skills/tdd` (if it
-existed) would shadow it *only* when running in Claude Code.
+`ai-artifacts/skills/shared/coding/tdd` is the cross-everything copy; `ai-artifacts/skills/anthropic/claude-code/coding/tdd`
+(if it existed) would shadow it *only* when running in Claude Code.
 
 == Top-level layout
 
 ....
 ai-lab/
 ├── AGENTS.md                 # root shared cross-harness instructions (cross-vendor)
-├── shared/                   # vendor- & harness-agnostic artifacts
-│   └── skills/               # ← all current skills (intent-grouped: coding/ documents/ planning/ session/ setup/)
-├── anthropic/
-│   ├── claude-ai/
-│   │   ├── instructions/profile.md          # account-wide profile (live: Settings → Instructions for Claude)
-│   │   └── projects/<project-name>/         # per-project: project-instruction.md + knowledge files
-│   ├── claude-code/                         # settings/ mcp/ hooks/ output-styles/ instructions/ skills/  (on demand)
-│   └── claude-desktop/                      # (on demand)
-├── openai/                   # codex, etc. — added via the cross-harness review loop
+├── ai-artifacts/
+│   ├── skills/
+│   │   └── shared/           # all current skills (intent-grouped: coding/ documents/ planning/ session/ setup/)
+│   ├── instructions/
+│   │   └── anthropic/
+│   │       └── claude-ai/
+│   │           └── profile.md # account-wide profile (live: Settings → Instructions for Claude)
+│   ├── hooks/                # hook source definitions, when added; scoped as shared/<vendor>/<harness>
+│   ├── mcp-config/           # MCP server/config definitions
+│   ├── output-styles/        # reusable output-format or style guidance assets
+│   ├── agents/               # agent/subagent definitions and related assets
+│   ├── prompts/              # reusable prompts and prompt packs
+│   └── plugins/              # plugin packaging and support material
 ├── docs/                     # cross-cutting docs: harnesses/, reviews/, findings/, repo-layout.adoc…
-├── eval/                     # vendor-agnostic: INSTRUCTION-EVAL.md + the eval harness
 ├── scripts/                  # sync-skills.ps1, …
 ├── .scratch/                 # local-markdown issue tracker (PRDs + issues; committed)
 ├── .temp/                    # gitignored transient local working files; keep only .gitkeep
@@ -48,19 +53,38 @@ ai-lab/
 └── .agents/skills/           # GENERATED Codex skill mirror — never edit; rebuild via sync-skills.ps1
 ....
 
-Folders are created *on demand* — a `<vendor>/<harness>/<artifact-type>/` directory is materialized
-only when it has content, not pre-scaffolded empty.
+Folders are created *on demand* — a `<artifact-type>/<vendor>/<harness>/` directory is materialized
+only when it has content, not pre-scaffolded empty. The top-level artifact folders may contain a
+small `README.md` before they have scoped content so the taxonomy is visible in fresh clones.
 
 == Per-artifact-type keying
 
-* *skills* — usually `shared/` (they are methodology, not vendor-specific). Drop to `<vendor>/` or
-  `<vendor>/<harness>/` only for a skill that genuinely is specific. Skills follow the
+* *skills* — usually `ai-artifacts/skills/shared/` (they are methodology, not vendor-specific). Drop to
+  `ai-artifacts/skills/<vendor>/` or `ai-artifacts/skills/<vendor>/<harness>/` only for a skill that genuinely is specific.
+  Skills follow the
   *capability contract* (detect shell/filesystem → full path; else conversational fallback) so one
   copy works across harnesses — avoid per-harness copies unless behavior truly diverges. Each skill's
   runtime instructions live in `SKILL.md`; catalog/provenance facts live in sibling `METADATA.md`
   using the repo's OKF convention.
-* *instructions, settings, mcp, hooks, output-styles* — almost always `<vendor>/<harness>/`. A Claude
-  Code `settings.json` is meaningless to Codex; the claude-ai profile is not the Claude Code `CLAUDE.md`.
+* *instructions* — `ai-artifacts/instructions/<vendor>/<harness>/`. This folder holds repo copies of loaded
+  instruction surfaces: claude.ai profile instructions, Claude Code `CLAUDE.md`, project
+  instructions, global instruction files, Copilot instruction files, Codex instruction notes, and
+  equivalent base instruction documents for other agents.
+* *hooks* — `ai-artifacts/hooks/<vendor>/<harness>/` when hook definitions become source artifacts. Hook-related
+  skills still live under `ai-artifacts/skills/` unless the artifact itself is a hook config or script.
+* *MCP config* — `ai-artifacts/mcp-config/shared/` or `ai-artifacts/mcp-config/<vendor>/<harness>/` for MCP server manifests,
+  connection definitions, and adjacent support files.
+* *output styles* — `ai-artifacts/output-styles/shared/` or `ai-artifacts/output-styles/<vendor>/<harness>/` for reusable
+  formatting/style assets that shape model output.
+* *agents* — `ai-artifacts/agents/shared/` or `ai-artifacts/agents/<vendor>/<harness>/` for agent/subagent definitions and
+  related resources.
+* *prompts* — `ai-artifacts/prompts/shared/` or `ai-artifacts/prompts/<vendor>/<harness>/` for reusable prompts or prompt packs
+  that are not instruction surfaces.
+* *plugins* — `ai-artifacts/plugins/shared/` or `ai-artifacts/plugins/<vendor>/<harness>/` for plugin
+  packaging, manifests, and durable support files.
+* *future artifact families* — when a new class of AI repo asset appears often enough to deserve a
+  stable home, add a top-level artifact-type folder with the same `shared/`, `<vendor>/`,
+  `<vendor>/<harness>/` scoping rather than creating another catch-all bucket.
 * *temporary working files* — `.temp/` at repo root. Its contents are gitignored and may be deleted at
   any time. Promote only durable, redacted, intentionally committed support material to
   `.scratch/<feature>/artifacts/`.
@@ -72,10 +96,10 @@ deploys from here to there.
 
 * *Default.* `scripts/sync-skills.ps1` refreshes every generated skill mirror supported by this repo.
   Use `-Target Claude` or `-Target Codex` only when intentionally limiting the sync.
-* *Claude Code.* The Claude target mirrors `shared/skills/<group>/<name>/` to the
+* *Claude Code.* The Claude target mirrors `ai-artifacts/skills/shared/<group>/<name>/` to the
   Claude Code command tree (`.claude/commands/<group>/<name>.md` + resources). The generated tree is
   gitignored; rebuild after editing a skill.
-* *Codex.* The Codex target mirrors `shared/skills/<group>/<name>/` to Codex's
+* *Codex.* The Codex target mirrors `ai-artifacts/skills/shared/<group>/<name>/` to Codex's
   repo-local skill tree (`.agents/skills/<group>-<name>/SKILL.md` + resources). The generated tree is
   gitignored; rebuild after editing a skill.
 * *Other harnesses (Copilot, ChatGPT, …)* — added incrementally through the cross-harness review loop
@@ -90,12 +114,20 @@ with a harness-owned file format. The current concrete use is per-skill `METADAT
 
 == Not the same file (common confusion)
 
-* `anthropic/claude-ai/instructions/profile.md` — the claude.ai account profile. Read by the Chat
+* `ai-artifacts/instructions/anthropic/claude-ai/profile.md` — the claude.ai account profile. Read by the Chat
   harness only. Live version: Settings → Instructions for Claude (paste the whole file).
 * `~/.claude/CLAUDE.md` — Claude Code's global instructions. Different harness, different file. Expected
   to *overlap* with the profile (same behavioral preferences) but authored and loaded separately.
-  Repo copy, when added, lives at `anthropic/claude-code/instructions/CLAUDE.md`.
+  Repo copy, when added, lives at `ai-artifacts/instructions/anthropic/claude-code/CLAUDE.md`.
 * `AGENTS.md` (repo root) — the cross-harness shared layer read by Claude Code, Codex, and Copilot.
   The place for anything that should be identical across harnesses.
+
+== Format choices
+
+* `docs/repo-layout.adoc` stays AsciiDoc because it is the canonical layout reference and benefits
+  from AsciiDoc tables, examples, and richer cross-reference structure.
+* `AGENTS.md` stays Markdown because harnesses load it directly as an instruction file; portability
+  matters more than richer document syntax.
+* Artifact READMEs stay Markdown unless they need AsciiDoc-only structure.
 
 See `docs/harnesses/<harness>.md` for each harness's instruction surfaces and load model.

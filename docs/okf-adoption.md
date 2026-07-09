@@ -15,7 +15,7 @@ bodies.
 
 ## Applied Now
 
-- `shared/skills/<group>/<name>/METADATA.md` is the OKF-style concept document for each skill.
+- `ai-artifacts/skills/shared/<group>/<name>/METADATA.md` is the OKF-style concept document for each skill.
 - Skill provenance (`upstream-*`) lives in `METADATA.md`, not in runtime `SKILL.md` frontmatter.
 - Runtime `SKILL.md` frontmatter keeps harness-facing fields such as `name`, `description`,
   `argument-hint`, `disable-model-invocation`, and `version`.

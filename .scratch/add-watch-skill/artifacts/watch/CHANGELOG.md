@@ -24,7 +24,7 @@ All notable changes to `/watch` are documented here.
 
 ### Fixed
 - Added `commands/watch.md` shim so `/watch` is callable when installed as a Claude Code plugin. Without it, the plugin loaded but the skill wasn't exposed as a slash command.
-- `scripts/build-skill.sh` now strips `commands/` from the claude.ai `.skill` bundle alongside `hooks/` and `.claude-plugin/`.
+- `scripts/build-skill.sh` now strips `commands/` from the claude.ai `.skill` bundle alongside `ai-artifacts/hooks/` and `.claude-plugin/`.
 
 ## [0.1.0] — 2026-04-24
 

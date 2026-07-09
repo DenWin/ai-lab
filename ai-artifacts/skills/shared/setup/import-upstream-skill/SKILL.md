@@ -10,7 +10,7 @@ A repeatable, **source-agnostic** process for bringing an outside skill into thi
 concrete driver was the mattpocock skills repo, but nothing here is specific to it — it works for any
 `upstream-repo` (or a local/global copy with no repo).
 
-The single source of truth is `shared/skills/<group>/<name>/SKILL.md` (+ bundled resources). The
+The single source of truth is `ai-artifacts/skills/shared/<group>/<name>/SKILL.md` (+ bundled resources). The
 `.claude/commands/` copies are a generated mirror — never edit them; rebuild with
 `pwsh scripts/sync-skills.ps1`. This skill **imports and adapts**; the sibling
 `/setup:check-skill-updates` is what later detects staleness against upstream.
@@ -32,7 +32,7 @@ The single source of truth is `shared/skills/<group>/<name>/SKILL.md` (+ bundled
    (conversational/process skills) · `setup` (repo tooling and skill maintenance). Create a new group
    only when none fit — a new group is a deliberate decision, not a default.
 
-3. **Place it** at `shared/skills/<group>/<name>/SKILL.md` with resources alongside. Runtime
+3. **Place it** at `ai-artifacts/skills/shared/<group>/<name>/SKILL.md` with resources alongside. Runtime
    frontmatter should contain only harness-relevant fields plus `version: <semver>`; start new local
    imports at `version: 1.0.0` unless they are explicitly experimental (`0.x.y`). Use `git mv`-style
    care if you are relocating something already tracked.
@@ -70,7 +70,7 @@ The single source of truth is `shared/skills/<group>/<name>/SKILL.md` (+ bundled
 6. **Verify** the result with `/session:write-a-skill` (structure, description triggers, progressive
    disclosure, references one level deep).
 
-7. **Update the origin map** — add a row to [shared/skills/README.md](../../README.md) (skill, group,
+7. **Update the origin map** — add a row to [ai-artifacts/skills/shared/README.md](../../README.md) (skill, group,
    upstream, notes) so the human-readable summary matches `METADATA.md`.
 
 8. **Rebuild the mirror:** `pwsh scripts/sync-skills.ps1`, then confirm `/group:name` resolves. If the
@@ -84,5 +84,5 @@ The single source of truth is `shared/skills/<group>/<name>/SKILL.md` (+ bundled
 - [ ] `METADATA.md` has OKF `type` frontmatter and correct `upstream-*` fields — or fork/local-original rules applied (no dangling `upstream-commit`)
 - [ ] Capability-contract adaptation done; bash → pwsh; intent + local customizations preserved
 - [ ] Verified via `/session:write-a-skill`
-- [ ] `shared/skills/README.md` origin map updated
+- [ ] `ai-artifacts/skills/shared/README.md` origin map updated
 - [ ] `scripts/sync-skills.ps1` run; `/group:name` resolves

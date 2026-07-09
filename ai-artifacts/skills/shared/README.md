@@ -6,8 +6,8 @@ the `/setup:check-skill-updates` skill, and anything about that process lives in
 
 ## Layout
 
-`shared/skills/<group>/<name>/SKILL.md` (+ bundled runtime resources) is the **single source of
-truth** for skill behavior. `shared/skills/<group>/<name>/METADATA.md` is the OKF-style catalog and
+`ai-artifacts/skills/shared/<group>/<name>/SKILL.md` (+ bundled runtime resources) is the **single source of
+truth** for skill behavior. `ai-artifacts/skills/shared/<group>/<name>/METADATA.md` is the OKF-style catalog and
 provenance file for that skill. The invocable copies under generated harness mirrors are build
 artifacts — never edit them; edit the source and re-run:
 
@@ -25,7 +25,7 @@ Both generated trees are gitignored; never edit either directly. Use
 `pwsh scripts/sync-skills.ps1 -Target Claude` or `-Target Codex` only when you intentionally want a
 single mirror.
 
-Namespacing follows the directory: `shared/skills/coding/tdd/` → `/coding:tdd`.
+Namespacing follows the directory: `ai-artifacts/skills/shared/coding/tdd/` → `/coding:tdd`.
 
 | Group       | Intent                                                            |
 | ----------- | ----------------------------------------------------------------- |

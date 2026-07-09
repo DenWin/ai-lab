@@ -32,9 +32,10 @@ For repo-specific working conventions, `AGENTS.md` is the active project contrac
 ## 2. Storage split
 
 - **Repo-scoped (committed):** `AGENTS.md`, `docs/harnesses/*.md`, shared skills under
-  `shared/skills/`, repo scripts, and any future Codex-specific repo config under `openai/codex/`
-  if added.
-- **Repo-scoped generated (gitignored):** `.agents/skills/`, rebuilt from `shared/skills/` by
+  `ai-artifacts/skills/shared/`, repo scripts, and any future Codex-specific repo config under
+  `ai-artifacts/mcp-config/openai/codex/`, `ai-artifacts/plugins/openai/codex/`, or instruction
+  files under `ai-artifacts/instructions/openai/codex/` if added.
+- **Repo-scoped generated (gitignored):** `.agents/skills/`, rebuilt from `ai-artifacts/skills/shared/` by
   `pwsh scripts/sync-skills.ps1`.
 - **Machine-local:** Codex home and plugin/skill caches under the user's profile, local approval
   state, local settings, and sandbox/session metadata. These are not committed to this repo.
@@ -45,16 +46,14 @@ For repo-specific working conventions, `AGENTS.md` is the active project contrac
 
 ## 3. Disk locations
 
-| Tier                             | Windows                                                  | macOS / Linux                               |
-| -------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
-| Repo root                        | `C:\GIT\DenWin\ai-lab` in this session                   | `<repo>`                                    |
-| Repo instruction file            | `<repo>\AGENTS.md`                                       | `<repo>/AGENTS.md`                          |
-| Repo Codex skill mirror          | `<repo>\.agents\skills\`                                 | `<repo>/.agents/skills/`                    |
-| Suggested Codex repo config home | `<repo>\openai\codex\` if needed                         | `<repo>/openai/codex/` if needed            |
-| User Codex home                  | `%USERPROFILE%\.codex\` observed from skill/plugin paths | `~/.codex/` presumed (`?`)                  |
-| User skills                      | `%USERPROFILE%\.codex\skills\` observed                  | `~/.codex/skills/` presumed (`?`)           |
-| Plugin cache                     | `%USERPROFILE%\.codex\plugins\cache\` observed           | `~/.codex/plugins/cache/` presumed (`?`)    |
-| Temporary writable area          | harness-provided temp directory (`:tmpdir`)              | harness-provided temp directory (`:tmpdir`) |
+- Repo root: Windows `C:\GIT\DenWin\ai-lab` in this session; macOS / Linux `<repo>`
+- Repo instruction file: Windows `<repo>\AGENTS.md`; macOS / Linux `<repo>/AGENTS.md`
+- Repo Codex skill mirror: Windows `<repo>\.agents\skills\`; macOS / Linux `<repo>/.agents/skills/`
+- Suggested Codex repo config home: Windows `<repo>\ai-artifacts\mcp-config\openai\codex\` if needed; macOS / Linux `<repo>/ai-artifacts/mcp-config/openai/codex/` if needed
+- User Codex home: Windows `%USERPROFILE%\.codex\` observed from skill/plugin paths; macOS / Linux `~/.codex/` presumed (`?`)
+- User skills: Windows `%USERPROFILE%\.codex\skills\` observed; macOS / Linux `~/.codex/skills/` presumed (`?`)
+- Plugin cache: Windows `%USERPROFILE%\.codex\plugins\cache\` observed; macOS / Linux `~/.codex/plugins/cache/` presumed (`?`)
+- Temporary writable area: harness-provided temp directory (`:tmpdir`) on both platforms
 
 Exact Codex settings filenames and all OS-specific config paths are `?` unless observed in a live
 session or documented by the active runtime.
@@ -267,7 +266,7 @@ Operational expectations:
 ## 16. Operational edge cases
 
 - **Generated vs source artifacts:** In this repo, `.claude/commands/` and `.agents/skills/` are
-  generated mirrors. Edit `shared/skills/<group>/<name>/`, then rebuild with
+  generated mirrors. Edit `ai-artifacts/skills/shared/<group>/<name>/`, then rebuild with
   `pwsh scripts/sync-skills.ps1`; never edit the mirrors directly.
 - **Bootstrap requirements:** A fresh clone or sandbox may not have generated mirrors or local
   harness settings. Use repo scripts and docs to materialize generated state instead of inventing it.
@@ -299,8 +298,9 @@ Operational expectations:
 | Hooks                               | No verified Codex equivalent                          | Use scripts, CI, or harness-specific automation elsewhere                 |
 | Plugins/connectors                  | Harness-specific packaging                            | Underlying tools may map to MCP or app connectors                         |
 
-**Design principle:** keep shared repo facts in `AGENTS.md`; keep Codex-specific behavior in a
-future `openai/codex/` subtree only when it cannot be expressed portably.
+**Design principle:** keep shared repo facts in `AGENTS.md`; keep Codex-specific behavior in
+`ai-artifacts/instructions/openai/codex/`, `ai-artifacts/mcp-config/openai/codex/`, or
+`ai-artifacts/plugins/openai/codex/` only when it cannot be expressed portably.
 
 ---
 

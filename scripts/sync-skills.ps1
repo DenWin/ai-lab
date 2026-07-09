@@ -4,7 +4,7 @@
     Sync generated skill mirrors for supported local harnesses.
 
 .DESCRIPTION
-    shared/skills/ is the source of truth. This script refreshes generated harness mirrors:
+    ai-artifacts/skills/shared/ is the source of truth. This script refreshes generated harness mirrors:
 
       Claude Code -> .claude/commands/
       Codex       -> .agents/skills/
@@ -32,7 +32,7 @@
 
 .EXAMPLE
     pwsh scripts/sync-skills.ps1
-    Rebuild Claude Code and Codex skill mirrors from shared/skills.
+    Rebuild Claude Code and Codex skill mirrors from ai-artifacts/skills/shared.
 
 .EXAMPLE
     pwsh scripts/sync-skills.ps1 -Check
@@ -66,8 +66,8 @@ if ($Scope -eq 'User' -and $Target -ne 'Claude') {
     throw "-Scope User applies only to Claude. Use -Target Claude -Scope User."
 }
 
-$skillsRoot = Join-Path $RepoRoot 'shared\skills'
-if (-not (Test-Path $skillsRoot)) { throw "shared/skills root not found at: $skillsRoot" }
+$skillsRoot = Join-Path $RepoRoot 'ai-artifacts\skills\shared'
+if (-not (Test-Path $skillsRoot)) { throw "ai-artifacts/skills/shared root not found at: $skillsRoot" }
 $script:LastSyncExitCode = 0
 
 function Get-SkillDirectories {
@@ -178,7 +178,7 @@ function ConvertTo-CodexSkill {
         $(if ($version) { "version: $(ConvertTo-YamlScalar $version)" })
         '---'
         ''
-        "<!-- GENERATED from $SourceRelPath. Edit shared/skills and run scripts/sync-skills.ps1. -->"
+        "<!-- GENERATED from $SourceRelPath. Edit ai-artifacts/skills/shared and run scripts/sync-skills.ps1. -->"
         ''
     ) -join "`n"
 
@@ -195,7 +195,7 @@ function Get-CodexCompatibilityWarnings {
         'claude-path'     = '\.claude|CLAUDE_PROJECT_DIR'
         'claude-command'  = '(^|\s)/[A-Za-z0-9_-]+:[A-Za-z0-9_-]+|\$ARGUMENTS|!command'
         'codex-case'      = '\.Codex'
-        'old-skills-root' = 'skills/<group>/<name>|(?<!shared/)skills/'
+        'old-skills-root' = 'shared/skills|shared\\skills|skills/<group>/<name>'
     }
 
     foreach ($entry in $patterns.GetEnumerator()) {
@@ -335,7 +335,7 @@ function Sync-CodexSkills {
         }
 
         $sourceSkill = Join-Path $dir.FullName 'SKILL.md'
-        $sourceRelPath = "shared/skills/$group/$sourceName/SKILL.md"
+        $sourceRelPath = "ai-artifacts/skills/shared/$group/$sourceName/SKILL.md"
         $sourceDocument = Get-Content $sourceSkill -Raw
         $expectedSkill = ConvertTo-CodexSkill -SourceDocument $sourceDocument -CodexName $codexName -SourceRelPath $sourceRelPath
         foreach ($warning in Get-CodexCompatibilityWarnings -Document $sourceDocument -SkillName $codexName) {

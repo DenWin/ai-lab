@@ -11,7 +11,7 @@ from the PRD against the actual bodies.
 
 ## Acceptance criteria
 
-- [ ] Every skill under `skills/` listed with its classification (conversational / agentic)
+- [ ] Every skill under `ai-artifacts/skills/` listed with its classification (conversational / agentic)
 - [ ] Per skill: concrete list of mechanics to change (or "none")
 - [ ] Any additional carried-over content bugs noted (beyond the two already known)
 

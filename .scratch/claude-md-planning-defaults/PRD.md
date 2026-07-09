@@ -4,7 +4,7 @@ Status: needs-triage
 
 Quick capture — iron out in scratch-planning, don't action yet. These are **general, cross-project**
 rules (not ai-lab specific). Home: the global Claude Code instructions (`~/.claude/CLAUDE.md`; repo
-copy will live at `anthropic/claude-code/instructions/CLAUDE.md` per `incorporate-global-claude-setup`).
+copy will live at `instructions/anthropic/claude-code/CLAUDE.md` per `incorporate-global-claude-setup`).
 
 Rough rules to encode (not final):
 

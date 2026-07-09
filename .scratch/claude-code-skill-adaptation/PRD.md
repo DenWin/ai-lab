@@ -2,7 +2,7 @@
 
 Status: ready-for-human
 
-The skills under `skills/` were imported from their claude.ai (chat) versions, organized by intent,
+The skills under `ai-artifacts/skills/` were imported from their claude.ai (chat) versions, organized by intent,
 and given upstream provenance. They are **invocable** but still **claude.ai-flavored**. This feature
 covers the second pass: making each one behave as a native Claude Code skill.
 
@@ -59,7 +59,7 @@ skill's intent or its local customizations — only its mechanics.
   Windows/pwsh substitutions all stay. This pass changes mechanics, not content decisions.
 - **`check-skill-updates` rework:** extract the inline PowerShell into `scripts/check-skill-updates.ps1`
   (staleness check + three-way-merge helper), and have the SKILL.md drive it. Keep the path-detection
-  already pointed at this repo's `skills/` layout.
+  already pointed at this repo's `ai-artifacts/skills/` layout.
 
 ## Testing Decisions
 
@@ -76,13 +76,13 @@ skill's intent or its local customizations — only its mechanics.
 - The **setup/init skill design** decision (monolithic vs self-configuring vs config-in-AGENTS.md vs
   minimal tracker-only) — handoff decision #5. Resolve with a `grill-me` pass in its own session; it
   shapes any future agentic skills but isn't required to adapt the existing eight.
-- Adopting **new** authors' skills, or new skills not already in `skills/`.
+- Adopting **new** authors' skills, or new skills not already in `ai-artifacts/skills/`.
 - The wider `ai-lab` repo scaffold (AGENTS.md, compatibility matrix, instructions/, mcp/, etc.) —
   tracked by the repo-structure handoff, not this feature.
 
 ## Scope note — which skills this covers
 
-The eight skills imported in pass 1 live under `skills/`. Of these, the **engineering-origin** ones —
+The eight skills imported in pass 1 live under `ai-artifacts/skills/`. Of these, the **engineering-origin** ones —
 `tdd`, `prototype` (mattpocock `engineering/`), and `grill-me` (the `productivity/grill-me` +
 `engineering/grill-with-docs` merge) — are adapted **here** (issues 01, 03, 05). The *additional*
 mattpocock engineering/misc skills not yet imported are a separate feature:

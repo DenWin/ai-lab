@@ -132,7 +132,7 @@ window; keep `.github/copilot-instructions.md` and `AGENTS.md` concise.
 
 ## 10. Capability limits / notable absences
 
-- No native skill format — skills from `shared/skills/` are not auto-mirrored to a
+- No native skill format — skills from `ai-artifacts/skills/shared/` are not auto-mirrored to a
   Copilot CLI-specific directory (the sync script targets `.claude/commands/` and
   `.agents/skills/` only); expose skills via extensions or prompt files
 - No declarative hook system comparable to Claude Code's `settings.json` hooks
@@ -253,7 +253,7 @@ edge cases where multiple equally-valid approaches exist.
   `rename_branch` before the first commit (using `git branch -m` bypasses the session tracking).
 - **Generated mirrors:** `.claude/commands/` (Claude Code skill mirror) and `.agents/skills/`
   (Codex skill mirror) are gitignored and rebuilt by `pwsh scripts/sync-skills.ps1`. Run the sync
-  script after any change to `shared/skills/`; these mirrors may not exist on a fresh clone.
+  script after any change to `ai-artifacts/skills/shared/`; these mirrors may not exist on a fresh clone.
 - **Session state persistence:** session state folder (`~/.copilot/session-state/<session-id>/`)
   persists across checkpoints but is **not** committed. Promote only durable, redacted material
   to the repo.
@@ -281,7 +281,7 @@ edge cases where multiple equally-valid approaches exist.
 | `.github/extensions/`             | Copilot CLI-specific                | Extension format is not shared with other harnesses                           |
 | `.github/prompts/*.prompt.md`     | Copilot family (shared format)      | VS Code Copilot invokes as slash commands; Copilot CLI references by path     |
 | MCP (workspace/user config)       | Cross-vendor                        | Config syntax and location differ per harness; protocol is vendor-neutral     |
-| `shared/skills/`                  | Source of truth                     | Mirrored to `.claude/commands/` (Claude Code) and `.agents/skills/` (Codex); not auto-mirrored for Copilot CLI |
+| `ai-artifacts/skills/shared/`                  | Source of truth                     | Mirrored to `.claude/commands/` (Claude Code) and `.agents/skills/` (Codex); not auto-mirrored for Copilot CLI |
 | Scheduled workflows               | Copilot CLI-specific                | No equivalent native primitive in other harnesses                             |
 | Canvas panels                     | Copilot CLI-specific                | No equivalent in other harnesses                                              |
 
