@@ -38,9 +38,10 @@ publishing" never ran:
 ## Progress (2026-07-04)
 
 - ✅ **Item 1 — attribution:** both upstreams verified MIT.
-  Attribution files were created in a dedicated third-party folder at the time, with license copies for vendored sources
-  (`mattpocock-skills.LICENSE`, `bradautomates-claude-video.LICENSE`) plus a notice map. Exact
-  upstream checkpoints for skills live in each skill's `METADATA.md`, not in summary docs.
+  Historical note: a dedicated third-party attribution folder existed when this item was first
+  completed, but those repo copies are no longer tracked after later cleanup. The remaining durable
+  provenance in this repo is each imported skill's `METADATA.md`; this entry should not be read as a
+  current inventory of committed license-copy files.
 - ✅ **Item 3 — free hardening wins:** secret scanning, push protection, and Dependabot alerts
   enabled via `gh api`. **Branch protection deliberately NOT enabled** — it would block the current
   direct-to-main workflow; decide it together with [[gated-work-prd-issue-approval]] (which wants a
