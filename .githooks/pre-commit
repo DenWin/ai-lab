@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 staged="$(git diff --cached --name-only --diff-filter=ACMRTUXB)"
 if [ -z "${staged}" ]; then
