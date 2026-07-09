@@ -1,0 +1,67 @@
+POLYGLOT_POLICY:
+  version: "1.0"
+  audience: "automated code-generation systems"
+  scope: "cross-language baseline constraints for coding and tdd behavior"
+
+  RULES:
+    - id: data_vs_diagnostics
+      type: coding
+      rule: "Keep machine-consumable output separate from diagnostics/logging."
+      rationale: "Mixed output breaks automation and makes failures hard to parse reliably."
+    - id: collect_then_report
+      type: coding
+      rule: "Collect and validate data first, then emit final report output in a dedicated reporting phase."
+      rationale: "Prevents partial noisy output streams and improves reliability of long-running scripts."
+      exception: "Incremental output is allowed for explicit progress/status reporting."
+    - id: explicit_error_policy
+      type: coding
+      rule: "Fail intentionally with clear non-success signaling for required failures."
+      rationale: "Silent or ambiguous failures create unreliable automation behavior."
+    - id: fail_on_warning_default
+      type: coding
+      rule: "In automated runs, treat warnings as failures by default."
+      rationale: "Warning-tolerant defaults hide real defects and let quality regressions accumulate unnoticed."
+      exception: "A warning may be downgraded only with an explicit, documented rule-level override and rationale."
+    - id: defer_projection_for_broad_analysis
+      type: coding
+      rule: "For broad analysis flows, defer projection/filtering until reporting boundaries."
+      rationale: "Premature projection discards fields needed for later correlation, validation, and diagnostics across object-centric pipelines."
+      exception: "Early projection is allowed when the output contract explicitly requires a constrained shape."
+    - id: safe_destructive_ops
+      type: security
+      rule: "Validate targets before destructive operations and require explicit intent."
+      rationale: "Reduces accidental data loss and enforces safer execution boundaries."
+    - id: secure_composition
+      type: security
+      rule: "Do not execute untrusted user input as code, shell command, or query fragment."
+      rationale: "Prevents command/query injection paths across languages and runtimes."
+    - id: behavior_boundary
+      type: tdd
+      rule: "Test observable behavior at public boundaries."
+      rationale: "Boundary-focused tests survive refactoring and remain specification-oriented."
+    - id: real_red
+      type: tdd
+      rule: "In TDD, red means a failing assertion after test execution, not setup/import failure."
+      rationale: "Only assertion failures validate that tests can detect incorrect behavior."
+    - id: vertical_slicing
+      type: tdd
+      rule: "Prefer one failing test -> minimal implementation -> refactor."
+      rationale: "Small loops reduce design drift and improve incremental correctness."
+    - id: separate_structure_behavior
+      type: tdd
+      rule: "Do not mix behavior change and structural refactor in one step."
+      rationale: "Separation preserves debugging clarity and rollback safety."
+
+  FORBIDDEN:
+    - id: no_assertionless_tests
+      type: tdd
+      rule: "Do not produce tests with no assertions."
+      rationale: "Assertionless tests provide no behavioral verification."
+    - id: no_bulk_test_then_implement
+      type: tdd
+      rule: "Do not write all tests up front and then bulk implement."
+      rationale: "Breaks tight feedback loops that TDD depends on."
+    - id: no_coverage_as_primary_goal
+      type: tdd
+      rule: "Do not use coverage percentage as the primary quality goal."
+      rationale: "Coverage can be high while behavioral confidence remains low."

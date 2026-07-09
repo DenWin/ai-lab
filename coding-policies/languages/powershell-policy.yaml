@@ -1,0 +1,15 @@
+POWERSHELL_POLICY:
+  version: "1.0"
+  depends_on: "../polyglot-policy.yaml"
+
+  RULES:
+    - id: stream_specific_assertions
+      type: tdd
+      rule: "When testing scripts, assert Output stream behavior separately from Warning/Verbose/Error streams."
+      rationale: "PowerShell streams are semantically distinct and should be validated independently."
+
+  FORBIDDEN:
+    - id: no_format_table_logic
+      type: coding
+      rule: "Do not parse Format-Table/Format-List output for program logic."
+      rationale: "Formatted output is for humans; object data is the reliable automation surface."

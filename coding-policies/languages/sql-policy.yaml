@@ -1,0 +1,31 @@
+SQL_POLICY:
+  version: "1.0"
+  depends_on: "../polyglot-policy.yaml"
+
+  RULES:
+    - id: explicit_order_assertions
+      type: tdd
+      rule: "Assert row ordering explicitly when consumer behavior depends on order."
+      rationale: "Prevents accidental dependence on implicit SQL result ordering."
+    - id: deterministic_seeded_data
+      type: tdd
+      rule: "Use seeded deterministic datasets and reset state between tests."
+      rationale: "Ensures repeatable behavior and prevents order-dependent flakiness."
+    - id: nolock_requires_justification
+      type: security
+      rule: "NOLOCK hints are allowed only with an explicit rationale documented in code comments."
+      rationale: "NOLOCK is not inherently wrong, but tradeoffs (dirty/phantom reads) must be intentional."
+    - id: precompute_expression_arguments
+      type: coding
+      rule: "Precompute function expressions into variables before passing arguments to EXEC/RAISERROR style statements."
+      rationale: "Prevents syntax/runtime issues in procedural SQL where inline expressions are not accepted in those positions."
+
+  FORBIDDEN:
+    - id: no_implicit_row_order
+      type: coding
+      rule: "Do not rely on implicit row order when order matters."
+      rationale: "ORDER BY is required for deterministic sequencing."
+    - id: no_state_leakage
+      type: tdd
+      rule: "Do not allow test state leakage that makes tests depend on execution order."
+      rationale: "State-coupled tests are brittle and fail under parallel or shuffled execution."

@@ -1,0 +1,15 @@
+DOTNET_POLICY:
+  version: "1.0"
+  depends_on: "../polyglot-policy.yaml"
+
+  RULES:
+    - id: async_behavior_contract
+      type: tdd
+      rule: "For async code, prefer async tests and assert cancellation/timeout behavior when part of the contract."
+      rationale: "Async behavior bugs often appear only under real await/cancellation paths."
+
+  FORBIDDEN:
+    - id: no_result_wait_blocking
+      type: coding
+      rule: "Do not block async code with .Result/.Wait() unless an interoperability constraint requires it."
+      rationale: "Blocking can cause deadlocks and hides real async scheduling behavior."

@@ -1,0 +1,33 @@
+USAGE_POLICY:
+  version: "1.0"
+  purpose: "Routing for policy loading"
+
+  RULES:
+    - id: directional_not_absolute
+      rule: "Policies are directional, not absolute. Defensible exceptions are allowed."
+      rationale: "Avoids rigid harness behavior while still providing consistent steering."
+    - id: keep_only_behavior_shaping_constraints
+      rule: "Keep only constraints that materially change default generation behavior."
+      rationale: "Removes advice that would already happen in a competent cold generation."
+    - id: load_order
+      rule: "Load polyglot baseline first, then one resolved language policy if it exists."
+      rationale: "Keeps baseline behavior consistent while allowing optional specialization."
+    - id: specificity_precedence
+      rule: "When policies conflict, the more specific policy wins."
+      rationale: "Prevents broad defaults from overriding context-specific constraints."
+
+  LANGUAGE_POLICY_RESOLUTION:
+    - id: direct_language_policy
+      rule: "Resolve <language> to ./languages/<language>-policy.yaml when present."
+      rationale: "Uses exact overlays where available."
+    - id: jvm_family_policy
+      rule: "Map java|kotlin|scala|groovy to ./languages/jvm-policy.yaml."
+      rationale: "One representative policy covers shared JVM concurrency/testing pitfalls."
+    - id: dotnet_family_policy
+      rule: "Map csharp|fsharp|vbnet to ./languages/dotnet-policy.yaml."
+      rationale: "One representative policy covers shared .NET async/testing pitfalls."
+
+  TASK_ROUTING:
+    default_load:
+      - "./polyglot-policy.yaml"
+      - "./languages/<resolved-language>-policy.yaml (if it exists)"

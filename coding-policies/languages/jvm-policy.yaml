@@ -1,0 +1,13 @@
+JVM_POLICY:
+  version: "1.0"
+  depends_on: "../polyglot-policy.yaml"
+
+  FORBIDDEN:
+    - id: no_ignored_interruption
+      type: coding
+      rule: "Do not ignore interruption/cancellation semantics in concurrent code."
+      rationale: "Ignoring interruption causes stuck threads, poor cancellation behavior, and shutdown issues."
+    - id: no_sleep_based_timing_tests
+      type: tdd
+      rule: "Do not use sleeping-based timing tests when deterministic synchronization or virtual time is possible."
+      rationale: "Sleep-based tests are flaky and environment-sensitive under load and CI variance."

@@ -58,6 +58,9 @@ guide [.scratch/AGENTS.md](.scratch/AGENTS.md); structural layout stays in the `
 - Skills follow the **capability contract**: if shell/filesystem is available, take the full
   agentic path; otherwise degrade to a conversational fallback. Write "if shell available" —
   never "if <harness name>".
+- AI-generated code changes must follow the coding policies in `coding-policies/`:
+  load `polyglot-policy.yaml` first, then the resolved language policy from
+  `coding-policies/languages/` per `usage-policy.yaml`.
 - Vendored/imported skill provenance lives in each skill's `METADATA.md`; the origin map is
   [shared/skills/README.md](shared/skills/README.md).
 - **Single owner per fact:** each fact lives in one canonical file; other docs link to it instead
@@ -70,3 +73,12 @@ guide [.scratch/AGENTS.md](.scratch/AGENTS.md); structural layout stays in the `
 This file carries cross-harness **operational facts** only. Behavioral preferences live in the
 harness-specific instruction files (claude.ai profile; global CLAUDE.md) until the planned overlap
 hoist (`.scratch/incorporate-global-claude-setup/`) consolidates the shared subset here.
+
+## PR and CI expectations (for human and AI contributors)
+
+- Pull requests must use the template at `.github/pull_request_template.md` and fill every section
+  (goal, plan, scope, policy compliance, risk, rollback, evidence).
+- Keep changes scoped so only relevant workflows run; avoid touching unrelated files in the same PR.
+- CI lints exclude `.scratch/*/artefacts/**` and `.scratch/*/artifacts/**` on purpose; those
+  paths are treated as supporting artifacts. Safety checks (secret/policy) still apply.
+- Enable local pre-commit checks in your clone with `pwsh scripts/install-git-hooks.ps1`.
