@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/usr/bin/sh
 
-staged="$(git diff --cached --name-only --diff-filter=ACMRTUXB)"
+if ! staged="$(git diff --cached --name-only --diff-filter=ACMRTUXB)"; then
+  echo "Failed to enumerate staged files for pre-commit hook." >&2
+  exit 1
+fi
 if [ -z "${staged}" ]; then
   exit 0
 fi
