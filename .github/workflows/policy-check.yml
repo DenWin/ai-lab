@@ -75,9 +75,13 @@ jobs:
             echo "::error::Failed to list tracked files for guardrails (rc=$list_rc)."
             exit "$list_rc"
           fi
-          if [ -n "${files}" ] && echo "${files}" | xargs -I{} grep -IInE "(api[_-]?key|secret|token|password)\s*[:=]\s*['\"][^'\"]+['\"]" "{}"; then
-            echo "Potential hardcoded secret detected."
-            exit 1
+          if [ -n "${files}" ]; then
+            secret_matches=$(echo "${files}" | xargs -d '\n' grep -IInE "(api[_-]?key|secret|token|password)\s*[:=]\s*['\"][^'\"]+['\"]" || true)
+            if [ -n "${secret_matches}" ]; then
+              echo "${secret_matches}"
+              echo "Potential hardcoded secret detected."
+              exit 1
+            fi
           fi
 
           # 2) Ensure PowerShell scripts use strict mode, excluding scratch artifacts.
