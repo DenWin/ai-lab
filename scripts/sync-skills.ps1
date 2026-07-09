@@ -60,6 +60,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 if ($Check -and $IfMissing) { throw "-Check is read-only; do not combine it with -IfMissing." }
 if ($Scope -eq 'User' -and $Target -ne 'Claude') {
     throw "-Scope User applies only to Claude. Use -Target Claude -Scope User."

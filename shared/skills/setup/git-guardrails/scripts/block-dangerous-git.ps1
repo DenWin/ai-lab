@@ -2,6 +2,7 @@
 # Reads the tool-call JSON on stdin; on a dangerous match, writes a message to stderr and exits 2
 # (which Claude Code treats as "blocked"); otherwise exits 0. No pwsh-7-only features — runs on 5.1+.
 $ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 
 $raw = [Console]::In.ReadToEnd()
 try {

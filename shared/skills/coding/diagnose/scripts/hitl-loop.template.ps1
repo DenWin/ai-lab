@@ -9,6 +9,7 @@
 # At the end, captured values are printed as KEY=VALUE for the agent to parse.
 
 $ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 $captured = [ordered]@{}
 
 function Step([string]$Instruction) {
