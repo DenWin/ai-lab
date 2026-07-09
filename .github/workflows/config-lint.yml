@@ -80,7 +80,7 @@ jobs:
         run: |
           mkdir -p reports
           set +e
-          yamllint -s . -i ".scratch/*/artefacts/**" -i ".scratch/*/artifacts/**" | tee reports/yamllint.txt
+          yamllint -s . | tee reports/yamllint.txt
           rc=${PIPESTATUS[0]}
           if [ "$rc" -ne 0 ]; then
             echo "::error::yamllint failed (rc=$rc). See reports/yamllint.txt."

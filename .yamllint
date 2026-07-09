@@ -1,0 +1,12 @@
+extends: default
+
+ignore: |
+  .scratch/*/artefacts/**
+  .scratch/*/artifacts/**
+
+rules:
+  document-start: disable
+  new-lines: disable
+  truthy:
+    check-keys: false
+  line-length: disable
