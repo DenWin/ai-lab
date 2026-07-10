@@ -43,4 +43,4 @@ test: does the local guide measurably help an agent working in `.scratch/` vs. r
 `AGENTS.md` + `LAYOUT.md`? Evaluate it here before any broader rollout — the mass-generation decision
 stays gated. (Also settles the filename open-question for this instance: `AGENTS.md`, cross-harness.)
 
-_Solution: Fill in (gated on the hypothesis analysis above)._
+*Solution: Fill in (gated on the hypothesis analysis above).*

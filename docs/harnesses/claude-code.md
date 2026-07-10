@@ -56,7 +56,7 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 | Subagents                                          | **Native** — `agents/*.md`                                                                              |
 | Hooks                                              | **Native** — `settings.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, etc.)                        |
 | MCP servers                                        | **Native** — `.mcp.json` (project), `~/.claude.json` (global), Desktop `claude_desktop_config.json`     |
-| Output styles                                      | **Native** — `ai-artifacts/output-styles/` (referenced in settings)                                                  |
+| Output styles                                      | **Native** — `ai-artifacts/output-styles/` (referenced in settings)                                     |
 | Settings / permissions                             | **Native** — `settings.json` / `settings.local.json`                                                    |
 | Plugins / bundles                                  | **Native** — `.claude-plugin/plugin.json` wrapping skills/agents/hooks/mcp                              |
 

@@ -17,6 +17,7 @@ Decide this once, at the start, before grilling — it governs the whole session
 **Docs mode is OFF by default.** Run a pure grilling session: no glossary, no CONTEXT.md, no ADRs, no documentation output. Don't mention them.
 
 **Engage docs mode only if** either is true:
+
 1. A `CONTEXT.md`, `CONTEXT-MAP.md`, or other project documentation is attached/uploaded, or
 2. The user explicitly asks for documentation, a glossary, or ADRs, or signals it by phrasing such as "with docs", "using the docs", or "against the docs".
 

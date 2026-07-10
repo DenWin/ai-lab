@@ -26,11 +26,11 @@ instead of being maintained twice.
 
 ## What to bring in
 
-| Source (`~/.claude/`)                   | Proposed repo location                              | Notes                                                                |
-| --------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
-| `CLAUDE.md` (global instructions)       | `ai-artifacts/instructions/claude-code/CLAUDE.md`                | Harness-scoped; overlaps with the profile                            |
+| Source (`~/.claude/`)                   | Proposed repo location                                             | Notes                                                                |
+| --------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `CLAUDE.md` (global instructions)       | `ai-artifacts/instructions/claude-code/CLAUDE.md`                  | Harness-scoped; overlaps with the profile                            |
 | `settings.json` (permissions/hooks/MCP) | `ai-artifacts/mcp-config/claude-code/settings.json` *(or similar)* | Decide: global settings vs project settings; secrets stay out        |
-| Global skills (`commands/`)             | already handled by the skills work                  | Prior-version globals captured in `import-upstream-skills` artifacts |
+| Global skills (`commands/`)             | already handled by the skills work                                 | Prior-version globals captured in `import-upstream-skills` artifacts |
 
 ## Pending content to fold in when hoisting `CLAUDE.md`
 

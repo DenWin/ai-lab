@@ -64,7 +64,7 @@ Refactor is non-optional — skipping it degrades TDD into "tests plus mess."
 
 ## Per-Cycle Checklist
 
-```
+```text
 [ ] Test describes behavior, not implementation
 [ ] Test uses the public interface only
 [ ] Test would survive an internal refactor

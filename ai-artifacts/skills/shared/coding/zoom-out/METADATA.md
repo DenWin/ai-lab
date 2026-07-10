@@ -10,7 +10,7 @@ upstream-path: skills/engineering/zoom-out/SKILL.md
 upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
-# Skill Metadata
+## Skill Metadata
 
 - Runtime skill: [SKILL.md](SKILL.md)
 - Group: `coding`
@@ -19,6 +19,6 @@ upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 - Reconciled commit: `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`
 - Notes: Prompt-only; dual-mode note added.
 
-# Citations
+## Citations
 
 [1] [https://github.com/mattpocock/skills](https://github.com/mattpocock/skills)

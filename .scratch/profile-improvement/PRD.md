@@ -6,6 +6,7 @@ The live source-of-truth is Settings → Instructions for Claude (claude.ai / Cl
 The repo copy is `ai-artifacts/instructions/anthropic/claude-ai/profile.md` — edit here, paste there.
 
 Two versions are in `artifacts/`:
+
 - `profile-current.md` — the version refined in a claude.ai session; live as of 2026-06
 - `profile-prior.md` — the previous version; use as counterpart to identify what changed and whether
   any prior formulation was actually sharper

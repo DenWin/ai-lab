@@ -13,7 +13,7 @@ session keeps invoking the old version until someone remembers to re-run the syn
 
 ## Solution
 
-_Proposed — refine in triage:_
+*Proposed — refine in triage:*
 
 - Add a `-Check` mode to [scripts/sync-skills.ps1](../../scripts/sync-skills.ps1): compare source
   vs. mirror content (per-skill hash over SKILL.md + resources, with the same link rewriting
@@ -44,4 +44,4 @@ _Proposed — refine in triage:_
 
 - Failure mode identified in the Fable repo review (2026-07-04); the `-IfMissing` limitation is
   already documented in the script's own help — this scratch makes it observable.
-- _Created by Claude Fable 5 via /planning:scratch._
+- *Created by Claude Fable 5 via /planning:scratch.*

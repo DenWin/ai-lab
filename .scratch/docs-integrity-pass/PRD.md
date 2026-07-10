@@ -25,7 +25,7 @@ Facts are stated in more than one place and have started to drift. Concrete inst
 
 ## Solution
 
-_Proposed — refine in triage:_
+*Proposed — refine in triage:*
 
 - Single-owner rule: each fact has one canonical location; other files link instead of restating
   (e.g. repo-layout.adoc owns "Not the same file"; instructions/README links to it).
@@ -61,4 +61,4 @@ _Proposed — refine in triage:_
 
 - The duplication cost is exactly what [[backlog-enhancements]] concept 1 (frontmatter → generated
   BACKLOG) eliminates for status fields; this scratch covers the prose-facts side.
-- _Created by Claude Fable 5 via /planning:scratch._
+- *Created by Claude Fable 5 via /planning:scratch.*

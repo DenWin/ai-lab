@@ -201,6 +201,6 @@ This will run through the new hooks — a good smoke test.
 
 - `pre-commit` caches environments; first run per hook is slow, subsequent runs are fast
 - `sqlfluff --fix` is aggressive — review its changes before committing
-- For vale, pick a style pack matching your writing style (`Microsoft`, `Google`, `Vale`) from https://vale.sh/hub/
+- For vale, pick a style pack matching your writing style (`Microsoft`, `Google`, `Vale`) from <https://vale.sh/hub/>
 - To skip hooks temporarily: `git commit --no-verify` (use sparingly)
 - To update all hooks to latest versions: `pre-commit autoupdate`

@@ -12,123 +12,123 @@ Define edge-case behavior required to faithfully recreate the skill.
 
 - Expected: fail fast with explicit file-not-found error.
 
-2. Unsupported extension
+1. Unsupported extension
 
 - Expected: fail fast and print supported extensions (.msg, .eml).
 
-3. Explicit output path provided
+1. Explicit output path provided
 
 - Expected: use explicit path and skip auto-name for primary file.
 
-4. Source file already in converted folder
+1. Source file already in converted folder
 
 - Expected: do not re-move source.
 
 ### Date and Naming
 
-5. Missing or unparsable date
+1. Missing or unparsable date
 
 - Expected: output name derived from stem only, no date prefix.
 
-6. Source stem already includes date prefix
+1. Source stem already includes date prefix
 
 - Expected: avoid double-prefixing by trimming known date forms.
 
-7. Filename collisions in output dirs
+1. Filename collisions in output dirs
 
 - Expected: append numeric suffix until unique.
 
 ### Metadata Normalization
 
-8. Folded headers in .eml (RFC line wrapping)
+1. Folded headers in .eml (RFC line wrapping)
 
 - Expected: unfolded values appear as single-line fields.
 
-9. Address fields with mixed display-name/email forms
+1. Address fields with mixed display-name/email forms
 
 - Expected: parsed, normalized, sorted representation.
 
-10. More than 10 recipients in a field
+1. More than 10 recipients in a field
 
 - Expected: comma-separated single-cell rendering.
 
 ### Body Extraction and Cleanup
 
-11. .msg has empty plain text but valid HTML
+1. .msg has empty plain text but valid HTML
 
 - Expected: HTML fallback used.
 
-12. .eml has both HTML and plain text
+1. .eml has both HTML and plain text
 
 - Expected: HTML chosen.
 
-13. HTML contains style/script/comment/o:p/conditional blocks
+1. HTML contains style/script/comment/o:p/conditional blocks
 
 - Expected: removed before conversion.
 
-14. Body contains null bytes, NBSP, zero-width chars
+1. Body contains null bytes, NBSP, zero-width chars
 
 - Expected: stripped or normalized.
 
-15. Body has long runs of blank lines
+1. Body has long runs of blank lines
 
 - Expected: collapsed to stable spacing.
 
-16. Reply chain header block in body
+1. Reply chain header block in body
 
 - Expected: [%hardbreaks] inserted before each header run.
 
 ### Attachment Handling
 
-17. Inline image with filename
+1. Inline image with filename
 
 - Expected: skipped as inline artifact.
 
-18. Duplicate attachment content with different names
+1. Duplicate attachment content with different names
 
 - Expected: dedupe by checksum; link to existing stored file.
 
-19. Blocklisted attachment checksum
+1. Blocklisted attachment checksum
 
 - Expected: skipped without writing file.
 
-20. Attachment filename with directory traversal pattern
+1. Attachment filename with directory traversal pattern
 
 - Expected: sanitized to basename before writing.
 
-21. Image attachment
+1. Image attachment
 
 - Expected: rendered with image:: thumbnail and click-through link.
 
-22. Non-image attachment
+1. Non-image attachment
 
 - Expected: rendered as link: entry.
 
 ### Nested Mail Attachments
 
-23. Attached .msg or .eml present
+1. Attached .msg or .eml present
 
 - Expected: write to mails/raw, convert nested mail, link to nested .adoc.
 
-24. Nested conversion fails
+1. Nested conversion fails
 
 - Expected: warning logged; parent links to raw nested source.
 
-25. Duplicate nested mail attachment by checksum
+1. Duplicate nested mail attachment by checksum
 
 - Expected: existing raw file reused.
 
 ### Sibling Pair Comparison
 
-26. Input file has sibling counterpart extension
+1. Input file has sibling counterpart extension
 
 - Expected: both converted; comparison status printed.
 
-27. Outputs differ
+1. Outputs differ
 
 - Expected: similarity percentage + bounded diff preview printed.
 
-28. Outputs identical
+1. Outputs identical
 
 - Expected: IDENTICAL status printed.
 

@@ -26,7 +26,7 @@ description: Create, update, or improve agent skills with proper structure, prog
 
 ## Skill Structure
 
-```
+```text
 skill-name/
 ├── SKILL.md           # Main instructions (required)
 ├── REFERENCE.md       # Detailed docs (if needed)

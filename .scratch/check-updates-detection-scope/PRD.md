@@ -34,4 +34,4 @@ principle **any** change inside the upstream skill directory — scripts include
 - Explicit call-out of any out-of-directory components that escape detection, and whether that's a
   real risk for current skills.
 
-_Solution: Fill in._
+*Solution: Fill in.*

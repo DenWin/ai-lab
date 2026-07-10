@@ -10,7 +10,7 @@ upstream-path: skills/misc/git-guardrails-claude-code/SKILL.md
 upstream-commit: 62f43a18177be6ec82da242e59ffbc490a4c22ea
 ---
 
-# Skill Metadata
+## Skill Metadata
 
 - Runtime skill: [SKILL.md](SKILL.md)
 - Group: `setup`
@@ -19,6 +19,6 @@ upstream-commit: 62f43a18177be6ec82da242e59ffbc490a4c22ea
 - Reconciled commit: `62f43a18177be6ec82da242e59ffbc490a4c22ea`
 - Notes: Localized from the global-prior; Claude-Code-hook skill, not generally useful in chat.
 
-# Citations
+## Citations
 
 [1] [https://github.com/mattpocock/skills](https://github.com/mattpocock/skills)

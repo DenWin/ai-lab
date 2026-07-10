@@ -10,7 +10,7 @@ A realistic minimal skill covering a focused domain.
 
 ### File layout
 
-```
+```text
 csv-import/
 ├── SKILL.md
 └── EXAMPLES.md
@@ -57,10 +57,10 @@ description: Parse, validate, and import CSV files into SQL databases or datafra
 
 ### What makes this a good skill
 
-| Property | Value |
-|---|---|
-| Description discriminates | Yes — "CSV", "import", "ingestion", "tabular data" |
-| Update trigger covered | Not applicable (no update flow for this domain) |
-| Line count | 38 — well under 100 |
-| Concrete example | Checklist steps are actionable without guessing |
-| Split decision | EXAMPLES.md added because SQL sample output would push SKILL.md over limit |
+| Property                  | Value                                                                      |
+| ------------------------- | -------------------------------------------------------------------------- |
+| Description discriminates | Yes — "CSV", "import", "ingestion", "tabular data"                         |
+| Update trigger covered    | Not applicable (no update flow for this domain)                            |
+| Line count                | 38 — well under 100                                                        |
+| Concrete example          | Checklist steps are actionable without guessing                            |
+| Split decision            | EXAMPLES.md added because SQL sample output would push SKILL.md over limit |

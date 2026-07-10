@@ -54,6 +54,7 @@ A probe whose own failures are silent is worse than no probe — it grounds code
 This needs a **tri-state, not a bare `null`**: distinguish *present-with-value*, *present-but-empty* (0 rows is a real answer), *probed-but-errored*, and *not-probed*. `null` alone is overloaded.
 
 **Before emitting the probe, verify:**
+
 - [ ] Every named dependency has a fact key — nothing silently skipped.
 - [ ] Each fact carries a status; failure is a recorded value, not an absence.
 - [ ] The flush runs even if a step throws (`finally`/`trap`); a genuine precondition failure (can't connect at all) still stops hard, outside the per-fact guard.
@@ -61,6 +62,7 @@ This needs a **tri-state, not a bare `null`**: distinguish *present-with-value*,
 - [ ] Output is valid parseable JSON — depth sufficient (no silent truncation), quotes/newlines escaped, no BOM, no locale-formatted numbers (decimal comma breaks JSON).
 
 **Before generating code from the pasted-back output, verify:**
+
 - [ ] All expected keys present; `attempted == captured`; no errored fact you're about to build on.
 - [ ] Values match expected shape — version matches a version pattern, counts are integers ≥ 0, expected arrays are arrays.
 - [ ] A value that contradicts your assumption is surfaced; a fact that errored or is empty gets re-probed or asked about — never generate over a hole.

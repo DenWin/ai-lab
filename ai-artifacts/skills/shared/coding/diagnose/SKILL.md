@@ -43,7 +43,7 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 7. **Property / fuzz loop.** If the bug is "sometimes wrong output", run 1000 random inputs and look for the failure mode.
 8. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
 9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
-10. **HITL script.** Last resort. If a human must click, drive _them_ with a structured loop —
+10. **HITL script.** Last resort. If a human must click, drive *them* with a structured loop —
     `scripts/hitl-loop.template.ps1` (pwsh, primary) or `scripts/hitl-loop.template.sh` (bash). With a
     shell, generate and run it; without one, hand the user the same numbered steps in chat and collect
     their answers. Captured output feeds back to you.
@@ -52,7 +52,7 @@ Build the right feedback loop, and the bug is 90% fixed.
 
 ### Iterate on the loop itself
 
-Treat the loop as a product. Once you have _a_ loop, ask:
+Treat the loop as a product. Once you have *a* loop, ask:
 
 - Can I make it faster? (Cache setup, skip unrelated init, narrow the test scope.)
 - Can I make the signal sharper? (Assert on the specific symptom, not "didn't crash".)

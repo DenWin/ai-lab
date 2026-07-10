@@ -49,6 +49,6 @@ tags: [<tag>]
 - **Scratch tracker:** not adopted directly; `.scratch/AGENTS.md` and the scratch skill own that
   schema.
 
-# Citations
+## Citations
 
 [1] [Open Knowledge Format specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)

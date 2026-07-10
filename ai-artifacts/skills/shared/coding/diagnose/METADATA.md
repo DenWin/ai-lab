@@ -10,7 +10,7 @@ upstream-path: skills/engineering/diagnose/SKILL.md
 upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
-# Skill Metadata
+## Skill Metadata
 
 - Runtime skill: [SKILL.md](SKILL.md)
 - Group: `coding`
@@ -19,6 +19,6 @@ upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 - Reconciled commit: `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`
 - Notes: Dual-mode capability contract; HITL loop ships pwsh (primary) and bash templates.
 
-# Citations
+## Citations
 
 [1] [https://github.com/mattpocock/skills](https://github.com/mattpocock/skills)

@@ -41,15 +41,15 @@ If the user enters a non-standard value (e.g. "5h", "3 days"), round to the near
 midpoints between adjacent buckets (bucket hours: 4h=4, 1day=8, 2days=16, 1week=40, 2weeks=80,
 1month=160, 2months=320):
 
-| Input | Maps to |
-|-------|---------|
-| < 6h | 4h |
-| 6h – < 12h | 1day |
-| 12h – < 28h | 2days |
-| 28h – < 60h | 1week |
-| 60h – < 120h | 2weeks |
-| 120h – < 240h | 1month |
-| ≥ 240h | 2months |
+| Input         | Maps to |
+| ------------- | ------- |
+| < 6h          | 4h      |
+| 6h – < 12h    | 1day    |
+| 12h – < 28h   | 2days   |
+| 28h – < 60h   | 1week   |
+| 60h – < 120h  | 2weeks  |
+| 120h – < 240h | 1month  |
+| ≥ 240h        | 2months |
 
 Silently apply the rounding and confirm the mapped bucket to the user before continuing.
 

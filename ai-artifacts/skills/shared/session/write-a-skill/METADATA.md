@@ -10,7 +10,7 @@ upstream-path: skills/productivity/write-a-skill/SKILL.md
 upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 ---
 
-# Skill Metadata
+## Skill Metadata
 
 - Runtime skill: [SKILL.md](SKILL.md)
 - Group: `session`
@@ -19,6 +19,6 @@ upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 - Reconciled commit: `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`
 - Notes: Localized. Known issue: links REFERENCE.md but ships EXAMPLES.md.
 
-# Citations
+## Citations
 
 [1] [https://github.com/mattpocock/skills](https://github.com/mattpocock/skills)

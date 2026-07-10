@@ -7,7 +7,7 @@ rather than restating the conventions.
 
 Every feature lives in its own folder: `.scratch/<feature-slug>/`
 
-```
+```text
 .scratch/
   BACKLOG.md                        ← ranked index of all features (repo-level, one file)
   <feature-slug>/
@@ -49,6 +49,7 @@ Supporting *inputs* only — reference material that feeds the work, **never the
 Deliverables (a skill, script, report, or durable finding) live in their proper repo home; the rule
 and the deliverable→home table are in the folder guide `.scratch/AGENTS.md`. No required structure;
 common sub-folders:
+
 - `artifacts/<upstream-name>/` — upstream source files (when `.temp/` is gitignored)
 - `artifacts/global-prior/` — prior installed versions to mine for local customizations
 

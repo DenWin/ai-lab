@@ -33,18 +33,18 @@ Email formats vary by client and encoding. .msg and .eml representations of the 
 - The tool shall optionally accept an explicit output .adoc path.
 - The tool shall return a clear error for unsupported extensions.
 
-2. Output naming and placement
+1. Output naming and placement
 
 - Without explicit output path, output filename shall be auto-derived from date + source stem.
 - If source is in a raw directory, output shall be placed in the parent directory.
 
-3. Metadata extraction
+1. Metadata extraction
 
 - The output shall include mail metadata table fields where available:
   - From, Sent, To, Reply-To, CC, BCC, Importance, Sensitivity, Categories.
 - Subject shall be used as document title and colon spacing shall be escaped for AsciiDoc safety.
 
-4. Body extraction and normalization
+1. Body extraction and normalization
 
 - .msg conversion shall prefer plain text body, then HTML fallback.
 - .eml conversion shall prefer HTML body, then plain text fallback.
@@ -52,7 +52,7 @@ Email formats vary by client and encoding. .msg and .eml representations of the 
 - Body normalization shall remove null bytes, NBSP artifacts, invisible unicode, repeated blank lines, and Outlook-specific noise blocks.
 - Quoted header blocks shall be prefixed with [%hardbreaks] for readability.
 
-5. Attachment processing
+1. Attachment processing
 
 - All non-inline attachments shall be inspected.
 - Attachments shall be deduplicated by MD5 checksum.
@@ -61,14 +61,14 @@ Email formats vary by client and encoding. .msg and .eml representations of the 
 - Image attachments shall be rendered as image:: entries with links.
 - Other attachments shall be rendered as link: entries.
 
-6. Nested mail attachment processing
+1. Nested mail attachment processing
 
 - Attached .msg/.eml files shall not be written to docs/.
 - Attached .msg/.eml files shall be written to mails/raw/.
 - Nested mail attachments shall be converted recursively to .adoc.
 - Parent document attachment list shall link to nested conversion output when available, otherwise to raw source.
 
-7. Sibling parity conversion and comparison
+1. Sibling parity conversion and comparison
 
 - If counterpart extension exists for the same stem (foo.msg + foo.eml), both shall be converted.
 - Tool shall compare generated outputs and print:
@@ -76,7 +76,7 @@ Email formats vary by client and encoding. .msg and .eml representations of the 
   - Similarity ratio when different
   - Limited unified diff preview
 
-8. Source lifecycle
+1. Source lifecycle
 
 - After successful conversion run, the primary source file shall be moved to a converted subfolder unless already inside converted.
 

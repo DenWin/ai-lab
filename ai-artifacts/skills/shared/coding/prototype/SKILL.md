@@ -22,7 +22,7 @@ Typical questions it answers:
 
 1. **Throwaway from day one, and marked as such.** Put it next to the module it's prototyping for so context is obvious, but name it so a casual reader sees it's a prototype, not production (`proto-<thing>.ps1`, `Proto<Thing>/`, `proto_<thing>.py`).
 2. **One command to run.** Via the project's existing task runner or a single documented invocation — `pwsh ./proto-<thing>.ps1`, `dotnet run --project Proto<Thing>`, `python proto_<thing>.py`. The user starts it without thinking. Don't add a new runtime or package manager just for the prototype.
-3. **No persistence by default.** State lives in memory. Persistence is usually the thing being _checked_, not depended on. If the question is specifically about persistence, hit a scratch target with an obvious throwaway name (`tempdb` table `Proto_WipeMe`, a `proto-wipe-me.db`), never a real one.
+3. **No persistence by default.** State lives in memory. Persistence is usually the thing being *checked*, not depended on. If the question is specifically about persistence, hit a scratch target with an obvious throwaway name (`tempdb` table `Proto_WipeMe`, a `proto-wipe-me.db`), never a real one.
 4. **Skip the polish.** No tests, no abstractions, no error handling beyond what makes it runnable. The point is to learn fast and delete.
 5. **Surface the state.** Re-render the full relevant state after every action so the user sees exactly what changed.
 6. **Delete or absorb when done.** Once it has answered its question, fold the validated decision into the real code or delete it — don't leave it rotting in the repo.
@@ -75,7 +75,7 @@ Add it to the project's existing task runner if there is one (`*.psd1`/build scr
 
 ### 6. Hand it over
 
-Give the run command. The user drives it; the valuable moments are "wait, that shouldn't be possible" or "huh, I assumed X would differ" — those are bugs in the _idea_, which is the whole point. If they want new actions, add them. Prototypes evolve.
+Give the run command. The user drives it; the valuable moments are "wait, that shouldn't be possible" or "huh, I assumed X would differ" — those are bugs in the *idea*, which is the whole point. If they want new actions, add them. Prototypes evolve.
 
 ### 7. Capture the answer
 

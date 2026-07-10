@@ -6,7 +6,7 @@ resource: ./SKILL.md
 tags: [setup, skill]
 ---
 
-# Skill Metadata
+## Skill Metadata
 
 - Runtime skill: [SKILL.md](SKILL.md)
 - Group: `setup`

@@ -34,7 +34,7 @@ pip install extract-msg
 
 Add MD5 checksums of attachments to ignore (e.g. Outlook signature images) to:
 
-```
+```text
 .github/skills/mail-to-adoc/attachment-blocklist.txt
 ```
 
@@ -53,8 +53,8 @@ python '.github/skills/mail-to-adoc/scripts/mail_to_adoc.py' '<path-to-file.eml>
 python '.github/skills/mail-to-adoc/scripts/mail_to_adoc.py' '<path>' '<output.adoc>'
 ```
 
-3. Open the generated `.adoc` file to review.
-4. The source file is automatically moved to `mails/converted/`.
+1. Open the generated `.adoc` file to review.
+2. The source file is automatically moved to `mails/converted/`.
 
 ## Notes
 

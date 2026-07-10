@@ -6,7 +6,7 @@ resource: ./SKILL.md
 tags: [session, skill]
 ---
 
-# Skill Metadata
+## Skill Metadata
 
 - Runtime skill: [SKILL.md](SKILL.md)
 - Group: `session`

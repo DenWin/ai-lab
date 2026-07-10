@@ -45,13 +45,13 @@
 
 ## Double Taxonomy (Meszaros)
 
-| Kind | Purpose |
-| --- | --- |
-| Dummy | Fills a parameter slot; never used. |
-| Stub | Returns canned answers. Use when the code needs specific inputs from a collaborator. |
-| Spy | A stub that records how it was called. Use when verifying an interaction occurred. |
-| Mock | A spy with pre-set expectations; fails if they are not met. Strictest. |
-| Fake | A working but production-unsuitable implementation (in-memory DB/queue). |
+| Kind  | Purpose                                                                              |
+| ----- | ------------------------------------------------------------------------------------ |
+| Dummy | Fills a parameter slot; never used.                                                  |
+| Stub  | Returns canned answers. Use when the code needs specific inputs from a collaborator. |
+| Spy   | A stub that records how it was called. Use when verifying an interaction occurred.   |
+| Mock  | A spy with pre-set expectations; fails if they are not met. Strictest.               |
+| Fake  | A working but production-unsuitable implementation (in-memory DB/queue).             |
 
 Using a mock where a stub would do creates over-specified tests that fail on
 irrelevant changes. Using a stub where a mock is needed leaves interaction bugs
