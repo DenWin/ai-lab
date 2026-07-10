@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -u
-
 warn() {
 	echo "[config-lint install] $*" >&2
 }

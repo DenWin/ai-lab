@@ -31,11 +31,11 @@ def _prepare_fake_toolchain(tmp_path: Path, log_path: Path) -> Path:
 
     _write_cmd(
         bin_dir / "python.cmd",
-        "@echo off\r\n" "exit /b 0\r\n",
+        "@echo off\r\nexit /b 0\r\n",
     )
     _write_cmd(
         bin_dir / "git.cmd",
-        "@echo off\r\n" "exit /b 0\r\n",
+        "@echo off\r\nexit /b 0\r\n",
     )
 
     return bin_dir
