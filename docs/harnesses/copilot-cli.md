@@ -282,7 +282,7 @@ edge cases where multiple equally-valid approaches exist.
 | `.github/extensions/`             | Copilot CLI-specific           | Extension format is not shared with other harnesses                                                            |
 | `.github/prompts/*.prompt.md`     | Copilot family (shared format) | VS Code Copilot invokes as slash commands; Copilot CLI references by path                                      |
 | MCP (workspace/user config)       | Cross-vendor                   | Config syntax and location differ per harness; protocol is vendor-neutral                                      |
-| `ai-artifacts/skills/shared/`     | Source of truth                | Mirrored to `.claude/commands/` (Claude Code), `.agents/skills/` (Codex), and `.github/skills/<group>_<name>/SKILL.md` (Copilot skill mirror) |
+| `ai-artifacts/skills/shared/`     | Source of truth                | Mirrored to Claude, Codex, and Copilot skill mirrors                                                           |
 | Scheduled workflows               | Copilot CLI-specific           | No equivalent native primitive in other harnesses                                                              |
 | Canvas panels                     | Copilot CLI-specific           | No equivalent in other harnesses                                                                               |
 
