@@ -6,6 +6,9 @@
   "MD033": false,
   "MD041": false,
 
+  "MD003": { "style": "atx" },
+  "MD004": { "style": "dash" },
+  "MD029": { "style": "ordered" },
   "MD049": { "style": "asterisk" },
   "MD050": { "style": "asterisk" },
   "MD060": { "style": "aligned" }
