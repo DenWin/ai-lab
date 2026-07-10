@@ -160,6 +160,9 @@ class HTMLToAsciiDoc(HTMLParser):
         # Hyperlink state — href is set on <a>, used while writing inner text, cleared on </a>
         self.open_link_href: str | None = None
 
+        # Tags whose contents should be discarded entirely.
+        self.ignored_tag_depth = 0
+
     def _write(self, text: str) -> None:
         """Append text to the innermost active context: list item, table cell, or top level."""
         if self.list_item_stack:
@@ -171,6 +174,11 @@ class HTMLToAsciiDoc(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         tag = tag.lower()
+        if tag in ("script", "style", "o:p"):
+            self.ignored_tag_depth += 1
+            return
+        if self.ignored_tag_depth:
+            return
         attr_dict = dict(attrs)
         if tag == "table":
             self.table_depth += 1
@@ -203,6 +211,11 @@ class HTMLToAsciiDoc(HTMLParser):
 
     def handle_endtag(self, tag):
         tag = tag.lower()
+        if tag in ("script", "style", "o:p"):
+            self.ignored_tag_depth = max(0, self.ignored_tag_depth - 1)
+            return
+        if self.ignored_tag_depth:
+            return
         if tag == "table":
             if self.table_depth == 1 and self.table_rows:
                 header_row = " ".join(f"|{c}" for c in self.table_rows[0])
@@ -267,6 +280,8 @@ class HTMLToAsciiDoc(HTMLParser):
             self._write("\n")
 
     def handle_data(self, data: str) -> None:
+        if self.ignored_tag_depth:
+            return
         data = re.sub(
             r"[\u200b\u200c\u200d\ufeff\u00ad]", "", data
         )  # zero-width / soft-hyphen chars
@@ -287,12 +302,7 @@ class HTMLToAsciiDoc(HTMLParser):
 
 def strip_html(html: str) -> str:
     """Remove non-content HTML and convert the remainder to AsciiDoc markup."""
-    html = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.IGNORECASE | re.DOTALL)
-    html = re.sub(
-        r"<script\b[^>]*>.*?</script\s*>", "", html, flags=re.IGNORECASE | re.DOTALL
-    )
     html = re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)
-    html = re.sub(r"<o:p[^>]*>.*?</o:p>", "", html, flags=re.IGNORECASE | re.DOTALL)
     html = re.sub(
         r"<!\[if[^\]]*\]>.*?<!\[endif\]>", "", html, flags=re.IGNORECASE | re.DOTALL
     )
