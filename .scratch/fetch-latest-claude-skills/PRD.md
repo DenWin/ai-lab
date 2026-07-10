@@ -14,12 +14,12 @@ process of staying current with whatever claude.ai publishes.
 
 ## Solution
 
-_Fill in — identify the claude.ai skill source (URL, API, CLI mechanism), define the fetch
-process, determine how to diff against local versions, and decide the integration/review step._
+*Fill in — identify the claude.ai skill source (URL, API, CLI mechanism), define the fetch
+process, determine how to diff against local versions, and decide the integration/review step.*
 
 **Reuse the generic import skill for the integration step.** The "place it in the repo as a
 first-class, grouped, provenance-tracked skill and adapt it" half is already solved by
-[`/setup:import-upstream-skill`](../../shared/skills/setup/import-upstream-skill/SKILL.md) (delivered
+[`/setup:import-upstream-skill`](../../ai-artifacts/skills/shared/setup/import-upstream-skill/SKILL.md) (delivered
 by `import-upstream-skills`). This scratch only needs to solve the **claude.ai-specific source half** —
 how to *discover and fetch* the latest versions — then hand each fetched skill to
 `/setup:import-upstream-skill` for placement, `upstream-*` provenance, and the capability-contract
@@ -39,4 +39,4 @@ adaptation. Don't reinvent the import mechanics.
 
 - Related: [import-upstream-skills](../import-upstream-skills/PRD.md) (mattpocock GitHub — different *source*, but its `/setup:import-upstream-skill` is the shared *integration* step to reuse)
 - Related: [check-updates-detection-scope](../check-updates-detection-scope/PRD.md)
-- _Created by /planning:scratch._
+- *Created by /planning:scratch.*

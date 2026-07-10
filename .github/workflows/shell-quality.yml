@@ -4,18 +4,18 @@ on:
   pull_request:
     paths:
       - "**/*.sh"
-      - "coding-policies/polyglot-policy.yaml"
-      - "coding-policies/languages/bash-policy.yaml"
       - ".github/workflows/shell-quality.yml"
+      - "coding-policies/languages/bash-policy.yaml"
+      - "coding-policies/polyglot-policy.yaml"
       - "!.scratch/*/artefacts/**"
       - "!.scratch/*/artifacts/**"
   push:
     branches: [main]
     paths:
       - "**/*.sh"
-      - "coding-policies/polyglot-policy.yaml"
-      - "coding-policies/languages/bash-policy.yaml"
       - ".github/workflows/shell-quality.yml"
+      - "coding-policies/languages/bash-policy.yaml"
+      - "coding-policies/polyglot-policy.yaml"
       - "!.scratch/*/artefacts/**"
       - "!.scratch/*/artifacts/**"
   workflow_dispatch:
@@ -40,64 +40,25 @@ jobs:
         id: diff
         shell: bash
         run: |
-          base="${{ github.event.pull_request.base.sha }}"
-          head="${{ github.event.pull_request.head.sha }}"
-          if [ -z "${base}" ]; then
-            base="${{ github.event.before }}"
-          fi
-          if [ -z "${head}" ]; then
-            head="${{ github.sha }}"
-          fi
-          if [ -z "${base}" ] || [ "${base}" = "0000000000000000000000000000000000000000" ]; then
-            base=$(git rev-list --max-parents=0 "${head}" | tail -n 1)
-          fi
-          echo "base=${base}" >> "$GITHUB_OUTPUT"
-          echo "head=${head}" >> "$GITHUB_OUTPUT"
+          bash .github/workflows/scripts/ci/determin-diff-range.sh "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" "${{ github.event.before }}" "${{ github.sha }}"
 
       - name: Find shell files
         id: shfiles
         shell: bash
         run: |
-          set +e
-          count=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.sh' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' | wc -l | tr -d ' ')
-          rc=${PIPESTATUS[0]}
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::Failed to enumerate shell files (rc=$rc)."
-            exit "$rc"
-          fi
-          echo "count=$count" >> "$GITHUB_OUTPUT"
+          bash .github/workflows/scripts/shell-quality/find-shell-files.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
 
       - name: Install ShellCheck
         if: steps.shfiles.outputs.count != '0'
         shell: bash
         run: |
-          set +e
-          sudo apt-get update
-          apt_update_rc=$?
-          if [ "$apt_update_rc" -ne 0 ]; then
-            echo "::error::apt-get update failed (rc=$apt_update_rc)."
-            exit "$apt_update_rc"
-          fi
-          sudo apt-get install -y shellcheck
-          install_rc=$?
-          if [ "$install_rc" -ne 0 ]; then
-            echo "::error::shellcheck installation failed (rc=$install_rc)."
-            exit "$install_rc"
-          fi
+          bash .github/workflows/scripts/shell-quality/install-shellcheck.sh
 
       - name: Run ShellCheck
         if: steps.shfiles.outputs.count != '0'
         shell: bash
         run: |
-          mkdir -p reports
-          files=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.sh' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**')
-          set +e
-          echo "$files" | xargs -I{} shellcheck "{}" 2>&1 | tee reports/shellcheck.txt
-          rc=${PIPESTATUS[1]}
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::shellcheck failed (rc=$rc). See reports/shellcheck.txt."
-            exit "$rc"
-          fi
+          bash .github/workflows/scripts/shell-quality/run-shellcheck.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
 
       - name: Upload shell reports
         if: always() && steps.shfiles.outputs.count != '0'
@@ -110,14 +71,4 @@ jobs:
         if: always()
         shell: bash
         run: |
-          set +e
-          {
-            echo "## shell-quality summary"
-            echo "- Shell files found: ${{ steps.shfiles.outputs.count }}"
-            echo "- ShellCheck report: reports/shellcheck.txt"
-          } >> "$GITHUB_STEP_SUMMARY"
-          rc=$?
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::Failed to write shell-quality job summary (rc=$rc)."
-            exit "$rc"
-          fi
+          bash .github/workflows/scripts/shell-quality/write-summary.sh "${{ steps.shfiles.outputs.count }}"

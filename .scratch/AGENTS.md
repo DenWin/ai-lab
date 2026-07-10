@@ -10,8 +10,8 @@ A **vehicle for capturing and tracking ideas** — one folder per feature
 `BACKLOG.md`. Capture with `/planning:scratch`; rank with `/planning:scratch-plan`.
 
 - Structural layout + file templates → the `scratch` skill's
-  [LAYOUT.md](../shared/skills/planning/scratch/LAYOUT.md)
-- Ranking formula → [RANKING.md](../shared/skills/planning/scratch/RANKING.md)
+  [LAYOUT.md](../ai-artifacts/skills/shared/planning/scratch/LAYOUT.md)
+- Ranking formula → [RANKING.md](../ai-artifacts/skills/shared/planning/scratch/RANKING.md)
 
 ## Working rules
 
@@ -24,18 +24,18 @@ produces — a skill or script, a report, a durable finding, any shippable outpu
 and belongs in its proper repo home, with the PRD linking to it. `artifacts/` holds only *supporting
 inputs* (upstream snapshots, prior drafts, sample inputs) — **never the deliverable**.
 
-| Deliverable | Home (not the scratch) |
-| --- | --- |
-| Skill / tool | `shared/skills/<group>/<name>/` (or a `<vendor>/<harness>/` skills dir) |
-| Report / durable finding / review | `docs/` — `docs/findings/`, `docs/reviews/`, … |
-| Instructions / settings / hooks | their harness-scoped home (`<vendor>/<harness>/…`) |
+Deliverable homes:
+
+- Skill / tool: `ai-artifacts/skills/shared/<group>/<name>/` (or `ai-artifacts/skills/<vendor>/<harness>/…`)
+- Report / durable finding / review: `docs/` — `docs/findings/`, `docs/reviews/`, …
+- Instructions / hooks: their artifact-type home (`ai-artifacts/instructions/<vendor>/<harness>/…`, `ai-artifacts/hooks/<vendor>/<harness>/…`, `ai-artifacts/mcp-config/<vendor>/<harness>/…`, `ai-artifacts/output-styles/<vendor>/<harness>/…`, `ai-artifacts/agents/<vendor>/<harness>/…`, `ai-artifacts/prompts/<vendor>/<harness>/…`, or `ai-artifacts/plugins/<vendor>/<harness>/…`)
 
 **Don't hand-maintain rankings.** `BACKLOG.md` order and scores are produced by
 `/planning:scratch-plan`; flipping a single status cell is fine, re-ranking is the skill's job.
 
 ---
 
-_This is the first per-folder `AGENTS.md` in the repo. Whether to add folder guides across other
+*This is the first per-folder `AGENTS.md` in the repo. Whether to add folder guides across other
 significant subtrees is gated on the hypothesis test in
 [`agents-md-folder-guides`](agents-md-folder-guides/PRD.md) — this file is a deliberate single
-instance (it houses a decided convention), not a rollout._
+instance (it houses a decided convention), not a rollout.*

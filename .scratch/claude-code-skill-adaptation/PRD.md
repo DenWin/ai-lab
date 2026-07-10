@@ -2,7 +2,7 @@
 
 Status: ready-for-human
 
-The skills under `skills/` were imported from their claude.ai (chat) versions, organized by intent,
+The skills under `ai-artifacts/skills/` were imported from their claude.ai (chat) versions, organized by intent,
 and given upstream provenance. They are **invocable** but still **claude.ai-flavored**. This feature
 covers the second pass: making each one behave as a native Claude Code skill.
 
@@ -54,21 +54,21 @@ skill's intent or its local customizations — only its mechanics.
   else → conversational fallback" rather than "if Claude Code do X". Keeps the skills portable to
   Cowork/claude.ai. (Ref: handoff compatibility-matrix design principle.)
 - **Edit the source of truth only.** All edits land in `skills/<group>/<name>/SKILL.md`; re-run
-  `scripts/sync-skills.ps1` to regenerate the `.claude/commands` mirror. Never edit the mirror.
+  `scripts/setup-repo.ps1 -SkipHooks` to regenerate the `.claude/commands` mirror. Never edit the mirror.
 - **Preserve intent and local customizations.** Stack rules, the `grill-me`←`grill-with-docs` merge,
   Windows/pwsh substitutions all stay. This pass changes mechanics, not content decisions.
 - **`check-skill-updates` rework:** extract the inline PowerShell into `scripts/check-skill-updates.ps1`
   (staleness check + three-way-merge helper), and have the SKILL.md drive it. Keep the path-detection
-  already pointed at this repo's `skills/` layout.
+  already pointed at this repo's `ai-artifacts/skills/` layout.
 
 ## Testing Decisions
 
 - Verify each adapted skill loads and triggers: invoke `/group:name` and confirm the body and any
-  `!command` preprocessing resolve, and bundled resources open (after `sync-skills.ps1`).
+  `!command` preprocessing resolve, and bundled resources open (after `setup-repo.ps1 -SkipHooks`).
 - For agentic skills, exercise the tool path on a throwaway target (run a trivial probe / a trivial
   failing test / a one-route prototype) and confirm the conversational fallback still reads sensibly
   when shell is unavailable.
-- Run `scripts/sync-skills.ps1` after each skill edit and confirm the mirror's resource links resolve.
+- Run `scripts/setup-repo.ps1 -SkipHooks` after each skill edit and confirm the mirror's resource links resolve.
 - Structural review of each via `/session:write-a-skill`.
 
 ## Out of Scope
@@ -76,13 +76,13 @@ skill's intent or its local customizations — only its mechanics.
 - The **setup/init skill design** decision (monolithic vs self-configuring vs config-in-AGENTS.md vs
   minimal tracker-only) — handoff decision #5. Resolve with a `grill-me` pass in its own session; it
   shapes any future agentic skills but isn't required to adapt the existing eight.
-- Adopting **new** authors' skills, or new skills not already in `skills/`.
+- Adopting **new** authors' skills, or new skills not already in `ai-artifacts/skills/`.
 - The wider `ai-lab` repo scaffold (AGENTS.md, compatibility matrix, instructions/, mcp/, etc.) —
   tracked by the repo-structure handoff, not this feature.
 
 ## Scope note — which skills this covers
 
-The eight skills imported in pass 1 live under `skills/`. Of these, the **engineering-origin** ones —
+The eight skills imported in pass 1 live under `ai-artifacts/skills/`. Of these, the **engineering-origin** ones —
 `tdd`, `prototype` (mattpocock `engineering/`), and `grill-me` (the `productivity/grill-me` +
 `engineering/grill-with-docs` merge) — are adapted **here** (issues 01, 03, 05). The *additional*
 mattpocock engineering/misc skills not yet imported are a separate feature:

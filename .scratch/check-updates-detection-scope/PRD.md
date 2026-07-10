@@ -25,7 +25,7 @@ principle **any** change inside the upstream skill directory — scripts include
   correctly when the dir was renamed/moved (PATH-NOT-FOUND path), and does it false-negative on
   changes to files the skill depends on but doesn't physically contain?
 - Hooks specifically: are hooks ever part of a skill's tracked directory in this repo's model, or do
-  they live under a separate `hooks/`/settings path that detection never looks at?
+  they live under a separate `ai-artifacts/hooks/`/settings path that detection never looks at?
 
 ## Acceptance (what "checked in detail" means)
 
@@ -34,4 +34,4 @@ principle **any** change inside the upstream skill directory — scripts include
 - Explicit call-out of any out-of-directory components that escape detection, and whether that's a
   real risk for current skills.
 
-_Solution: Fill in._
+*Solution: Fill in.*

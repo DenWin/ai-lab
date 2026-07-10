@@ -15,7 +15,7 @@ capability contract, not a harness branch.
 - [ ] Agentic path: probe is generated, executed read-only, and its output consumed in-tool
 - [ ] Fallback path preserved for no-shell harnesses
 - [ ] Probe remains strictly read-only (no state changes)
-- [ ] `RECIPES.md` still referenced correctly; `sync-skills.ps1` re-run
+- [ ] `RECIPES.md` still referenced correctly; `setup-repo.ps1 -SkipHooks` re-run
 
 ## Blocked by
 

@@ -9,7 +9,7 @@ requirements from the user.
 
 1. **Diff the two drops** — `.temp/mail-to-adoc-2026-06-28.zip` vs
    `.temp/mail-to-adoc-2026-07-05.zip` (gitignored local backups; the redacted
-   extracted working copy is `shared/skills/documents/mail-to-adoc/`). Record what changed and check whether any of the four
+   extracted working copy is `ai-artifacts/skills/shared/documents/mail-to-adoc/`). Record what changed and check whether any of the four
    problems in PRD.md (tangled HTML→AsciiDoc logic, adoc-only output, image macros
    instead of links, spurious `+` after table rows) were already fixed upstream.
    Update PRD.md accordingly.

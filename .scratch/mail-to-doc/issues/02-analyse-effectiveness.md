@@ -4,7 +4,7 @@ Status: needs-triage
 
 ## What to build
 
-A written analysis of how well the 2026-07-05 version (`shared/skills/documents/mail-to-adoc/`)
+A written analysis of how well the 2026-07-05 version (`ai-artifacts/skills/shared/documents/mail-to-adoc/`)
 actually works, as input for issue 03. Note: the artifacts copy is redacted
 (placeholder emails/party names); the unredacted original is `.temp/mail-to-adoc-2026-07-05.zip`
 (local-only). Cover:

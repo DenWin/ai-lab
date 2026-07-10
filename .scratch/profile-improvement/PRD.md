@@ -3,9 +3,10 @@
 Status: ready-for-human
 
 The live source-of-truth is Settings → Instructions for Claude (claude.ai / Claude Desktop Chat).
-The repo copy is `instructions/claude-ai/profile.md` — edit here, paste there.
+The repo copy is `ai-artifacts/instructions/anthropic/claude-ai/profile.md` — edit here, paste there.
 
 Two versions are in `artifacts/`:
+
 - `profile-current.md` — the version refined in a claude.ai session; live as of 2026-06
 - `profile-prior.md` — the previous version; use as counterpart to identify what changed and whether
   any prior formulation was actually sharper
@@ -27,7 +28,7 @@ review; the behavioral eval is a separate session.
 Diff the two versions rule by rule. For each rule where they differ, decide: is the current
 version more precise, or did compression in the prior version lose something, or did the current
 version introduce unnecessary verbosity? Apply the better formulation back to
-`instructions/claude-ai/profile.md` and paste the final result into Settings.
+`ai-artifacts/instructions/anthropic/claude-ai/profile.md` and paste the final result into Settings.
 
 ## User Stories
 
@@ -40,7 +41,7 @@ version introduce unnecessary verbosity? Apply the better formulation back to
 
 ## Implementation Decisions
 
-- **Source of truth:** `instructions/claude-ai/profile.md`; paste into Settings when updated
+- **Source of truth:** `ai-artifacts/instructions/anthropic/claude-ai/profile.md`; paste into Settings when updated
 - **Diff axis:** per-rule comparison, not whole-file; the structure (§1–§9 + Facts) is settled
   <!-- [RE-CONFIRM] "structure is settled" was decided in a claude.ai session; confirm before the diff pass. -->
 
@@ -59,4 +60,4 @@ version introduce unnecessary verbosity? Apply the better formulation back to
 - The CLAUDE.md at `~/.claude/CLAUDE.md` is a different file (global Claude Code instructions);
   do not conflate with this profile
 - The profile header "Paste into: Settings → Instructions for Claude" should stay in
-  `instructions/claude-ai/profile.md` as a placement reminder but must be stripped before pasting
+  `ai-artifacts/instructions/anthropic/claude-ai/profile.md` as a placement reminder but must be stripped before pasting

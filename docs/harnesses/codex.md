@@ -32,10 +32,11 @@ For repo-specific working conventions, `AGENTS.md` is the active project contrac
 ## 2. Storage split
 
 - **Repo-scoped (committed):** `AGENTS.md`, `docs/harnesses/*.md`, shared skills under
-  `shared/skills/`, repo scripts, and any future Codex-specific repo config under `openai/codex/`
-  if added.
-- **Repo-scoped generated (gitignored):** `.agents/skills/`, rebuilt from `shared/skills/` by
-  `pwsh scripts/sync-skills.ps1`.
+  `ai-artifacts/skills/shared/`, repo scripts, and any future Codex-specific repo config under
+  `ai-artifacts/mcp-config/openai/codex/`, `ai-artifacts/plugins/openai/codex/`, or instruction
+  files under `ai-artifacts/instructions/openai/codex/` if added.
+- **Repo-scoped generated (gitignored):** `.agents/skills/`, rebuilt from `ai-artifacts/skills/shared/` by
+  `pwsh scripts/setup-repo.ps1 -SkipHooks`.
 - **Machine-local:** Codex home and plugin/skill caches under the user's profile, local approval
   state, local settings, and sandbox/session metadata. These are not committed to this repo.
 - **User-global:** account/session-level Codex instructions, installed skills/plugins/connectors,
@@ -45,16 +46,14 @@ For repo-specific working conventions, `AGENTS.md` is the active project contrac
 
 ## 3. Disk locations
 
-| Tier                             | Windows                                                  | macOS / Linux                               |
-| -------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
-| Repo root                        | `C:\GIT\DenWin\ai-lab` in this session                   | `<repo>`                                    |
-| Repo instruction file            | `<repo>\AGENTS.md`                                       | `<repo>/AGENTS.md`                          |
-| Repo Codex skill mirror          | `<repo>\.agents\skills\`                                 | `<repo>/.agents/skills/`                    |
-| Suggested Codex repo config home | `<repo>\openai\codex\` if needed                         | `<repo>/openai/codex/` if needed            |
-| User Codex home                  | `%USERPROFILE%\.codex\` observed from skill/plugin paths | `~/.codex/` presumed (`?`)                  |
-| User skills                      | `%USERPROFILE%\.codex\skills\` observed                  | `~/.codex/skills/` presumed (`?`)           |
-| Plugin cache                     | `%USERPROFILE%\.codex\plugins\cache\` observed           | `~/.codex/plugins/cache/` presumed (`?`)    |
-| Temporary writable area          | harness-provided temp directory (`:tmpdir`)              | harness-provided temp directory (`:tmpdir`) |
+- Repo root: Windows `C:\GIT\DenWin\ai-lab` in this session; macOS / Linux `<repo>`
+- Repo instruction file: Windows `<repo>\AGENTS.md`; macOS / Linux `<repo>/AGENTS.md`
+- Repo Codex skill mirror: Windows `<repo>\.agents\skills\`; macOS / Linux `<repo>/.agents/skills/`
+- Suggested Codex repo config home: Windows `<repo>\ai-artifacts\mcp-config\openai\codex\` if needed; macOS / Linux `<repo>/ai-artifacts/mcp-config/openai/codex/` if needed
+- User Codex home: Windows `%USERPROFILE%\.codex\` observed from skill/plugin paths; macOS / Linux `~/.codex/` presumed (`?`)
+- User skills: Windows `%USERPROFILE%\.codex\skills\` observed; macOS / Linux `~/.codex/skills/` presumed (`?`)
+- Plugin cache: Windows `%USERPROFILE%\.codex\plugins\cache\` observed; macOS / Linux `~/.codex/plugins/cache/` presumed (`?`)
+- Temporary writable area: harness-provided temp directory (`:tmpdir`) on both platforms
 
 Exact Codex settings filenames and all OS-specific config paths are `?` unless observed in a live
 session or documented by the active runtime.
@@ -64,7 +63,7 @@ session or documented by the active runtime.
 | Artifact type                                       | Support                                                                                         |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Instruction docs (`AGENTS.md`, custom instructions) | **Native** — root `AGENTS.md` is supplied as repo instructions                                  |
-| Skills / slash commands                             | **Native** — repo skills are mirrored to `.agents/skills/<group>-<name>/SKILL.md`               |
+| Skills / slash commands                             | **Native** — repo skills are mirrored to `.agents/skills/<group>_<name>/SKILL.md`               |
 | Subagents                                           | **Native / optional** — multi-agent tools may be available through deferred tool discovery      |
 | Hooks                                               | **Unsupported / ?** — no Codex lifecycle hook surface is visible in this session                |
 | MCP servers                                         | **Native / optional** — MCP resources/tools and app connectors may be available when configured |
@@ -98,11 +97,24 @@ session or documented by the active runtime.
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | System/developer instructions | Auto, every turn                                                                                              |
 | `AGENTS.md`                   | Auto-supplied for the workspace/session                                                                       |
-| Skills                        | Description-match or explicit user mention; mirrored `.agents/skills/<group>-<name>/SKILL.md` read before use |
+| Skills                        | Description-match or explicit user mention; mirrored `.agents/skills/<group>_<name>/SKILL.md` read before use |
 | Shell/filesystem tools        | Model-invoked, subject to sandbox and approval policy                                                         |
 | MCP resources/tools           | On-demand when configured and exposed                                                                         |
 | Plugins/connectors            | Available through installed capabilities or deferred tool discovery                                           |
 | Web browsing                  | On-demand, subject to browsing policy and network/tool availability                                           |
+
+There is no verified Codex-native equivalent to Claude Code's `hooks.SessionStart`. In this repo,
+the closest automatic bootstrap is the VS Code folder-open task in `.vscode/tasks.json`, which runs:
+
+```powershell
+pwsh -NoProfile -File .github/skills/setup_setup-repo/scripts/Invoke-SetupRepo.ps1 -IfMissing
+```
+
+For a non-circular fresh-clone bootstrap, prefer the source wrapper:
+
+```powershell
+pwsh scripts/setup-repo.ps1 -IfMissing
+```
 
 Context behavior observed from this session:
 
@@ -110,7 +122,7 @@ Context behavior observed from this session:
   the context budget.
 - A context compaction mechanism may summarize older conversation state when needed.
 - Skill files are not assumed to be fully loaded until selected; when selected, the relevant
-  `.agents/skills/<group>-<name>/SKILL.md` must be read before task actions.
+  `.agents/skills/<group>_<name>/SKILL.md` must be read before task actions.
 - File contents are not automatically re-read after edits unless the model uses filesystem tools.
 - Exact context window size, truncation thresholds, and prefix-caching behavior are `?`.
 
@@ -118,8 +130,8 @@ Context behavior observed from this session:
 
 - Ask the model which repo instructions are active and compare against `AGENTS.md`.
 - Read `AGENTS.md` directly with filesystem tools and verify behavior follows it.
-- For skills, run `pwsh scripts/sync-skills.ps1 -Target Codex -Check` and check that the selected
-  `.agents/skills/<group>-<name>/SKILL.md` was read before task actions.
+- For skills, run `pwsh scripts/setup-repo.ps1 -SkipHooks -Target Codex -Check` and check that the selected
+  `.agents/skills/<group>_<name>/SKILL.md` was read before task actions.
 - For shell/tool access, run a harmless command such as `Get-Content AGENTS.md` or `rg --files`.
 - For sandbox behavior, attempt an operation that should require approval and confirm the harness
   requests escalation rather than silently bypassing policy.
@@ -183,11 +195,11 @@ Codex workflow invocation patterns:
 - **Plain chat request:** primary interface. Arguments are natural-language task details, file paths,
   constraints, and follow-up corrections.
 - **Skill mention:** user names a skill or the task matches a skill description. The model reads the
-  mirrored `.agents/skills/<group>-<name>/SKILL.md` file and follows it for that turn.
+  mirrored `.agents/skills/<group>_<name>/SKILL.md` file and follows it for that turn.
 - **Tool calls:** arguments are structured by each tool schema, for example shell command, working
   directory, timeout, and escalation request.
 - **Plugin/app connectors:** discovered tools expose their own schemas when installed.
-- **Repo scripts:** invoked through shell tools, for example `pwsh scripts/sync-skills.ps1`.
+- **Repo scripts:** invoked through shell tools, for example `pwsh scripts/setup-repo.ps1 -SkipHooks`.
 
 Fallback pattern when no native command system exists: write a short prompt template with explicit
 placeholders, have the user fill it in chat, then treat the filled prompt as the workflow invocation.
@@ -267,8 +279,8 @@ Operational expectations:
 ## 16. Operational edge cases
 
 - **Generated vs source artifacts:** In this repo, `.claude/commands/` and `.agents/skills/` are
-  generated mirrors. Edit `shared/skills/<group>/<name>/`, then rebuild with
-  `pwsh scripts/sync-skills.ps1`; never edit the mirrors directly.
+  generated mirrors. Edit `ai-artifacts/skills/shared/<group>/<name>/`, then rebuild with
+  `pwsh scripts/setup-repo.ps1 -SkipHooks`; never edit the mirrors directly.
 - **Bootstrap requirements:** A fresh clone or sandbox may not have generated mirrors or local
   harness settings. Use repo scripts and docs to materialize generated state instead of inventing it.
 - **Persistence:** Files written under the repo persist in the working tree. Conversation context,
@@ -299,8 +311,9 @@ Operational expectations:
 | Hooks                               | No verified Codex equivalent                          | Use scripts, CI, or harness-specific automation elsewhere                 |
 | Plugins/connectors                  | Harness-specific packaging                            | Underlying tools may map to MCP or app connectors                         |
 
-**Design principle:** keep shared repo facts in `AGENTS.md`; keep Codex-specific behavior in a
-future `openai/codex/` subtree only when it cannot be expressed portably.
+**Design principle:** keep shared repo facts in `AGENTS.md`; keep Codex-specific behavior in
+`ai-artifacts/instructions/openai/codex/`, `ai-artifacts/mcp-config/openai/codex/`, or
+`ai-artifacts/plugins/openai/codex/` only when it cannot be expressed portably.
 
 ---
 

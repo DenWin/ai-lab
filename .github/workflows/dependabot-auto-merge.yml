@@ -27,4 +27,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: gh pr merge "$PR_URL" --auto --squash
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/dependabot-auto-merge/enable-auto-merge.sh

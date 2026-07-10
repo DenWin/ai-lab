@@ -26,7 +26,7 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 ## 2. Storage split
 
 - **Repo-scoped (committed):** `CLAUDE.md`, `AGENTS.md`, `.claude/settings.json`,
-  `shared/skills/<group>/<name>/`, `.mcp.json`
+  `ai-artifacts/skills/shared/<group>/<name>/`, `.mcp.json`
 - **Machine-local (gitignored):** `CLAUDE.local.md`, `.claude/settings.local.json`,
   `~/.claude/projects/<project>/memory/` (auto-memory)
 - **User-global (all repos):** `~/.claude/CLAUDE.md`, `~/.claude/settings.json`,
@@ -56,7 +56,7 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 | Subagents                                          | **Native** — `agents/*.md`                                                                              |
 | Hooks                                              | **Native** — `settings.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, etc.)                        |
 | MCP servers                                        | **Native** — `.mcp.json` (project), `~/.claude.json` (global), Desktop `claude_desktop_config.json`     |
-| Output styles                                      | **Native** — `output-styles/` (referenced in settings)                                                  |
+| Output styles                                      | **Native** — `ai-artifacts/output-styles/` (referenced in settings)                                     |
 | Settings / permissions                             | **Native** — `settings.json` / `settings.local.json`                                                    |
 | Plugins / bundles                                  | **Native** — `.claude-plugin/plugin.json` wrapping skills/agents/hooks/mcp                              |
 
@@ -147,8 +147,8 @@ is loaded every turn and competes with code for context budget — keep it conci
    the first heading of each." Pass: names the repo-root `AGENTS.md` and any present `CLAUDE.md`
    tiers with real content. Fail: invents files or misses `AGENTS.md`.
 2. **Skill invocation check** — Run `/planning:scratch` with no arguments. Pass: the ranked table
-   from `.scratch/BACKLOG.md` is displayed (command body + resources resolved from the mirror).
-   Fail: skill unknown → mirror missing; run `pwsh scripts/sync-skills.ps1`.
+  from `.scratch/BACKLOG.md` is displayed (command body + resources resolved from the mirror).
+  Fail: skill unknown → mirror missing; run `pwsh scripts/setup-repo.ps1 -SkipHooks`.
 3. **Hook check** — Start a new session on a machine with the SessionStart hook configured in
    `.claude/settings.local.json`. Pass: the "Synced skills → …" hook output appears at session
    start. Fail: no output → hook not installed on this machine or script error (`--debug` for logs).

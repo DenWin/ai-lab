@@ -18,11 +18,11 @@ Status: done (git-guardrails + setup-pre-commit imported 2026-07-05; setup clust
 - [ ] git-guardrails imported; bash guard has a working pwsh equivalent; hook blocks a dangerous git command in test
 - [ ] Decision 3 recorded; setup-pre-commit reflects my toolchain (pre-commit framework), lineage noted
 - [ ] Provenance correct: git-guardrails tracks upstream; setup-pre-commit marked as fork (skipped by update check)
-- [ ] `sync-skills.ps1` run; `/setup:git-guardrails`, `/setup:setup-pre-commit` resolve
+- [ ] `setup-repo.ps1 -SkipHooks` run; `/setup:git-guardrails`, `/setup:setup-pre-commit` resolve
 
 ## Progress (2026-07-05)
 
-- ✅ **git-guardrails** → `shared/skills/setup/git-guardrails/`. Imported from the **global-prior**
+- ✅ **git-guardrails** → `ai-artifacts/skills/shared/setup/git-guardrails/`. Imported from the **global-prior**
   (already localized: pwsh + bash, Windows-primary hook wiring) rather than the raw bash-only artifact.
   Wrote the **pwsh guard** `scripts/block-dangerous-git.ps1` (uses `ConvertFrom-Json`, no `jq`
   dependency; same regex pattern list as the bash guard) alongside the bash one. Added an
@@ -30,7 +30,7 @@ Status: done (git-guardrails + setup-pre-commit imported 2026-07-05; setup clust
   Provenance tracks `misc/git-guardrails-claude-code` in the skill's `METADATA.md`; README no longer
   duplicates exact upstream checkpoints. Bash guard smoke-tested: `git push` → exit 2, `git status`
   → exit 0; pwsh mirrors the same patterns.
-- ✅ **setup-pre-commit** → `shared/skills/setup/setup-pre-commit/`. **Decision 3 resolved:** imported
+- ✅ **setup-pre-commit** → `ai-artifacts/skills/shared/setup/setup-pre-commit/`. **Decision 3 resolved:** imported
   the global-prior (pre-commit framework for PS/MD/AsciiDoc/SQL) as a **local fork** — SoT = mine,
   lineage recorded in an HTML comment, **no `upstream-*` frontmatter** so `/setup:check-skill-updates`
   skips it (it shares only a name with Matt's Husky/lint-staged version). Added an Applicability note

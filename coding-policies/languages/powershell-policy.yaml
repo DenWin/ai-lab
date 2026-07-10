@@ -7,6 +7,22 @@ POWERSHELL_POLICY:
       type: tdd
       rule: "When testing scripts, assert Output stream behavior separately from Warning/Verbose/Error streams."
       rationale: "PowerShell streams are semantically distinct and should be validated independently."
+    - id: runtime-policy-classification
+      type: runtime
+      rule: "Every PowerShell script must declare one runtime policy header: '# RuntimePolicy: core-first|dual-runtime|desktop-only'."
+      rationale: "Runtime intent is explicit, reviewable, and enforceable in CI."
+    - id: core-first-default
+      type: runtime
+      rule: "Core-first scripts must declare '#Requires -Version 7.0' (or higher) and '#Requires -PSEdition Core'."
+      rationale: "Default runtime is pwsh Core 7+ for Linux/macOS compatibility."
+    - id: dual-runtime-compat
+      type: runtime
+      rule: "Dual-runtime scripts must remain compatible with both Windows PowerShell 5.1 and pwsh 7+, and must not declare '#Requires -PSEdition'."
+      rationale: "Edition pinning blocks one runtime and defeats dual compatibility."
+    - id: desktop-only-exception
+      type: runtime
+      rule: "Desktop-only scripts are exceptions: name them '*-windowsps.ps1', add '# RuntimeJustification: ...', and require '#Requires -Version 5.1' + '#Requires -PSEdition Desktop'."
+      rationale: "Windows-only behavior remains explicit, justified, and auditable."
 
   FORBIDDEN:
     - id: no_format_table_logic

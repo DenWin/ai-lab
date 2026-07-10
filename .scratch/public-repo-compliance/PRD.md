@@ -11,12 +11,12 @@ The repo is already **PUBLIC** (`github.com/DenWin/ai-lab`), but the items gated
 publishing" never ran:
 
 1. **Third-party attribution.** [import-upstream-skills](../import-upstream-skills/PRD.md) says to
-   add upstream's LICENSE (e.g. `THIRD-PARTY/mattpocock-skills.LICENSE`) "before publishing, since
+  add upstream's LICENSE (historically tracked in a dedicated third-party attribution folder) "before publishing, since
    the repo redistributes adapted copies of his work." Vendored copies are committed (mattpocock
-   skills under `shared/skills/` + `.scratch/*/artifacts/`; MIT-licensed `claude-video` under
+   skills under `ai-artifacts/skills/shared/` + `.scratch/*/artifacts/`; MIT-licensed `claude-video` under
    `.scratch/add-watch-skill/artifacts/`), and the repo is live.
 2. **Profile exposure.** The personal behavioral profile
-   ([anthropic/claude-ai/instructions/profile.md](../../anthropic/claude-ai/instructions/profile.md))
+   ([ai-artifacts/instructions/anthropic/claude-ai/profile.md](../../ai-artifacts/instructions/anthropic/claude-ai/profile.md))
    and committed `.scratch` history are public. Probably fine — but it should be a conscious
    decision, not a side effect of `gh repo create`.
 3. **Free hardening wins.** [[harden-github-repo]] is still needs-triage, and its central open
@@ -26,9 +26,9 @@ publishing" never ran:
 
 ## Solution
 
-_Proposed — refine in triage:_
+*Proposed — refine in triage:*
 
-- Add `THIRD-PARTY/` attribution files for all vendored upstream content; audit `.scratch/*/artifacts/`
+- Add attribution files for all vendored upstream content; audit `.scratch/*/artifacts/`
   for anything else redistributed.
 - Explicit go/no-go on public visibility of the profile and scratch history (alternative: flip repo
   to private until [[harden-github-repo]] lands).
@@ -38,16 +38,17 @@ _Proposed — refine in triage:_
 ## Progress (2026-07-04)
 
 - ✅ **Item 1 — attribution:** both upstreams verified MIT.
-  [THIRD-PARTY/](../../THIRD-PARTY/README.md) created with license copies for vendored sources
-  (`mattpocock-skills.LICENSE`, `bradautomates-claude-video.LICENSE`) plus a notice map. Exact
-  upstream checkpoints for skills live in each skill's `METADATA.md`, not in summary docs.
+  Historical note: a dedicated third-party attribution folder existed when this item was first
+  completed, but those repo copies are no longer tracked after later cleanup. The remaining durable
+  provenance in this repo is each imported skill's `METADATA.md`; this entry should not be read as a
+  current inventory of committed license-copy files.
 - ✅ **Item 3 — free hardening wins:** secret scanning, push protection, and Dependabot alerts
   enabled via `gh api`. **Branch protection deliberately NOT enabled** — it would block the current
   direct-to-main workflow; decide it together with [[gated-work-prd-issue-approval]] (which wants a
   PR flow anyway) inside [[harden-github-repo]].
 - ✅ **Item 2 — decided 2026-07-05: keep public, after a scrub.** Decision: `keep-public`. Before
   confirming, a redaction audit swept the personal profile
-  ([anthropic/claude-ai/instructions/profile.md](../../anthropic/claude-ai/instructions/profile.md))
+  ([ai-artifacts/instructions/anthropic/claude-ai/profile.md](../../ai-artifacts/instructions/anthropic/claude-ai/profile.md))
   and the full `.scratch/` tree (+ the committed config artifacts) for anything personal or sensitive.
 
   **Audit scope & result (nothing required redaction):**
@@ -65,6 +66,6 @@ _Proposed — refine in triage:_
 
 ## Further Notes
 
-- Related: [[harden-github-repo]] (settings/Actions side), [[import-upstream-skills]] (where the
+- Related: [[harden-github-repo]] (GitHub Actions/settings side), [[import-upstream-skills]] (where the
   attribution requirement was first recorded).
-- _Created by Claude Fable 5 via /planning:scratch._
+- *Created by Claude Fable 5 via /planning:scratch.*

@@ -14,7 +14,7 @@ chat-only phrasing into procedural steps. Keep intent and local customizations i
 - [ ] Each skill takes `$ARGUMENTS` where it has an input, or is confirmed not to need one
 - [ ] `disable-model-invocation` set where appropriate, with a one-line rationale per decision
 - [ ] No remaining "paste this back into chat"-style phrasing where a tool path exists
-- [ ] Each verified via `/session:write-a-skill`; `sync-skills.ps1` re-run
+- [ ] Each verified via `/session:write-a-skill`; `setup-repo.ps1 -SkipHooks` re-run
 
 ## Blocked by
 

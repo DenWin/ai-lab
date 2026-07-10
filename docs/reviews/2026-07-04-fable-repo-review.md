@@ -12,7 +12,7 @@ executed the same day:
 
 | Scratch                                                                      | State after the review session                                             |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [sync-skills-drift-check](../../.scratch/sync-skills-drift-check/PRD.md)     | ✅ done — `-Check` mode + hook                                             |
+| [sync-skills-drift-check](../../.scratch/sync-skills-drift-check/PRD.md)     | ✅ done — drift check + hook                                               |
 | [docs-integrity-pass](../../.scratch/docs-integrity-pass/PRD.md)             | ✅ done — 4 drift fixes + decay contract                                   |
 | [public-repo-compliance](../../.scratch/public-repo-compliance/PRD.md)       | ⏳ ready-for-human — attribution + protections done; profile go/no-go open |
 | [backlog-hygiene-wip-limit](../../.scratch/backlog-hygiene-wip-limit/PRD.md) | needs-triage                                                               |
@@ -26,15 +26,15 @@ Also executed on the back of the review: `repo-scaffold` completed (root `AGENTS
 
 `ai-lab` is a personal **control plane for AI-assisted work across multiple harnesses**. Four pillars:
 
-1. **Skills as source of truth** — `shared/skills/` holds portable, provenance-tracked skills
-   (grouped by intent: coding/planning/session/setup), deployed into Claude Code's
-   `.claude/commands/` via `scripts/sync-skills.ps1`. The mirror is a gitignored build artifact.
+1. **Skills as source of truth** — `ai-artifacts/skills/shared/` holds portable, provenance-tracked skills
+  (grouped by intent: coding/planning/session/setup), deployed into Claude Code's
+  `.claude/commands/` via `scripts/setup-repo.ps1 -SkipHooks`. The mirror is a gitignored build artifact.
 2. **Harness knowledge base** — `docs/harnesses/` documents each harness *from the inside*
    (self-description via `TEMPLATE.md`): instruction surfaces, precedence, storage tiers,
    capability limits. The "capability contract" (shell available → full path; else conversational
    fallback) is the portability mechanism that lets one skill copy serve all harnesses.
-3. **Instructions as versioned artifacts** — `instructions/` +
-   `anthropic/claude-ai/instructions/profile.md` treat instruction files as repo-managed source
+3. **Instructions as versioned artifacts** — `ai-artifacts/instructions/` +
+  `ai-artifacts/instructions/anthropic/claude-ai/profile.md` treat instruction files as repo-managed source
    with harness-specific live locations, organized by the specificity tiers in
    `docs/repo-layout.adoc` (`shared/` → `<vendor>/` → `<vendor>/<harness>/`, most-specific wins).
 4. **A self-hosted tracker** — `.scratch/` is a committed local-markdown issue tracker
@@ -56,7 +56,7 @@ code is.*
   layout shift including link rewriting, has a non-clobbering `-IfMissing` bootstrap mode wired to
   a SessionStart hook, and the "never edit the mirror" rule is documented consistently.
 - **Provenance is taken seriously.** Per-skill `METADATA.md` files, an origin map in
-  `shared/skills/README.md`, explicit fork-vs-downstream decisions (the `setup-pre-commit` case),
+  `ai-artifacts/skills/shared/README.md`, explicit fork-vs-downstream decisions (the `setup-pre-commit` case),
   and license/attribution awareness in the import PRD. Exact upstream checkpoints belong in the
   individual skill metadata, not summary docs.
 - **Unusual epistemic maturity in the PRDs.** The `[RE-CONFIRM]` annotations on decisions inherited
@@ -85,16 +85,16 @@ code is.*
   near-verbatim in two places — and the copies contradicted each other on the future CLAUDE.md
   path. The skills README lacked the `planning` group and used pre-migration paths. A resolved
   git-init blocker was still marked blocking.
-- **The repo is public with hardening unranked.** *(largely fixed same day: THIRD-PARTY/ added,
+- **The repo is public with hardening unranked.** *(largely fixed same day: attribution files were added,
   secret scanning + push protection + Dependabot enabled)* Vendored upstream skill copies were
   committed without the license attribution the import PRD itself required "before publishing" —
   publishing had already happened. The personal behavioral profile is public; that should be a
   conscious decision (still open).
-- **Stray content dilutes the repo's identity.** `VSCode_Extsion/` (note the typo) is a shipped
+- **Stray content dilutes the repo's identity.** `VSCode_Extension/` is a shipped
   VS Code extension at the root of an AI-configuration repo with no README tying it in;
   `mail-to-doc` rides in the tracker as a general software project. Neither is wrong — the scope
   widening is silent (open: `repo-scope-strays`).
-- **Silent-staleness risks in the sync chain.** *(fixed same day: `-Check` mode)* `-IfMissing`
+- **Silent-staleness risks in the sync chain.** *(fixed same day: drift check)* `-IfMissing`
   never refreshes an edited skill, and it's the mode the hook runs — the failure mode was the
   default path. Harness docs describe fast-moving products with a single "verified 2026-06" stamp
   and no re-verification trigger *(fixed: decay contract in TEMPLATE.md)*.
@@ -114,7 +114,7 @@ code is.*
 4. **Close the public-repo gap** — THIRD-PARTY attribution, secret scanning, push protection,
    branch protection decision. *(done except branch protection + profile go/no-go)*
 5. **De-duplicate facts; single owner per fact.** *(done; rule codified in AGENTS.md)*
-6. **Add a `-Check` drift mode to sync-skills.ps1.** *(done)*
+6. **Add a drift check for generated mirrors.** *(done)*
 7. **Give harness docs a decay contract.** *(done)*
 8. **Decide the strays consciously** — declare incubation or evict. *(open)*
 

@@ -17,7 +17,7 @@ Both keep the capability-contract fallback for no-shell harnesses.
 - [ ] `tdd` drives a real failing→passing test cycle via shell on a trivial target
 - [ ] `prototype` builds and runs a minimal prototype end-to-end in-tool
 - [ ] Stack-specific resources still load; conversational fallback preserved
-- [ ] Each verified via `/session:write-a-skill`; `sync-skills.ps1` re-run
+- [ ] Each verified via `/session:write-a-skill`; `setup-repo.ps1 -SkipHooks` re-run
 
 ## Blocked by
 

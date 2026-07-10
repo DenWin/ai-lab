@@ -5,7 +5,7 @@ Status: in-progress (issue 01 markers landed 2026-07-05; issues 02/03 pending)
 ## Problem Statement
 
 The existing `mail-to-adoc` tool — now a first-class skill at
-[`shared/skills/documents/mail-to-adoc/`](../../shared/skills/documents/mail-to-adoc/) — converts
+[`ai-artifacts/skills/shared/documents/mail-to-adoc/`](../../ai-artifacts/skills/shared/documents/mail-to-adoc/) — converts
 `.eml` files to AsciiDoc but has several issues blocking a 1.0.0 release:
 
 1. The HTML→AsciiDoc conversion logic is tangled with the main orchestration code, making it hard
@@ -32,20 +32,24 @@ Reference: Mail "Scratch 'mail-to-adoc'" from 28.06.2026 (see `artifacts/` for t
 ## Solution
 
 ### 1 — Split conversion logic
+
 Extract the HTML→AsciiDoc transformation into a standalone skill or module (e.g.
 `html-to-adoc`), called by the main `mail-to-doc` orchestrator. This enables independent
 testing and future reuse.
 
 ### 2 — Rename & add Markdown target
+
 Rename the skill from `mail-to-adoc` to `mail-to-doc`. Add a `--format` / `-f` flag
 (`adoc` | `md`; default `adoc`) so users can select the output format.
 
 ### 3 — Fix image attachments (links only)
+
 When an attachment is an image, render it as a link rather than an image macro.
 Expected AsciiDoc: `* link:../../Attachments/<timestamp>-<name>[<name>]`
 Expected Markdown: `* [<name>](../../Attachments/<timestamp>-<name>)`
 
 ### 4 — Fix table row separator
+
 Diagnose and remove the spurious `+` appended after each table row. Likely an off-by-one
 in the row-close logic of the HTML table→AsciiDoc table converter.
 
@@ -67,7 +71,7 @@ in the row-close logic of the HTML table→AsciiDoc table converter.
 - **The deliverable lives outside the scratch (2026-07-05).** A scratch holds the *idea*; a working
   skill is a *deliverable* and belongs in the repo's skills tree. The tool was promoted from
   `artifacts/mail-to-adoc/` to the first-class skill
-  [`shared/skills/documents/mail-to-adoc/`](../../shared/skills/documents/mail-to-adoc/) (new
+  [`ai-artifacts/skills/shared/documents/mail-to-adoc/`](../../ai-artifacts/skills/shared/documents/mail-to-adoc/) (new
   `documents` group — no existing group fits document conversion). This scratch keeps only the
   idea + tracking; it no longer carries the code. Note: the skill's `_PROJECT_ROOT` assumes a
   `<root>/skills/<name>/` layout, so the extra `documents/` level shifts it in-repo — irrelevant here
@@ -97,4 +101,4 @@ in the row-close logic of the HTML table→AsciiDoc table converter.
   two path tests asserted the old `docs/` layout (fixed to `01_Korrespondenz/Attachments/`), and two
   referenced removed functions (`_add_hardbreaks_to_reply_headers`, `_auto_name`) now skipped pending
   a delete-vs-restore call. The zip-to-zip diff (`.temp/` originals) still needs the workstation.
-- _Created by /planning:scratch._
+- *Created by /planning:scratch.*

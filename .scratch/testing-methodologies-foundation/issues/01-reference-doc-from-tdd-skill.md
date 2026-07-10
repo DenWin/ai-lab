@@ -15,7 +15,7 @@ section pointing at `docs/testing-methodologies-foundation.adoc` as the canonica
 
 - `SKILL.md` names the foundation doc as its source-of-truth and links it via a git-tracked path.
 - The link resolves in the published repo (not just on this machine).
-- After the edit: re-run `scripts/sync-skills.ps1` so the synced command copy carries the reference.
+- After the edit: re-run `scripts/setup-repo.ps1 -SkipHooks` so the synced command copy carries the reference.
 
 ## Blocked by
 

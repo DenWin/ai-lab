@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Bootstrap repo mirrors and hooks (if missing)",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        ".github/skills/setup_setup-repo/scripts/Invoke-SetupRepo.ps1",
+        "-IfMissing"
+      ],
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated",
+        "focus": false,
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Bootstrap repo mirrors and hooks (full refresh)",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        ".github/skills/setup_setup-repo/scripts/Invoke-SetupRepo.ps1"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

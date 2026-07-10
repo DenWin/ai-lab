@@ -41,34 +41,34 @@ Precedence: platform rules > repo instructions > user messages. The `custom_inst
 
 ## 3. Disk locations
 
-| Tier                    | Windows                                                                          | macOS / Linux                                                     |
-| ----------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Repo main checkout      | `%USERPROFILE%\.copilot\repos\<owner-repo>\`                                     | `~/.copilot/repos/<owner-repo>/`                                  |
-| Session worktree        | `%USERPROFILE%\.copilot\repos\copilot-worktrees\<owner-repo>\<branch>\`         | `~/.copilot/repos/copilot-worktrees/<owner-repo>/<branch>/`      |
-| Session state folder    | `%USERPROFILE%\.copilot\session-state\<session-id>\`                            | `~/.copilot/session-state/<session-id>/`                          |
-| Session artifacts       | `%USERPROFILE%\.copilot\session-state\<session-id>\files\`                      | `~/.copilot/session-state/<session-id>/files/`                    |
-| Repo instructions       | `<repo>\.github\copilot-instructions.md`                                        | `<repo>/.github/copilot-instructions.md`                         |
-| Cross-harness contract  | `<repo>\AGENTS.md`                                                               | `<repo>/AGENTS.md`                                               |
-| Project extensions      | `<repo>\.github\extensions\`                                                    | `<repo>/.github/extensions/`                                     |
-| Project prompt files    | `<repo>\.github\prompts\*.prompt.md`                                            | `<repo>/.github/prompts/*.prompt.md`                             |
-| User-scope extensions   | `?` (not exposed in-session)                                                    | `?`                                                               |
-| App settings / config   | managed by Copilot CLI app — path `?`                                           | `?`                                                               |
+| Tier                   | Windows                                                                 | macOS / Linux                                               |
+| ---------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Repo main checkout     | `%USERPROFILE%\.copilot\repos\<owner-repo>\`                            | `~/.copilot/repos/<owner-repo>/`                            |
+| Session worktree       | `%USERPROFILE%\.copilot\repos\copilot-worktrees\<owner-repo>\<branch>\` | `~/.copilot/repos/copilot-worktrees/<owner-repo>/<branch>/` |
+| Session state folder   | `%USERPROFILE%\.copilot\session-state\<session-id>\`                    | `~/.copilot/session-state/<session-id>/`                    |
+| Session artifacts      | `%USERPROFILE%\.copilot\session-state\<session-id>\files\`              | `~/.copilot/session-state/<session-id>/files/`              |
+| Repo instructions      | `<repo>\.github\copilot-instructions.md`                                | `<repo>/.github/copilot-instructions.md`                    |
+| Cross-harness contract | `<repo>\AGENTS.md`                                                      | `<repo>/AGENTS.md`                                          |
+| Project extensions     | `<repo>\.github\extensions\`                                            | `<repo>/.github/extensions/`                                |
+| Project prompt files   | `<repo>\.github\prompts\*.prompt.md`                                    | `<repo>/.github/prompts/*.prompt.md`                        |
+| User-scope extensions  | `?` (not exposed in-session)                                            | `?`                                                         |
+| App settings / config  | managed by Copilot CLI app — path `?`                                   | `?`                                                         |
 
 ## 4. Artifact mapping
 
-| Artifact type                  | Support                 | Notes                                                                                    |
-| ------------------------------ | ----------------------- | ---------------------------------------------------------------------------------------- |
-| Instruction docs               | **Native**              | `.github/copilot-instructions.md` + `AGENTS.md`; auto-loaded every session              |
-| Skills / slash commands        | **Emulated**            | No dedicated skill format; represented via extensions (tools) or prompt files            |
-| Subagents                      | **Native**              | `task` tool spawns typed sub-agents (explore, task, general-purpose, code-review, etc.) |
-| Hooks                          | **Partial / Emulated**  | No declarative hook config; lifecycle events handled by extensions + app runtime         |
-| MCP servers                    | **Native**              | Configured via workspace or user settings; protocol is cross-vendor                      |
-| Canvas panels                  | **Native** (unique)     | Interactive side panels (editor, browser, terminal); opened by agent or user             |
-| Output styles                  | **Emulated**            | Style contracts in instruction files; no native style primitive                          |
-| Settings / permissions         | **Native**              | App settings + extension `allow/deny` lists                                              |
-| Plugins / bundles              | **Native** (extensions) | `.github/extensions/*.{js,ts,yml}` contribute tools / canvases to the session           |
-| Scheduled workflows            | **Native**              | Built-in workflow scheduler (manual / hourly / daily / weekly / CRON)                   |
-| Session store / history        | **Native**              | Per-session SQLite (`sql` tool); cross-session DuckDB history (`session_store_sql` tool) |
+| Artifact type           | Support                 | Notes                                                                                    |
+| ----------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
+| Instruction docs        | **Native**              | `.github/copilot-instructions.md` + `AGENTS.md`; auto-loaded every session               |
+| Skills / slash commands | **Emulated**            | No dedicated skill format; represented via extensions (tools) or prompt files            |
+| Subagents               | **Native**              | `task` tool spawns typed sub-agents (explore, task, general-purpose, code-review, etc.)  |
+| Hooks                   | **Partial / Emulated**  | No declarative hook config; lifecycle events handled by extensions + app runtime         |
+| MCP servers             | **Native**              | Configured via workspace or user settings; protocol is cross-vendor                      |
+| Canvas panels           | **Native** (unique)     | Interactive side panels (editor, browser, terminal); opened by agent or user             |
+| Output styles           | **Emulated**            | Style contracts in instruction files; no native style primitive                          |
+| Settings / permissions  | **Native**              | App settings + extension `allow/deny` lists                                              |
+| Plugins / bundles       | **Native** (extensions) | `.github/extensions/*.{js,ts,yml}` contribute tools / canvases to the session            |
+| Scheduled workflows     | **Native**              | Built-in workflow scheduler (manual / hourly / daily / weekly / CRON)                    |
+| Session store / history | **Native**              | Per-session SQLite (`sql` tool); cross-session DuckDB history (`session_store_sql` tool) |
 
 ## 5. Cross-compatibility
 
@@ -93,15 +93,15 @@ Precedence: platform rules > repo instructions > user messages. The `custom_inst
 
 ## 7. Activation + load model
 
-| Surface                           | Load model                                                                            |
-| --------------------------------- | ------------------------------------------------------------------------------------- |
-| `.github/copilot-instructions.md` | Auto, every session turn (injected as `custom_instruction`)                           |
-| `AGENTS.md`                       | Auto, every session turn (base instruction layer)                                     |
-| Extensions                        | Loaded at app / session start; tools contributed are available for the full session   |
-| MCP servers                       | On-demand tool calls (not loaded into context text)                                   |
-| Canvas                            | Opened explicitly by agent (`open_canvas`) or user; persists as a side panel         |
-| Scheduled workflows               | Time-triggered or manual; spawn a new session with a configured prompt and mode       |
-| Sub-agents (task tool)            | Spawned on demand; background agents notify on completion                             |
+| Surface                           | Load model                                                                               |
+| --------------------------------- | ---------------------------------------------------------------------------------------- |
+| `.github/copilot-instructions.md` | Auto, every session turn (injected as `custom_instruction`)                              |
+| `AGENTS.md`                       | Auto, every session turn (base instruction layer)                                        |
+| Extensions                        | Loaded at app / session start; tools contributed are available for the full session      |
+| MCP servers                       | On-demand tool calls (not loaded into context text)                                      |
+| Canvas                            | Opened explicitly by agent (`open_canvas`) or user; persists as a side panel             |
+| Scheduled workflows               | Time-triggered or manual; spawn a new session with a configured prompt and mode          |
+| Sub-agents (task tool)            | Spawned on demand; background agents notify on completion                                |
 | Prompt files (`.prompt.md`)       | User-invoked (`/filename` pattern from VS Code Copilot; not natively slash-invoked here) |
 
 Instructions are **not** cached across sessions — each session starts fresh from disk.
@@ -132,9 +132,8 @@ window; keep `.github/copilot-instructions.md` and `AGENTS.md` concise.
 
 ## 10. Capability limits / notable absences
 
-- No native skill format — skills from `shared/skills/` are not auto-mirrored to a
-  Copilot CLI-specific directory (the sync script targets `.claude/commands/` and
-  `.agents/skills/` only); expose skills via extensions or prompt files
+- Skills can be loaded from skill directories (Copilot SDK `skillDirectories`), where each immediate
+  subdirectory contains `SKILL.md`. This repo mirrors to `.github/skills/<group>_<name>/SKILL.md`.
 - No declarative hook system comparable to Claude Code's `settings.json` hooks
 - No path-scoped instruction activation (`applyTo`) — all instructions apply session-wide
 - No persistent cross-session memory built into the harness (relies on session state files
@@ -149,18 +148,18 @@ window; keep `.github/copilot-instructions.md` and `AGENTS.md` concise.
 - **Harness/App:** Copilot CLI 1.0.69-0
 - **Session model:** Claude Sonnet 4.6 (multi-model; observed model at time of writing)
 
-| Section                              | Confidence | Why                                                                                                      |
-| ------------------------------------ | ---------- | -------------------------------------------------------------------------------------------------------- |
-| 1. Instruction surfaces + precedence | high       | Load model visible in-session via `custom_instruction` injection; additive layer confirmed               |
-| 2. Storage split                     | high       | Session state and worktree paths are directly observable in the session context                          |
-| 3. Disk locations                    | medium     | Worktree and session paths confirmed from live context; user-scope extension path is `?`                 |
-| 4. Artifact mapping                  | high       | All tool categories exercised in this repo's sessions                                                    |
-| 5. Cross-compatibility               | high       | `AGENTS.md` and `.github/copilot-instructions.md` auto-load confirmed in-session                        |
-| 6. Composition mechanics             | medium     | Additive layering observed; exact precedence for instruction-level conflicts not systematically tested    |
-| 7. Activation + load model           | high       | Extension, MCP, canvas, and workflow load patterns all observed in-session                               |
-| 8. Validation                        | high       | Commands verified in live sessions (`extensions_manage`, `list_workflows`, etc.)                         |
-| 9. Security / secrets boundary       | high       | Follows repo-public constraint and standard env-var injection patterns                                   |
-| 10. Capability limits                | medium     | Known absences confirmed; some edge cases (cloud sessions, extension API limits) not fully tested        |
+| Section                              | Confidence | Why                                                                                                    |
+| ------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------ |
+| 1. Instruction surfaces + precedence | high       | Load model visible in-session via `custom_instruction` injection; additive layer confirmed             |
+| 2. Storage split                     | high       | Session state and worktree paths are directly observable in the session context                        |
+| 3. Disk locations                    | medium     | Worktree and session paths confirmed from live context; user-scope extension path is `?`               |
+| 4. Artifact mapping                  | high       | All tool categories exercised in this repo's sessions                                                  |
+| 5. Cross-compatibility               | high       | `AGENTS.md` and `.github/copilot-instructions.md` auto-load confirmed in-session                       |
+| 6. Composition mechanics             | medium     | Additive layering observed; exact precedence for instruction-level conflicts not systematically tested |
+| 7. Activation + load model           | high       | Extension, MCP, canvas, and workflow load patterns all observed in-session                             |
+| 8. Validation                        | high       | Commands verified in live sessions (`extensions_manage`, `list_workflows`, etc.)                       |
+| 9. Security / secrets boundary       | high       | Follows repo-public constraint and standard env-var injection patterns                                 |
+| 10. Capability limits                | medium     | Known absences confirmed; some edge cases (cloud sessions, extension API limits) not fully tested      |
 
 ## 12. Command + argument mapping
 
@@ -184,16 +183,16 @@ Fallback when no native command invocation exists:
 
 ## 13. Capability contract
 
-| Capability                        | Contract    | Notes                                                                           |
-| --------------------------------- | ----------- | ------------------------------------------------------------------------------- |
-| Filesystem read                   | required    | Core to codebase grounding; always available                                    |
-| Filesystem write                  | required    | Needed for code edits; always available                                         |
-| Shell / terminal execution        | required    | `powershell` tool; always available in local sessions                           |
-| Network access                    | optional    | `web_fetch` for URL retrieval; `gh` CLI for GitHub API                          |
-| External tool calls (MCP/plugins) | optional    | Available when extensions or MCP servers are configured                         |
-| Sub-agents                        | optional    | `task` tool for delegation; requires compatible model and agent type            |
-| Canvas panels                     | optional    | Available in the desktop app; degrade to text output in headless/API contexts   |
-| Background / scheduled tasks      | optional    | Workflows for scheduled; background agents for async within a session           |
+| Capability                        | Contract | Notes                                                                         |
+| --------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| Filesystem read                   | required | Core to codebase grounding; always available                                  |
+| Filesystem write                  | required | Needed for code edits; always available                                       |
+| Shell / terminal execution        | required | `powershell` tool; always available in local sessions                         |
+| Network access                    | optional | `web_fetch` for URL retrieval; `gh` CLI for GitHub API                        |
+| External tool calls (MCP/plugins) | optional | Available when extensions or MCP servers are configured                       |
+| Sub-agents                        | optional | `task` tool for delegation; requires compatible model and agent type          |
+| Canvas panels                     | optional | Available in the desktop app; degrade to text output in headless/API contexts |
+| Background / scheduled tasks      | optional | Workflows for scheduled; background agents for async within a session         |
 
 Degradation rule: if an optional capability is missing, continue with the nearest equivalent
 (e.g., text output instead of canvas; inline shell command instructions if terminal is blocked).
@@ -224,6 +223,7 @@ If a required capability is missing, stop and emit explicit manual steps.
 Update it at major milestones. Skip the plan for straightforward tasks.
 
 **Modes:**
+
 - **Interactive** — step-by-step with user approval at each significant change; preferred for
   exploratory or risky work.
 - **Autopilot** — agent drives to completion autonomously; use for well-defined tasks.
@@ -251,9 +251,10 @@ edge cases where multiple equally-valid approaches exist.
   read or write files in the main checkout path.
 - **Branch naming:** the app generates an initial branch name; rename it immediately with
   `rename_branch` before the first commit (using `git branch -m` bypasses the session tracking).
-- **Generated mirrors:** `.claude/commands/` (Claude Code skill mirror) and `.agents/skills/`
-  (Codex skill mirror) are gitignored and rebuilt by `pwsh scripts/sync-skills.ps1`. Run the sync
-  script after any change to `shared/skills/`; these mirrors may not exist on a fresh clone.
+- **Generated mirrors:** `.claude/commands/` (Claude Code skill mirror), `.agents/skills/`
+  (Codex skill mirror), and `.github/skills/` (Copilot skill mirror) are gitignored
+  and rebuilt by `pwsh scripts/setup-repo.ps1 -SkipHooks`. Run the sync step after any change to
+  `ai-artifacts/skills/shared/`; these mirrors may not exist on a fresh clone.
 - **Session state persistence:** session state folder (`~/.copilot/session-state/<session-id>/`)
   persists across checkpoints but is **not** committed. Promote only durable, redacted material
   to the repo.
@@ -274,16 +275,16 @@ edge cases where multiple equally-valid approaches exist.
 
 ## Cross-compatibility
 
-| Artifact                          | Cross-compat position               | Notes                                                                          |
-| --------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------ |
-| `AGENTS.md`                       | **Primary cross-compat file**       | Read by Copilot CLI, VS Code Copilot, Claude Code, Codex                      |
-| `.github/copilot-instructions.md` | Copilot family (CLI + VS Code)      | Not read by Claude Code or Codex as a native instruction file                 |
-| `.github/extensions/`             | Copilot CLI-specific                | Extension format is not shared with other harnesses                           |
-| `.github/prompts/*.prompt.md`     | Copilot family (shared format)      | VS Code Copilot invokes as slash commands; Copilot CLI references by path     |
-| MCP (workspace/user config)       | Cross-vendor                        | Config syntax and location differ per harness; protocol is vendor-neutral     |
-| `shared/skills/`                  | Source of truth                     | Mirrored to `.claude/commands/` (Claude Code) and `.agents/skills/` (Codex); not auto-mirrored for Copilot CLI |
-| Scheduled workflows               | Copilot CLI-specific                | No equivalent native primitive in other harnesses                             |
-| Canvas panels                     | Copilot CLI-specific                | No equivalent in other harnesses                                              |
+| Artifact                          | Cross-compat position          | Notes                                                                                                          |
+| --------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `AGENTS.md`                       | **Primary cross-compat file**  | Read by Copilot CLI, VS Code Copilot, Claude Code, Codex                                                       |
+| `.github/copilot-instructions.md` | Copilot family (CLI + VS Code) | Not read by Claude Code or Codex as a native instruction file                                                  |
+| `.github/extensions/`             | Copilot CLI-specific           | Extension format is not shared with other harnesses                                                            |
+| `.github/prompts/*.prompt.md`     | Copilot family (shared format) | VS Code Copilot invokes as slash commands; Copilot CLI references by path                                      |
+| MCP (workspace/user config)       | Cross-vendor                   | Config syntax and location differ per harness; protocol is vendor-neutral                                      |
+| `ai-artifacts/skills/shared/`     | Source of truth                | Mirrored to Claude, Codex, and Copilot skill mirrors                                                           |
+| Scheduled workflows               | Copilot CLI-specific           | No equivalent native primitive in other harnesses                                                              |
+| Canvas panels                     | Copilot CLI-specific           | No equivalent in other harnesses                                                                               |
 
 **Cross-capability preference order for Copilot CLI authoring:**
 

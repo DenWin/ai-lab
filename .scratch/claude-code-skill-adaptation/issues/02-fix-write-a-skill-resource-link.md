@@ -13,7 +13,7 @@ somewhere; if orphaned, wire it in or remove it.
 
 - [ ] Every resource link in `write-a-skill/SKILL.md` resolves to a file that exists
 - [ ] No bundled resource is orphaned (unreferenced)
-- [ ] `scripts/sync-skills.ps1` re-run; mirror links resolve
+- [ ] `scripts/setup-repo.ps1 -SkipHooks` re-run; mirror links resolve
 
 ## Blocked by
 

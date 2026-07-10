@@ -16,8 +16,8 @@ The structure decisions were resolved via grill-me (2026-06-04) and the layout m
 > superseded. Canonical layout is now `shared/` (default) + `<vendor>/` + `<vendor>/<harness>/`,
 > most-specific-wins; **loose folders** (no plugin bundles); folders created **on demand**. See
 > [docs/repo-layout.adoc](../../docs/repo-layout.adoc) — the canonical layout reference.
-> Done so far: `git init`; skills → `shared/skills/`; profile →
-> `anthropic/claude-ai/instructions/profile.md`; `sync-skills.ps1` retargeted + re-run; layout doc
+> Done so far: `git init`; skills → `ai-artifacts/skills/shared/`; profile →
+> `ai-artifacts/instructions/anthropic/claude-ai/profile.md`; setup-repo mirror sync retargeted + re-run; layout doc
 > authored. Remaining: `AGENTS.md`, file placement, remote, initial commit.
 
 `git init` (done) unblocks the `tdd`-skill→foundation-doc git-repo reference (see
@@ -26,15 +26,15 @@ This also folded in the earlier `init-git-repo` stub.
 
 ## Scope
 
-Phase 1 of the handoff (skill adaptation) is largely done — skills live under `shared/skills/` and
+Phase 1 of the handoff (skill adaptation) is largely done — skills live under `ai-artifacts/skills/shared/` and
 remaining work is tracked in [claude-code-skill-adaptation](../claude-code-skill-adaptation/PRD.md)
 and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is **Phase 2 only**:
 
 1. ✅ `git init`, default branch `main`. `.gitignore` already reconciled (`.claude/commands/*`
    generated; `.temp/*` staged) — no change needed.
-2. ✅ Structure resolved + migrated: skills → `shared/skills/`, profile →
-   `anthropic/claude-ai/instructions/`, `sync-skills.ps1` retargeted, [docs/repo-layout.adoc](../../docs/repo-layout.adoc)
-   authored. Per-harness artifact folders (`settings/`, `mcp/`, `hooks/`, `output-styles/`) are
+2. ✅ Structure resolved + migrated: skills → `ai-artifacts/skills/shared/`, profile →
+   `ai-artifacts/instructions/anthropic/claude-ai/`, setup-repo mirror sync retargeted, [docs/repo-layout.adoc](../../docs/repo-layout.adoc)
+   authored. Per-harness artifact folders (`ai-artifacts/mcp-config/`, `ai-artifacts/hooks/`, `ai-artifacts/output-styles/`) are
    created **on demand**, not pre-scaffolded.
 3. ✅ Root `AGENTS.md` authored (2026-07-04) as an **operational stub**: cross-harness facts only
    (layout, source-of-truth/mirror rules, `.scratch` workflow, conventions). The behavioral-overlap
@@ -53,8 +53,8 @@ and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is 
 ## Decisions
 
 1. **#6 Taxonomy keying — RESOLVED (grill-me 2026-06-04).** `shared/` (default) + `<vendor>/` +
-   `<vendor>/<harness>/`, most-specific-wins. Skills default to `shared/skills/`; config
-   (instructions/settings/mcp/hooks/output-styles) lives under `<vendor>/<harness>/`. claude.ai adds
+   `<vendor>/<harness>/`, most-specific-wins. Skills default to `ai-artifacts/skills/shared/`; config
+   (instructions/mcp-config/hooks/output-styles) lives under `<vendor>/<harness>/`. claude.ai adds
    a `projects/<project-name>/` layer. No vendor-only "platform" key. Ref: docs/repo-layout.adoc.
 2. **#7 Packaging — RESOLVED.** Loose folders, not plugin bundles (personal use; can be wrapped into a
    plugin later if distribution ever matters).

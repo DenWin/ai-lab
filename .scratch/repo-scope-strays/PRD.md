@@ -10,7 +10,7 @@ Quick capture — iron out in scratch-planning, don't action yet.
 The repo's declared identity (AI-configuration lab: skills, harness docs, instructions, tracker) is
 being diluted by undeclared strays:
 
-- `VSCode_Extsion/` (note the folder-name typo — "Extsion") — a shipped VS Code extension at repo
+- `VSCode_Extension/` (historically created as `VSCode_Extsion/`, with the typo) — a shipped VS Code extension at repo
   root, unrelated to the lab's stated purpose, with no README tying it in.
 - [mail-to-doc](../mail-to-doc/PRD.md) — a general software project (eml→AsciiDoc converter) riding
   in the `.scratch` tracker.
@@ -21,7 +21,7 @@ doesn't account for.
 
 ## Solution
 
-_Proposed — refine in triage. Two clean options:_
+*Proposed — refine in triage. Two clean options:*
 
 1. **Declare incubation:** "the lab also incubates small tools" — give them a home
    (e.g. `tools/` or `projects/`), fix the folder-name typo, add a README per tool, and record the
@@ -35,8 +35,8 @@ Either answer is fine — the undeclared middle isn't. Renaming/moving the exten
 ## Further Notes
 
 - Touches the repo-layout doc owned by [[repo-scaffold]]; coordinate if both are in flight.
-- 2026-07-04 scratch-plan (user input): `VSCode_Extsion/` **needs a README**; it is an outlier but
+- 2026-07-04 scratch-plan (user input): `VSCode_Extension/` **needs a README**; it is an outlier but
   not unrelated — it exists to make reading AsciiDoc files in VS Code easier, in support of AI
   projects. And [[mail-to-doc]] is a **skill**, not a software project — which weakens the "stray
   software project" framing above; re-frame during triage.
-- _Created by Claude Fable 5 via /planning:scratch._
+- *Created by Claude Fable 5 via /planning:scratch.*

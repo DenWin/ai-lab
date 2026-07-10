@@ -9,7 +9,7 @@ must be source-agnostic.
 
 > **Scope decision (2026-07-05):** this feature delivers **the skill that enables importing** — not
 > the actual mattpocock import run. The generic process now lives as a first-class skill,
-> `/setup:import-upstream-skill` (`shared/skills/setup/import-upstream-skill/SKILL.md`). Running the
+> `/setup:import-upstream-skill` (`ai-artifacts/skills/shared/setup/import-upstream-skill/SKILL.md`). Running the
 > concrete 9-skill mattpocock import stays as follow-up work — issues 03 (coding), 04 (planning), 05
 > (setup) — each executed by invoking the new skill.
 
@@ -19,7 +19,7 @@ must be source-agnostic.
   8-step process (snapshot → intent group → placement → `METADATA.md` provenance → capability-contract
   adaptation → verify via `write-a-skill` → origin-map update → sync). Source-agnostic; handles
   GitHub upstreams, local/global copies, and local forks (no dangling `upstream-commit`).
-- ✅ **Origin map updated:** `shared/skills/README.md` lists `import-upstream-skill` as a local original.
+- ✅ **Origin map updated:** `ai-artifacts/skills/shared/README.md` lists `import-upstream-skill` as a local original.
 - ⏳ **Actual imports remain:** issues 03/04/05 (import the coding / planning / setup clusters) are the
   first consumers of the new skill; the config-placement decision (issue 02) is only needed when the
   planning cluster is actually imported, so it stays deferred until then.
@@ -33,7 +33,7 @@ bash flavored, not adapted to Claude Code on Windows/pwsh), and one of them — 
 
 ## Solution
 
-Import each missing skill into `shared/skills/<group>/<name>/` under my intent-based grouping, with
+Import each missing skill into `ai-artifacts/skills/shared/<group>/<name>/` under my intent-based grouping, with
 `METADATA.md` provenance pointing at Matt's repo/path/checkpoint, then run the Claude Code
 capability-contract adaptation pass on them. Resolve two design decisions first (grouping + the
 config-distribution question) because they shape where things land.
@@ -101,7 +101,7 @@ worth carrying into the import (especially `setup-pre-commit`, which diverges ha
   `upstream-author`, `upstream-repo`, `upstream-path`, and `upstream-commit`. Do not duplicate the
   exact upstream checkpoint in summary docs.
 - **New `planning` group** for to-issues / to-prd / triage. Update `.gitignore` (add
-  `/.claude/commands/planning/`) and re-run `scripts/sync-skills.ps1`.
+  `/.claude/commands/planning/`) and re-run `scripts/setup-repo.ps1 -SkipHooks`.
 - **Capability-contract adaptation** (same principle as pass 1): shell/tool path where available,
   conversational fallback otherwise. Convert Matt's `.sh` helpers to pwsh.
 - **Tracker default = local-markdown `.scratch/`** (this repo already uses it). The planning skills
@@ -155,7 +155,7 @@ comment, omit `upstream-commit` so the staleness check skips it (it's no longer 
 
 ## Testing Decisions
 
-- After each import: `scripts/sync-skills.ps1`, then invoke `/group:name` and confirm body +
+- After each import: `scripts/setup-repo.ps1 -SkipHooks`, then invoke `/group:name` and confirm body +
   resources load and any `!command`/script paths resolve.
 - For pwsh-converted scripts (diagnose HITL loop, git-guardrails block hook): run them on a throwaway
   target and confirm they behave (and that the guardrail actually blocks a dangerous git command).
@@ -177,13 +177,11 @@ comment, omit `upstream-commit` so the staleness check skips it (it's no longer 
 ## Attribution
 
 These skills derive from [mattpocock/skills](https://github.com/mattpocock/skills). Per-skill
-provenance is in `METADATA.md`; consider adding upstream's `LICENSE` to this repo
-(e.g. `THIRD-PARTY/mattpocock-skills.LICENSE`) before publishing, since the repo redistributes adapted
-copies of his work.
+provenance is in `METADATA.md`.
 
 ## Further Notes
 
 - Upstream snapshot: `.temp/github.com_mattpocock/skills`; exact checkpoints belong in each imported
   skill's `METADATA.md`.
-- Provenance convention + origin map: `shared/skills/README.md`. Update flow: the `/setup:check-skill-updates` skill.
+- Provenance convention + origin map: `ai-artifacts/skills/shared/README.md`. Update flow: the `/setup:check-skill-updates` skill.
 - Claude Code adaptation principles & pass-1 backlog: `.scratch/claude-code-skill-adaptation/`.

@@ -16,20 +16,20 @@ its real behavior, not the one-line description. Establish ground truth before r
 - What files does quick-capture create/touch — `PRD.md`, the `BACKLOG.md` row, anything else? What
   status/ranking does a new entry get, and how is the slug chosen?
 - How does it relate to the sibling skills (`scratch-plan`, `to-issues`, `to-prd`, `triage`) and the
-  canonical [LAYOUT.md](../../shared/skills/planning/scratch/LAYOUT.md) they all reference?
+  canonical [LAYOUT.md](../../ai-artifacts/skills/shared/planning/scratch/LAYOUT.md) they all reference?
 - Does the skill's documented behavior match what's been happening in practice (e.g. the stub PRDs +
   TBD backlog rows captured this session)? Any gaps between the SKILL.md and actual effect?
 
 ## Notes
 
-- Source of truth: `shared/skills/planning/scratch/SKILL.md` (+ `LAYOUT.md`, `RANKING.md`); deployed
+- Source of truth: `ai-artifacts/skills/shared/planning/scratch/SKILL.md` (+ `LAYOUT.md`, `RANKING.md`); deployed
   mirror under `.claude/commands/planning/scratch/`.
 - Motivation seems to be calibrating trust in the scratch workflow before leaning on it more (cf.
   [[gated-work-prd-issue-approval]], [[capture-not-execute]]).
 
 ## Findings (investigation 2026-07-05)
 
-Ground truth read from `shared/skills/planning/scratch/SKILL.md` (+ `LAYOUT.md`, `RANKING.md`) and
+Ground truth read from `ai-artifacts/skills/shared/planning/scratch/SKILL.md` (+ `LAYOUT.md`, `RANKING.md`) and
 `scratch-plan/SKILL.md`, cross-checked against the actual `.scratch/` tree — and, for the sibling
 relationship, against the committed mattpocock upstream artifacts of `to-issues`/`to-prd`/`triage`
 (§3a).
@@ -72,7 +72,7 @@ does no ranking. Ranking is `scratch-plan`'s job (§3).
   runs a one-question-at-a-time interview (priority / importance / effort, with fuzzy-input bucket
   rounding), computes `P × I × E`, and **rewrites** `BACKLOG.md` sorted with a `Last updated:` line.
   Division of labour: `scratch` = capture + display; `scratch-plan` = calibrate + rank.
-- **`to-issues` / `to-prd` / `triage` aren't imported into `shared/skills/` yet** — but their
+- **`to-issues` / `to-prd` / `triage` aren't imported into `ai-artifacts/skills/shared/` yet** — but their
   mattpocock **upstream versions are committed as artifacts** under
   `import-upstream-skills/artifacts/engineering/{to-issues,to-prd,triage}/SKILL.md` (plus the config
   docs `setup-matt-pocock-skills/{issue-tracker-local,triage-labels,domain}.md`). Import into
@@ -141,7 +141,7 @@ conventions from `LAYOUT.md` directly plus a small triage-label map.
   `scratch`'s append. The LAYOUT template documents only the minimal header a fresh `BACKLOG.md` gets.
 - **Deployment caveat.** `/planning:scratch` only resolves after the generated mirror exists
   (`.claude/commands/planning/scratch.md`). On a fresh clone / non-Windows sandbox the mirror is
-  absent (gitignored; `pwsh scripts/sync-skills.ps1` not yet run) — so the *source* behavior above is
+  absent (gitignored; `pwsh scripts/setup-repo.ps1 -SkipHooks` not yet run) — so the *source* behavior above is
   authoritative, but the slash command itself may be unavailable until sync runs.
 
 ### Reevaluation (2026-07-06)
@@ -152,7 +152,7 @@ User-requested recheck of the last open question ("how does it relate to the sib
 "Tracker-contract prerequisites" checklist on
 [`import-upstream-skills` issue 04](../import-upstream-skills/issues/04-import-planning-cluster.md).
 Verified against the repo today: the three siblings are still not imported
-(`shared/skills/planning/` = `scratch` + `scratch-plan` only), so the §3a answer stands unchanged.
+(`ai-artifacts/skills/shared/planning/` = `scratch` + `scratch-plan` only), so the §3a answer stands unchanged.
 Nothing remains in this scratch; follow-up work lives in [[import-upstream-skills]] issues 02/04.
 
 ### Verdict

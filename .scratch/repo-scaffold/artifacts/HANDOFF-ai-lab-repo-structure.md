@@ -98,12 +98,15 @@ ai-lab/
 ├── instructions/
 │   ├── global/               # account-wide / cross-vendor (e.g. profile)
 │   └── <vendor>/<harness>/   # specific overrides — keying per #6
-├── skills/                   # <vendor>/<harness>/ OR nested in plugin bundles — per #6/#7
-├── agents/                   # subagents
-├── hooks/                    # hook scripts / hooks.json
-├── mcp/                      # MCP server defs (.mcp.json) — was missing
-├── output-styles/            # was missing
-├── settings/                 # settings.json / permissions — was missing
+├── ai-artifacts/
+│   ├── skills/               # <vendor>/<harness>/ OR nested in plugin bundles — per #6/#7
+│   ├── agents/               # subagents
+│   ├── hooks/                # hook scripts / hooks.json
+│   ├── mcp-config/           # MCP server defs (.mcp.json)
+│   ├── output-styles/        # reusable output styles
+│   ├── prompts/              # reusable prompt packs
+│   ├── instructions/         # harness instruction surfaces
+│   └── plugins/              # plugin packaging
 └── eval/
     └── INSTRUCTION-EVAL.md
 ```
@@ -111,10 +114,10 @@ ai-lab/
 **Design rationale:**
 
 - `AGENTS.md` at root is the broadest-compatible entrypoint; harness/vendor-specific files
-  (`CLAUDE.md`, `copilot-instructions.md`) live under `instructions/`, keyed per #6.
+  (`CLAUDE.md`, `copilot-instructions.md`) live under `ai-artifacts/instructions/`, keyed per #6.
 - The living doc maps (harness × artifact type) with vendor as a tag — not "platform × harness".
   Start minimal; grow as knowledge grows.
-- If plugins win (#7), `skills/`, `agents/`, `hooks/`, `mcp/`, `output-styles/` nest inside
+- If plugins win (#7), `ai-artifacts/skills/`, `ai-artifacts/agents/`, `ai-artifacts/hooks/`, `mcp/`, `ai-artifacts/output-styles/` nest inside
   `plugins/<name>/` rather than at top level.
 - `eval/` holds `INSTRUCTION-EVAL.md` (built) + the pending harness (separate handoff).
 - `instructions/global/` holds the account-wide profile copy (source of truth stays Settings →
@@ -129,9 +132,9 @@ ai-lab/
    and grow detail pages lazily?
 3. PowerShell-Skripte project-specific files (`02-project-instructions.md`, `CLAUDE.md`,
    `POWERSHELL.md`, `powershell.yml`) — these belong to a specific claude.ai project, not
-   the global repo. Options: (a) move under `instructions/` keyed per #6 (e.g.
+   the global repo. Options: (a) move under `ai-artifacts/instructions/` keyed per #6 (e.g.
    `…/anthropic/projects/pwsh/`); (b) leave them in the claude.ai project only; (c) both. Confirm.
-4. `skills/shared/` concept: define what makes a skill "shared" — a skill whose _intent_ is
+4. `ai-artifacts/skills/shared/` concept: define what makes a skill "shared" — a skill whose _intent_ is
    cross-vendor (logic documented once, adapted per harness), or one whose _file format_ runs on
    multiple harnesses unchanged? (Ties to the capability-contract principle below.)
 5. Setup/init skill shape: monolithic setup skill (Matt's pattern) vs self-configuring vs
@@ -140,12 +143,12 @@ ai-lab/
 6. Terminology alignment: the matrix taxonomy below settles on **harness** (primary) + **vendor**
    (tag), with **model** excluded. The structure proposal and Requirements still say "platform"
    (and list Copilot as one — it's a harness). When scaffolding, decide the folder keys
-   accordingly: e.g. `instructions/<vendor>/<harness>/`, `skills/<vendor>/<harness>/`, and rename
+   accordingly: e.g. `ai-artifacts/instructions/<vendor>/<harness>/`, `ai-artifacts/skills/<vendor>/<harness>/`, and rename
    `docs/platforms/` → `docs/harnesses/`. Don't silently keep "platform" — it's the ambiguity
    this session flagged. This includes the living doc's own filename: rename `platform-matrix.md`
    → e.g. `compatibility-matrix.md` or `harness-matrix.md`.
-7. Packaging: loose artifact folders (`skills/`, `agents/`, `hooks/`, `mcp/`, `output-styles/`,
-   `settings/`) vs Claude Code **plugin bundles** (`.claude-plugin/plugin.json` wrapping them).
+7. Packaging: loose artifact folders (`ai-artifacts/skills/`, `ai-artifacts/agents/`, `ai-artifacts/hooks/`, `mcp/`, `ai-artifacts/output-styles/`,
+  `ai-artifacts/mcp-config/`, `ai-artifacts/plugins/`) vs Claude Code **plugin bundles** (`.claude-plugin/plugin.json` wrapping them).
    Plugins are the native share/install unit and compose cleanly; loose folders are simpler but
    not directly installable. Regardless of choice, the structure currently has no home for MCP
    defs, output styles, or settings — add them.
@@ -193,7 +196,7 @@ in plugin bundles) — treat them as illustrative, not committed.
    if user wants an adversarial pass).
 8. Place existing non-skill files (profile, INSTRUCTION-EVAL, project files) per the
    artifact inventory above.
-9. Place the adapted Claude Code skills from Phase 1 into `skills/`.
+9. Place the adapted Claude Code skills from Phase 1 into `ai-artifacts/skills/`.
 10. Author `AGENTS.md` root stub and the living compatibility-matrix draft (filename per #6).
 11. Initial commit + push.
 12. (Optional) In claude.ai: Settings → Connectors → GitHub Integration → connect + add
@@ -245,7 +248,7 @@ The "artifact type" axis needs a fuller vocabulary. Claude Code (richest harness
 | Skills (slash commands now unified in)              | `skills/<name>/SKILL.md`               | Claude family; others vary                                                     |
 | Subagents                                           | `agents/*.md`                          | Claude Code                                                                    |
 | Hooks                                               | `hooks.json` / `settings.json`         | Claude Code                                                                    |
-| Output styles                                       | `output-styles/`                       | Claude Code                                                                    |
+| Output styles                                       | `ai-artifacts/output-styles/`                       | Claude Code                                                                    |
 | **MCP servers**                                     | `.mcp.json`, `~/.claude.json`          | **cross-vendor (open protocol)** — Codex, Cursor, etc.; config location varies |
 | Settings / permissions                              | `settings.json`, `settings.local.json` | Claude Code                                                                    |
 | Plugins (bundle wrapping all the above)             | `.claude-plugin/plugin.json`           | Claude Code                                                                    |

@@ -15,7 +15,7 @@ bodies.
 
 ## Applied Now
 
-- `shared/skills/<group>/<name>/METADATA.md` is the OKF-style concept document for each skill.
+- `ai-artifacts/skills/shared/<group>/<name>/METADATA.md` is the OKF-style concept document for each skill.
 - Skill provenance (`upstream-*`) lives in `METADATA.md`, not in runtime `SKILL.md` frontmatter.
 - Runtime `SKILL.md` frontmatter keeps harness-facing fields such as `name`, `description`,
   `argument-hint`, `disable-model-invocation`, and `version`.
@@ -49,6 +49,6 @@ tags: [<tag>]
 - **Scratch tracker:** not adopted directly; `.scratch/AGENTS.md` and the scratch skill own that
   schema.
 
-# Citations
+## Citations
 
 [1] [Open Knowledge Format specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
