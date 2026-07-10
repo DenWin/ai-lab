@@ -289,7 +289,7 @@ def strip_html(html: str) -> str:
     """Remove non-content HTML and convert the remainder to AsciiDoc markup."""
     html = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.IGNORECASE | re.DOTALL)
     html = re.sub(
-        r"<script[^>]*>.*?</script>", "", html, flags=re.IGNORECASE | re.DOTALL
+        r"<script\b[^>]*>.*?</script\s*>", "", html, flags=re.IGNORECASE | re.DOTALL
     )
     html = re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)
     html = re.sub(r"<o:p[^>]*>.*?</o:p>", "", html, flags=re.IGNORECASE | re.DOTALL)
