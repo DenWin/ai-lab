@@ -2,12 +2,12 @@
   "default": true,
 
   "MD013": false,
-  "MD025": { "front_matter_title": "" },
   "MD033": false,
   "MD041": false,
 
   "MD003": { "style": "atx" },
   "MD004": { "style": "dash" },
+  "MD025": { "front_matter_title": "" },
   "MD029": { "style": "ordered" },
   "MD049": { "style": "asterisk" },
   "MD050": { "style": "asterisk" },
