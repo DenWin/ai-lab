@@ -1014,10 +1014,11 @@ def main():
     final_adoc = primary_adoc
 
     if counterpart.exists():
-        import tempfile, shutil as _shutil
+        import tempfile
         tmp_fd, tmp_name = tempfile.mkstemp(suffix=f".{counterpart_ext[1:]}.adoc",
                                             prefix=stem + "_cmp_")
-        import os as _os; _os.close(tmp_fd)
+        import os as _os
+        _os.close(tmp_fd)
         temp_cmp = Path(tmp_name)
         _, cmp_adoc = _write_converted_mail(counterpart, temp_cmp)
         _report_adoc_comparison(temp_primary, primary_adoc, temp_cmp, cmp_adoc)
@@ -1066,7 +1067,8 @@ def main():
         elif overwrite:
             # copy2 cannot open a cloud-only file for 'wb'; use rename instead:
             # write to a sibling temp file, then rename() over the cloud-only target.
-            import os as _os, tempfile as _tf
+            import os as _os
+            import tempfile as _tf
             tmp_fd, tmp_name = _tf.mkstemp(dir=out_dir, prefix=".tmp_")
             _os.close(tmp_fd)
             _shutil2.copy2(str(temp_primary), tmp_name)
