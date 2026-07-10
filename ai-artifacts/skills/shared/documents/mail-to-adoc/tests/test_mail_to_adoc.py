@@ -132,7 +132,9 @@ def test_eml_to_adoc_prefers_html_and_writes_attachment_links(converter, tmp_pat
     assert f"* link:../../Attachments/{saved_name}[evidence.pdf]" in adoc
 
 
-def test_strip_html_removes_script_tag_with_whitespace_before_closing_bracket(converter):
+def test_strip_html_removes_script_tag_with_whitespace_before_closing_bracket(
+    converter,
+):
     html = "<p>keep</p><script>alert('x')</script ><p>also keep</p>"
 
     text = converter.strip_html(html)

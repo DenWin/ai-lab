@@ -69,7 +69,7 @@ This needs a **tri-state, not a bare `null`**: distinguish *present-with-value*,
 
 ## Stack recipes
 
-Per-stack probe anchors — what to query and how to emit it for SQL, PowerShell, Bash, and Python — live in [RECIPES.md](RECIPES.md). Load the one recipe for the stack in play; keep the probe as small as the question allows.
+Per-stack probe anchors — what to query and how to emit it for SQL, PowerShell, Bash, and Python — live in [RECIPES.md](docs/RECIPES.md). Load the one recipe for the stack in play; keep the probe as small as the question allows.
 
 ## Anti-patterns
 

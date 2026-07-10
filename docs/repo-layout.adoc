@@ -31,26 +31,27 @@ most general scope it is valid for. More-specific levels *override* more-general
 
 ....
 ai-lab/
-├── AGENTS.md                 # root shared cross-harness instructions (cross-vendor)
+├── AGENTS.md                  # root shared cross-harness instructions (cross-vendor)
 ├── ai-artifacts/
 │   ├── skills/
-│   │   └── shared/           # all current skills (intent-grouped: coding/ documents/ planning/ session/ setup/)
+│   │   └── shared/            # all current skills (intent-grouped: coding/ documents/ planning/ session/ setup/ workflow/)
 │   ├── instructions/
 │   │   └── anthropic/
 │   │       └── claude-ai/
 │   │           └── profile.md # account-wide profile (live: Settings → Instructions for Claude)
-│   ├── hooks/                # hook source definitions, when added; scoped as shared/<vendor>/<harness>
-│   ├── mcp-config/           # MCP server/config definitions
-│   ├── output-styles/        # reusable output-format or style guidance assets
-│   ├── agents/               # agent/subagent definitions and related assets
-│   ├── prompts/              # reusable prompts and prompt packs
-│   └── plugins/              # plugin packaging and support material
-├── docs/                     # cross-cutting docs: harnesses/, reviews/, findings/, repo-layout.adoc…
-├── scripts/                  # sync-skills.ps1, …
-├── .scratch/                 # local-markdown issue tracker (PRDs + issues; committed)
-├── .temp/                    # gitignored transient local working files; keep only .gitkeep
-├── .claude/commands/         # GENERATED Claude Code skill mirror — never edit; rebuild via sync-skills.ps1
-└── .agents/skills/           # GENERATED Codex skill mirror — never edit; rebuild via sync-skills.ps1
+│   ├── hooks/                 # hook source definitions, when added; scoped as shared/<vendor>/<harness>
+│   ├── mcp-config/            # MCP server/config definitions
+│   ├── output-styles/         # reusable output-format or style guidance assets
+│   ├── agents/                # agent/subagent definitions and related assets
+│   ├── prompts/               # reusable prompts and prompt packs
+│   └── plugins/               # plugin packaging and support material
+├── docs/                      # cross-cutting docs: harnesses/, reviews/, findings/, repo-layout.adoc…
+├── scripts/                   # setup-repo.ps1, …
+├── .scratch/                  # local-markdown issue tracker (PRDs + issues; committed)
+├── .temp/                     # gitignored transient local working files; keep only .gitkeep
+├── .claude/commands/          # GENERATED Claude Code skill mirror — never edit; rebuild via setup-repo.ps1
+├── .agents/skills/            # GENERATED Codex skill mirror — never edit; rebuild via setup-repo.ps1
+└── .github/skills/            # GENERATED Copilot skill mirror — never edit; rebuild via setup-repo.ps1
 ....
 
 Folders are created *on demand* — a `<artifact-type>/<vendor>/<harness>/` directory is materialized
@@ -94,17 +95,21 @@ small `README.md` before they have scoped content so the taxonomy is visible in 
 The repo is the source of truth. Each harness loads artifacts from its own locations, so a sync step
 deploys from here to there.
 
-* *Default.* `scripts/sync-skills.ps1` refreshes every generated skill mirror supported by this repo.
-  Use `-Target Claude` or `-Target Codex` only when intentionally limiting the sync.
+* *Default.* `scripts/setup-repo.ps1` runs clone setup end-to-end: installs git hooks and then runs
+  skill mirror sync (all targets by default, with optional `-Target`, `-Scope`, and `-IfMissing`).
+* *After skill edits.* `scripts/setup-repo.ps1 -SkipHooks` refreshes generated mirrors without re-installing hooks.
 * *Claude Code.* The Claude target mirrors `ai-artifacts/skills/shared/<group>/<name>/` to the
   Claude Code command tree (`.claude/commands/<group>/<name>.md` + resources). The generated tree is
   gitignored; rebuild after editing a skill.
 * *Codex.* The Codex target mirrors `ai-artifacts/skills/shared/<group>/<name>/` to Codex's
-  repo-local skill tree (`.agents/skills/<group>-<name>/SKILL.md` + resources). The generated tree is
+  repo-local skill tree (`.agents/skills/<group>_<name>/SKILL.md` + resources). The generated tree is
   gitignored; rebuild after editing a skill.
-* *Other harnesses (Copilot, ChatGPT, …)* — added incrementally through the cross-harness review loop
-  (see `docs/harnesses/`): each harness, on its turn, records where *it* expects its files; sync grows
-  to target it only then. No multi-harness sync engine is built ahead of that need.
+* *Copilot.* The Copilot target mirrors `ai-artifacts/skills/shared/<group>/<name>/` to
+  `.github/skills/<group>_<name>/SKILL.md` (+ resources in the same folder). The generated mirror is
+  gitignored; rebuild after editing a skill.
+* *Other harnesses (ChatGPT, …)* — added incrementally through the cross-harness review loop (see
+  `docs/harnesses/`): each harness, on its turn, records where *it* expects its files; sync grows to
+  target it only then. No multi-harness sync engine is built ahead of that need.
 
 == OKF metadata
 

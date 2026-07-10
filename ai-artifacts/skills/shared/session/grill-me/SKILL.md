@@ -59,8 +59,8 @@ If a `CONTEXT-MAP.md` is provided, the project has multiple contexts; infer whic
 
 **Cross-reference with provided code.** When I state how something works *and* the code is in the provided files, check whether the code agrees and surface contradictions. If the code isn't provided, don't guess — ask for it or flag the claim as unverified.
 
-**Maintain CONTEXT.md as we go.** Keep a working copy in the session. When a term resolves, update it and re-deliver the file as a download — don't wait and dump everything at the end. `CONTEXT.md` is a glossary and nothing else: no implementation details, not a spec, not a scratch pad. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
+**Maintain CONTEXT.md as we go.** Keep a working copy in the session. When a term resolves, update it and re-deliver the file as a download — don't wait and dump everything at the end. `CONTEXT.md` is a glossary and nothing else: no implementation details, not a spec, not a scratch pad. Use the format in [CONTEXT-FORMAT.md](docs/CONTEXT-FORMAT.md).
 
-**Offer ADRs sparingly.** Only when all three are true: (1) hard to reverse, (2) surprising without context, (3) the result of a real trade-off. If any is missing, skip it. Deliver each ADR as a `docs/adr/NNNN-slug.md` file. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+**Offer ADRs sparingly.** Only when all three are true: (1) hard to reverse, (2) surprising without context, (3) the result of a real trade-off. If any is missing, skip it. Deliver each ADR as a `docs/adr/NNNN-slug.md` file. Use the format in [ADR-FORMAT.md](docs/ADR-FORMAT.md).
 
 </docs-mode>

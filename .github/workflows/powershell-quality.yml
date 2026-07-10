@@ -4,22 +4,22 @@ on:
   pull_request:
     paths:
       - "**/*.ps1"
-      - "**/*.psm1"
       - "**/*.psd1"
-      - "coding-policies/polyglot-policy.yaml"
-      - "coding-policies/languages/powershell-policy.yaml"
+      - "**/*.psm1"
       - ".github/workflows/powershell-quality.yml"
+      - "coding-policies/languages/powershell-policy.yaml"
+      - "coding-policies/polyglot-policy.yaml"
       - "!.scratch/*/artefacts/**"
       - "!.scratch/*/artifacts/**"
   push:
     branches: [main]
     paths:
       - "**/*.ps1"
-      - "**/*.psm1"
       - "**/*.psd1"
-      - "coding-policies/polyglot-policy.yaml"
-      - "coding-policies/languages/powershell-policy.yaml"
+      - "**/*.psm1"
       - ".github/workflows/powershell-quality.yml"
+      - "coding-policies/languages/powershell-policy.yaml"
+      - "coding-policies/polyglot-policy.yaml"
       - "!.scratch/*/artefacts/**"
       - "!.scratch/*/artifacts/**"
   workflow_dispatch:
@@ -44,53 +44,25 @@ jobs:
         id: diff
         shell: bash
         run: |
-          base="${{ github.event.pull_request.base.sha }}"
-          head="${{ github.event.pull_request.head.sha }}"
-          if [ -z "${base}" ]; then
-            base="${{ github.event.before }}"
-          fi
-          if [ -z "${head}" ]; then
-            head="${{ github.sha }}"
-          fi
-          if [ -z "${base}" ] || [ "${base}" = "0000000000000000000000000000000000000000" ]; then
-            base=$(git rev-list --max-parents=0 "${head}" | tail -n 1)
-          fi
-          echo "base=${base}" >> "$GITHUB_OUTPUT"
-          echo "head=${head}" >> "$GITHUB_OUTPUT"
+          bash .github/workflows/scripts/ci/determin-diff-range.sh "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" "${{ github.event.before }}" "${{ github.sha }}"
 
       - name: Find PowerShell files
         id: psfiles
         shell: bash
         run: |
-          set +e
-          count=$(git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' | wc -l | tr -d ' ')
-          rc=${PIPESTATUS[0]}
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::Failed to enumerate PowerShell files (rc=$rc)."
-            exit "$rc"
-          fi
-          echo "count=$count" >> "$GITHUB_OUTPUT"
+          bash .github/workflows/scripts/powershell-quality/find-powershell-files.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
 
       - name: Run PSScriptAnalyzer
         if: steps.psfiles.outputs.count != '0'
-        shell: pwsh
+        shell: bash
         run: |
-          New-Item -ItemType Directory -Force -Path reports | Out-Null
-          Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
-          $files = git diff --name-only --diff-filter=ACMRTUXB "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}" -- '*.ps1' '*.psm1' '*.psd1' ':(exclude).scratch/*/artefacts/**' ':(exclude).scratch/*/artifacts/**' |
-            Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
-          $results = foreach ($file in $files) {
-            Invoke-ScriptAnalyzer -Path $file -Severity Warning,Error -ExcludeRule PSUseSingularNouns,PSAvoidUsingWriteHost,PSUseBOMForUnicodeEncodedFile
-          }
-          if ($results) {
-            $formatted = $results | Format-Table -AutoSize | Out-String
-            $formatted | Tee-Object -FilePath reports/psscriptanalyzer.txt
-            throw "PSScriptAnalyzer found issues."
-          } else {
-            "No PSScriptAnalyzer issues found." | Out-File -FilePath reports/psscriptanalyzer.txt -Encoding utf8
-            Write-Host "No PSScriptAnalyzer issues found."
-          }
+          bash .github/workflows/scripts/powershell-quality/run-psscriptanalyzer.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
+
+      - name: Validate PowerShell syntax (pwsh Core)
+        if: steps.psfiles.outputs.count != '0'
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/powershell-quality/validate-powershell-syntax.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
 
       - name: Upload PowerShell reports
         if: always() && steps.psfiles.outputs.count != '0'
@@ -103,14 +75,4 @@ jobs:
         if: always()
         shell: bash
         run: |
-          set +e
-          {
-            echo "## powershell-quality summary"
-            echo "- PowerShell files found: ${{ steps.psfiles.outputs.count }}"
-            echo "- Analyzer report: reports/psscriptanalyzer.txt"
-          } >> "$GITHUB_STEP_SUMMARY"
-          rc=$?
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::Failed to write powershell-quality job summary (rc=$rc)."
-            exit "$rc"
-          fi
+          bash .github/workflows/scripts/powershell-quality/write-summary.sh "${{ steps.psfiles.outputs.count }}"

@@ -101,7 +101,7 @@ worth carrying into the import (especially `setup-pre-commit`, which diverges ha
   `upstream-author`, `upstream-repo`, `upstream-path`, and `upstream-commit`. Do not duplicate the
   exact upstream checkpoint in summary docs.
 - **New `planning` group** for to-issues / to-prd / triage. Update `.gitignore` (add
-  `/.claude/commands/planning/`) and re-run `scripts/sync-skills.ps1`.
+  `/.claude/commands/planning/`) and re-run `scripts/setup-repo.ps1 -SkipHooks`.
 - **Capability-contract adaptation** (same principle as pass 1): shell/tool path where available,
   conversational fallback otherwise. Convert Matt's `.sh` helpers to pwsh.
 - **Tracker default = local-markdown `.scratch/`** (this repo already uses it). The planning skills
@@ -155,7 +155,7 @@ comment, omit `upstream-commit` so the staleness check skips it (it's no longer 
 
 ## Testing Decisions
 
-- After each import: `scripts/sync-skills.ps1`, then invoke `/group:name` and confirm body +
+- After each import: `scripts/setup-repo.ps1 -SkipHooks`, then invoke `/group:name` and confirm body +
   resources load and any `!command`/script paths resolve.
 - For pwsh-converted scripts (diagnose HITL loop, git-guardrails block hook): run them on a throwaway
   target and confirm they behave (and that the guardrail actually blocks a dangerous git command).

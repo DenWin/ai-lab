@@ -5,7 +5,7 @@ description: >
   Manage .scratch/ feature entries and the backlog. Two modes: with $ARGUMENTS quick-captures a new
   feature idea as a stub PRD; without arguments, lists the ranked backlog. The canonical definition
   of the .scratch/ layout — other skills (to-issues, to-prd, triage, check-skill-updates) reference
-  [LAYOUT.md](scratch/LAYOUT.md) rather than restating the conventions. For re-ranking the backlog
+  [LAYOUT.md](docs/LAYOUT.md) rather than restating the conventions. For re-ranking the backlog
   use /planning:scratch-plan.
 argument-hint: "<feature idea or slug>"
 ---
@@ -24,7 +24,7 @@ When `$ARGUMENTS` is provided:
 3. Create `.scratch/<feature-slug>/PRD.md` from the stub template below.
 4. Append the feature to `.scratch/BACKLOG.md` with all ranking fields set to `TBD` and
    score `?`. If `BACKLOG.md` does not exist, create it from the template in
-   [LAYOUT.md](scratch/LAYOUT.md).
+   [LAYOUT.md](docs/LAYOUT.md).
 5. Tell the user: `Created .scratch/<feature-slug>/. Run /planning:scratch-plan to set its rank.`
 
 ### PRD stub
@@ -54,7 +54,7 @@ say so and suggest running with an argument to capture the first feature.
 
 ## Layout and ranking conventions
 
-See [LAYOUT.md](scratch/LAYOUT.md) — the canonical `.scratch/` folder layout. Reference this from
+See [LAYOUT.md](docs/LAYOUT.md) — the canonical `.scratch/` folder layout. Reference this from
 other skills; do not restate the conventions inline.
 
-See [RANKING.md](scratch/RANKING.md) — the score formula and tiebreaker rules.
+See [RANKING.md](docs/RANKING.md) — the score formula and tiebreaker rules.

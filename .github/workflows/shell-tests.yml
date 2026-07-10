@@ -1,0 +1,82 @@
+name: shell-tests
+
+on:
+  pull_request:
+    paths:
+      - "**/*.bats"
+      - ".github/workflows/scripts/**"
+      - ".github/workflows/shell-tests.yml"
+      - "coding-policies/languages/bash-policy.yaml"
+      - "coding-policies/polyglot-policy.yaml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.bats"
+      - ".github/workflows/scripts/**"
+      - ".github/workflows/shell-tests.yml"
+      - "coding-policies/languages/bash-policy.yaml"
+      - "coding-policies/polyglot-policy.yaml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  shell-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Determine diff range
+        id: diff
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/ci/determin-diff-range.sh "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" "${{ github.event.before }}" "${{ github.sha }}"
+
+      - name: Find bats files
+        id: batsfiles
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/shell-tests/find-bats-files.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
+
+      - name: Install bats-core
+        if: steps.batsfiles.outputs.count != '0'
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/shell-tests/install-bats.sh
+
+      - name: Run bats
+        if: steps.batsfiles.outputs.count != '0'
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/shell-tests/run-bats.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
+
+      - name: No tests found
+        if: steps.batsfiles.outputs.count == '0'
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/shell-tests/no-tests-found.sh
+
+      - name: Upload shell test reports
+        if: always() && steps.batsfiles.outputs.count != '0'
+        uses: actions/upload-artifact@v7
+        with:
+          name: shell-test-reports
+          path: reports
+
+      - name: Add job summary
+        if: always()
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/shell-tests/write-summary.sh "${{ steps.batsfiles.outputs.count }}"

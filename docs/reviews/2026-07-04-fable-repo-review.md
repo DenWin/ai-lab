@@ -12,7 +12,7 @@ executed the same day:
 
 | Scratch                                                                      | State after the review session                                             |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [sync-skills-drift-check](../../.scratch/sync-skills-drift-check/PRD.md)     | ✅ done — `-Check` mode + hook                                             |
+| [sync-skills-drift-check](../../.scratch/sync-skills-drift-check/PRD.md)     | ✅ done — drift check + hook                                               |
 | [docs-integrity-pass](../../.scratch/docs-integrity-pass/PRD.md)             | ✅ done — 4 drift fixes + decay contract                                   |
 | [public-repo-compliance](../../.scratch/public-repo-compliance/PRD.md)       | ⏳ ready-for-human — attribution + protections done; profile go/no-go open |
 | [backlog-hygiene-wip-limit](../../.scratch/backlog-hygiene-wip-limit/PRD.md) | needs-triage                                                               |
@@ -27,8 +27,8 @@ Also executed on the back of the review: `repo-scaffold` completed (root `AGENTS
 `ai-lab` is a personal **control plane for AI-assisted work across multiple harnesses**. Four pillars:
 
 1. **Skills as source of truth** — `ai-artifacts/skills/shared/` holds portable, provenance-tracked skills
-   (grouped by intent: coding/planning/session/setup), deployed into Claude Code's
-   `.claude/commands/` via `scripts/sync-skills.ps1`. The mirror is a gitignored build artifact.
+  (grouped by intent: coding/planning/session/setup), deployed into Claude Code's
+  `.claude/commands/` via `scripts/setup-repo.ps1 -SkipHooks`. The mirror is a gitignored build artifact.
 2. **Harness knowledge base** — `docs/harnesses/` documents each harness *from the inside*
    (self-description via `TEMPLATE.md`): instruction surfaces, precedence, storage tiers,
    capability limits. The "capability contract" (shell available → full path; else conversational
@@ -94,7 +94,7 @@ code is.*
   VS Code extension at the root of an AI-configuration repo with no README tying it in;
   `mail-to-doc` rides in the tracker as a general software project. Neither is wrong — the scope
   widening is silent (open: `repo-scope-strays`).
-- **Silent-staleness risks in the sync chain.** *(fixed same day: `-Check` mode)* `-IfMissing`
+- **Silent-staleness risks in the sync chain.** *(fixed same day: drift check)* `-IfMissing`
   never refreshes an edited skill, and it's the mode the hook runs — the failure mode was the
   default path. Harness docs describe fast-moving products with a single "verified 2026-06" stamp
   and no re-verification trigger *(fixed: decay contract in TEMPLATE.md)*.
@@ -114,7 +114,7 @@ code is.*
 4. **Close the public-repo gap** — THIRD-PARTY attribution, secret scanning, push protection,
    branch protection decision. *(done except branch protection + profile go/no-go)*
 5. **De-duplicate facts; single owner per fact.** *(done; rule codified in AGENTS.md)*
-6. **Add a `-Check` drift mode to sync-skills.ps1.** *(done)*
+6. **Add a drift check for generated mirrors.** *(done)*
 7. **Give harness docs a decay contract.** *(done)*
 8. **Decide the strays consciously** — declare incubation or evict. *(open)*
 

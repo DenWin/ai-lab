@@ -12,17 +12,18 @@ provenance file for that skill. The invocable copies under generated harness mir
 artifacts — never edit them; edit the source and re-run:
 
 ```powershell
-pwsh scripts/sync-skills.ps1
+pwsh scripts/setup-repo.ps1 -SkipHooks
 ```
 
 That updates every supported generated skill mirror. `METADATA.md` files are source catalog files and
 are not deployed as runtime skill resources:
 
 - Claude Code: `.claude/commands/<group>/<name>.md` plus resources
-- Codex: `.agents/skills/<group>-<name>/SKILL.md` plus resources
+- Codex: `.agents/skills/<group>_<name>/SKILL.md` plus resources
+- Copilot: `.github/skills/<group>_<name>/SKILL.md` plus resources
 
-Both generated trees are gitignored; never edit either directly. Use
-`pwsh scripts/sync-skills.ps1 -Target Claude` or `-Target Codex` only when you intentionally want a
+All generated trees are gitignored; never edit them directly. Use
+`pwsh scripts/setup-repo.ps1 -SkipHooks -Target Claude`, `-Target Codex`, or `-Target Copilot` only when you intentionally want a
 single mirror.
 
 Namespacing follows the directory: `ai-artifacts/skills/shared/coding/tdd/` → `/coding:tdd`.
@@ -33,6 +34,7 @@ Namespacing follows the directory: `ai-artifacts/skills/shared/coding/tdd/` → 
 | `planning`  | Backlog / PRD / issue workflow (the `.scratch/` tracker)          |
 | `session`   | Conversational / process skills that shape a working session      |
 | `setup`     | Repo tooling and skill maintenance                                |
+| `workflow`  | Running deterministic local workflow/CI-equivalent sequences      |
 | `documents` | Producing / converting documents (e.g. email → AsciiDoc/Markdown) |
 
 ## Skill Metadata
@@ -76,8 +78,10 @@ table is the human-readable summary.
 | `recon`                         | session   | — (local original)                                            | No upstream                                                                                                                                                                          |
 | `check-skill-updates`           | setup     | — (local original)                                            | No upstream; the update tool itself                                                                                                                                                  |
 | `import-upstream-skill`         | setup     | — (local original)                                            | No upstream; the generic import process itself                                                                                                                                       |
+| `setup-repo`                    | setup     | — (local original)                                            | Self-contained bootstrap skill for clone setup (hooks + mirror generation in one command)                                                                                             |
 | `git-guardrails`                | setup     | mattpocock `skills/misc/git-guardrails-claude-code`           | Localized from the global-prior (pwsh + bash guards); Claude-Code-hook skill, N/A in chat. Exact upstream checkpoint lives only in the skill's `METADATA.md`                         |
 | `setup-pre-commit`              | setup     | mattpocock `skills/misc/setup-pre-commit` (**local fork**)    | Diverged entirely: `pre-commit` framework for PS/MD/AsciiDoc/SQL, not Husky/lint-staged/Prettier. Carries **no** `upstream-*` (lineage in a comment); `check-skill-updates` skips it |
+| `simulate-workflows`            | workflow  | — (local original)                                            | Deterministic script that runs local CI-equivalent workflow checks (Python, PowerShell, linting)                                                                                     |
 | `scratch`                       | planning  | — (local original)                                            | The `.scratch/` tracker; owns `LAYOUT.md` / `RANKING.md`                                                                                                                             |
 | `scratch-plan`                  | planning  | — (local original)                                            | Backlog ranking companion to `scratch`                                                                                                                                               |
 | `mail-to-adoc`                  | documents | — (local original)                                            | `.msg`/`.eml` → AsciiDoc; personal-workflow tool (redacted). Rename to `mail-to-doc` + Markdown target is `.scratch/mail-to-doc` issue 03                                            |

@@ -44,7 +44,7 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 8. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
 9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
 10. **HITL script.** Last resort. If a human must click, drive *them* with a structured loop —
-    `scripts/hitl-loop.template.ps1` (pwsh, primary) or `scripts/hitl-loop.template.sh` (bash). With a
+    `templates/hitl-loop.template.ps1` (pwsh, primary) or `templates/hitl-loop.template.sh` (bash). With a
     shell, generate and run it; without one, hand the user the same numbered steps in chat and collect
     their answers. Captured output feeds back to you.
 

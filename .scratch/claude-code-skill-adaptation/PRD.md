@@ -54,7 +54,7 @@ skill's intent or its local customizations — only its mechanics.
   else → conversational fallback" rather than "if Claude Code do X". Keeps the skills portable to
   Cowork/claude.ai. (Ref: handoff compatibility-matrix design principle.)
 - **Edit the source of truth only.** All edits land in `skills/<group>/<name>/SKILL.md`; re-run
-  `scripts/sync-skills.ps1` to regenerate the `.claude/commands` mirror. Never edit the mirror.
+  `scripts/setup-repo.ps1 -SkipHooks` to regenerate the `.claude/commands` mirror. Never edit the mirror.
 - **Preserve intent and local customizations.** Stack rules, the `grill-me`←`grill-with-docs` merge,
   Windows/pwsh substitutions all stay. This pass changes mechanics, not content decisions.
 - **`check-skill-updates` rework:** extract the inline PowerShell into `scripts/check-skill-updates.ps1`
@@ -64,11 +64,11 @@ skill's intent or its local customizations — only its mechanics.
 ## Testing Decisions
 
 - Verify each adapted skill loads and triggers: invoke `/group:name` and confirm the body and any
-  `!command` preprocessing resolve, and bundled resources open (after `sync-skills.ps1`).
+  `!command` preprocessing resolve, and bundled resources open (after `setup-repo.ps1 -SkipHooks`).
 - For agentic skills, exercise the tool path on a throwaway target (run a trivial probe / a trivial
   failing test / a one-route prototype) and confirm the conversational fallback still reads sensibly
   when shell is unavailable.
-- Run `scripts/sync-skills.ps1` after each skill edit and confirm the mirror's resource links resolve.
+- Run `scripts/setup-repo.ps1 -SkipHooks` after each skill edit and confirm the mirror's resource links resolve.
 - Structural review of each via `/session:write-a-skill`.
 
 ## Out of Scope

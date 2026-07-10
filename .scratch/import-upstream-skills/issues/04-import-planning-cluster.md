@@ -5,7 +5,7 @@ Status: ready-for-agent
 ## What to build
 
 Import these from Matt's `engineering/` into `skills/planning/` with `upstream-*` provenance,
-copying resources (triage's AGENT-BRIEF, OUT-OF-SCOPE) verbatim, then `scripts/sync-skills.ps1`.
+copying resources (triage's AGENT-BRIEF, OUT-OF-SCOPE) verbatim, then `scripts/setup-repo.ps1 -SkipHooks`.
 Wire them to read tracker + label config from wherever issue 02 lands, defaulting to this repo's
 local-markdown `.scratch/` tracker.
 
@@ -14,7 +14,7 @@ local-markdown `.scratch/` tracker.
 - [ ] `to-issues`, `to-prd`, `triage` under `skills/planning/<name>/` with `upstream-*` frontmatter
 - [ ] triage resources present
 - [ ] Skills reference the centralized config (issue 02), not a per-skill copy
-- [ ] Default tracker = local-markdown `.scratch/`; `sync-skills.ps1` run; `/planning:*` resolve
+- [ ] Default tracker = local-markdown `.scratch/`; `setup-repo.ps1 -SkipHooks` run; `/planning:*` resolve
 - [ ] `/setup:check-skill-updates` shows them `UP-TO-DATE`
 
 ## Tracker-contract prerequisites (from `understand-scratch-skill` §3a)

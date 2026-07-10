@@ -17,7 +17,7 @@ The structure decisions were resolved via grill-me (2026-06-04) and the layout m
 > most-specific-wins; **loose folders** (no plugin bundles); folders created **on demand**. See
 > [docs/repo-layout.adoc](../../docs/repo-layout.adoc) — the canonical layout reference.
 > Done so far: `git init`; skills → `ai-artifacts/skills/shared/`; profile →
-> `ai-artifacts/instructions/anthropic/claude-ai/profile.md`; `sync-skills.ps1` retargeted + re-run; layout doc
+> `ai-artifacts/instructions/anthropic/claude-ai/profile.md`; setup-repo mirror sync retargeted + re-run; layout doc
 > authored. Remaining: `AGENTS.md`, file placement, remote, initial commit.
 
 `git init` (done) unblocks the `tdd`-skill→foundation-doc git-repo reference (see
@@ -33,7 +33,7 @@ and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is 
 1. ✅ `git init`, default branch `main`. `.gitignore` already reconciled (`.claude/commands/*`
    generated; `.temp/*` staged) — no change needed.
 2. ✅ Structure resolved + migrated: skills → `ai-artifacts/skills/shared/`, profile →
-   `ai-artifacts/instructions/anthropic/claude-ai/`, `sync-skills.ps1` retargeted, [docs/repo-layout.adoc](../../docs/repo-layout.adoc)
+   `ai-artifacts/instructions/anthropic/claude-ai/`, setup-repo mirror sync retargeted, [docs/repo-layout.adoc](../../docs/repo-layout.adoc)
    authored. Per-harness artifact folders (`ai-artifacts/mcp-config/`, `ai-artifacts/hooks/`, `ai-artifacts/output-styles/`) are
    created **on demand**, not pre-scaffolded.
 3. ✅ Root `AGENTS.md` authored (2026-07-04) as an **operational stub**: cross-harness facts only

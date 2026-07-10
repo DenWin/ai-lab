@@ -1,4 +1,6 @@
 #Requires -Version 7
+#Requires -PSEdition Core
+# RuntimePolicy: core-first
 <#
 .SYNOPSIS
     Batch-converts .eml/.msg files in a source folder to AsciiDoc via mail_to_adoc.py.

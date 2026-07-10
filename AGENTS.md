@@ -21,11 +21,11 @@ Most-specific wins; folders are created on demand, never pre-scaffolded empty.
 
 ## Rules that prevent damage
 
-- **Never edit `.claude/commands/`** — it is a generated, gitignored mirror. Edit the source under
-  `ai-artifacts/skills/shared/<group>/<name>/`, then rebuild: `pwsh scripts/sync-skills.ps1`.
-- **Never edit `.agents/skills/`** — it is the generated Codex skill mirror. Edit the source under
-  `ai-artifacts/skills/shared/<group>/<name>/`, then rebuild: `pwsh scripts/sync-skills.ps1`.
-- On a fresh clone or a cloud/sandbox session the generated mirrors may not exist. Run the sync script once —
+- **Never edit generated skill mirrors directly** (`.claude/commands/`, `.agents/skills/`,
+  `.github/skills/`) — these are generated, gitignored harness mirrors. Edit the source under
+  `ai-artifacts/skills/shared/<group>/<name>/`, then rebuild with `pwsh scripts/setup-repo.ps1`.
+- For a fresh clone bootstrap, run `pwsh scripts/setup-repo.ps1` to enable git hooks and refresh mirrors in one pass.
+- On a fresh clone or a cloud/sandbox session the generated mirrors may not exist. Run setup once —
   the SessionStart hook that does this locally lives in machine-local settings and won't be there.
 - Files under `ai-artifacts/instructions/<vendor>/<harness>/` are repo copies for editing; the live version sits
   in each harness's own surface (see [ai-artifacts/instructions/README.md](ai-artifacts/instructions/README.md)).
@@ -54,6 +54,11 @@ guide [.scratch/AGENTS.md](.scratch/AGENTS.md); structural layout stays in the `
 
 - Primary environment: Windows, PowerShell 7 (`pwsh`). Write scripts in pwsh unless the target is
   cross-platform.
+- PowerShell runtime policy: each script declares `# RuntimePolicy: core-first|dual-runtime|desktop-only`.
+  Core-first is default (`#Requires -Version 7.0` + `#Requires -PSEdition Core`), dual-runtime must run
+  in both Windows PowerShell 5.1 and pwsh 7+, and desktop-only exceptions must be named
+  `*-windowsps.ps1` with `# RuntimeJustification: ...` plus
+  `#Requires -Version 5.1` + `#Requires -PSEdition Desktop`.
 - Docs: Markdown by default; AsciiDoc (`docs/*.adoc`) where richer syntax is needed.
 - Keep `AGENTS.md` Markdown because harnesses load it directly; keep `docs/repo-layout.adoc`
   AsciiDoc because it is the richer canonical layout reference.
@@ -85,4 +90,4 @@ hoist (`.scratch/incorporate-global-claude-setup/`) consolidates the shared subs
 - Keep changes scoped so only relevant workflows run; avoid touching unrelated files in the same PR.
 - CI lints exclude `.scratch/*/artefacts/**` and `.scratch/*/artifacts/**` on purpose; those
   paths are treated as supporting artifacts. Safety checks (secret/policy) still apply.
-- Enable local pre-commit checks in your clone with `pwsh scripts/install-git-hooks.ps1`.
+- Run `pwsh scripts/setup-repo.ps1` to bootstrap hooks and generated mirrors.

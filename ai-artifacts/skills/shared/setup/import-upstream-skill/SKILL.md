@@ -12,7 +12,7 @@ concrete driver was the mattpocock skills repo, but nothing here is specific to 
 
 The single source of truth is `ai-artifacts/skills/shared/<group>/<name>/SKILL.md` (+ bundled resources). The
 `.claude/commands/` copies are a generated mirror — never edit them; rebuild with
-`pwsh scripts/sync-skills.ps1`. This skill **imports and adapts**; the sibling
+`pwsh scripts/setup-repo.ps1 -SkipHooks`. This skill **imports and adapts**; the sibling
 `/setup:check-skill-updates` is what later detects staleness against upstream.
 
 ## Process
@@ -73,7 +73,7 @@ The single source of truth is `ai-artifacts/skills/shared/<group>/<name>/SKILL.m
 7. **Update the origin map** — add a row to [ai-artifacts/skills/shared/README.md](../../README.md) (skill, group,
    upstream, notes) so the human-readable summary matches `METADATA.md`.
 
-8. **Rebuild the mirror:** `pwsh scripts/sync-skills.ps1`, then confirm `/group:name` resolves. If the
+8. **Rebuild the mirror:** `pwsh scripts/setup-repo.ps1 -SkipHooks`, then confirm `/group:name` resolves. If the
    group is new, add its `/.claude/commands/<group>/` mirror path to `.gitignore`.
 
 ## Checklist
@@ -85,4 +85,4 @@ The single source of truth is `ai-artifacts/skills/shared/<group>/<name>/SKILL.m
 - [ ] Capability-contract adaptation done; bash → pwsh; intent + local customizations preserved
 - [ ] Verified via `/session:write-a-skill`
 - [ ] `ai-artifacts/skills/shared/README.md` origin map updated
-- [ ] `scripts/sync-skills.ps1` run; `/group:name` resolves
+- [ ] `scripts/setup-repo.ps1 -SkipHooks` run; `/group:name` resolves

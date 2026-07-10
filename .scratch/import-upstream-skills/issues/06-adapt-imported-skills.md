@@ -15,7 +15,7 @@ repo/file/shell access.
 - [ ] Each imported skill classified (conversational / agentic) and adapted accordingly
 - [ ] `diagnose` HITL loop and `git-guardrails` guard exist as pwsh, not bash-only
 - [ ] Agentic skills exercise real tool access on a throwaway target; fallbacks preserved
-- [ ] Each verified via `/session:write-a-skill`; `sync-skills.ps1` run after edits
+- [ ] Each verified via `/session:write-a-skill`; `setup-repo.ps1 -SkipHooks` run after edits
 
 ## Blocked by
 

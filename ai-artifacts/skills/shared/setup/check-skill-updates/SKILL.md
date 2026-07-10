@@ -15,7 +15,7 @@ item), preserving local customizations under review rather than auto-overwriting
 
 - No local clone of any upstream is needed, and it works for **any** `upstream-repo`.
 - Source of truth is `ai-artifacts/skills/shared/<group>/<name>/SKILL.md`; generated mirrors are rebuilt by
-  `scripts/sync-skills.ps1`.
+  `scripts/setup-repo.ps1 -SkipHooks`.
 - Skills whose `METADATA.md` has no `upstream-commit` are skipped.
 
 ## Prerequisite — GitHub CLI, authenticated
@@ -94,7 +94,7 @@ Upstream has moved past the commit this skill was last reconciled to.
 Review the upstream changes and merge the worthwhile ones into
 `ai-artifacts/skills/shared/<group>/<name>/SKILL.md` (and resources), preserving local customizations, then bump
 `upstream-commit` in `ai-artifacts/skills/shared/<group>/<name>/METADATA.md` and re-run
-`scripts/sync-skills.ps1`. See "Appendix: actioning an update" in the check-skill-updates skill for
+`scripts/setup-repo.ps1 -SkipHooks`. See "Appendix: actioning an update" in the check-skill-updates skill for
 the three-way procedure.
 ```
 
@@ -121,7 +121,7 @@ $newUpstream = (& gh api -H 'Accept: application/vnd.github.raw' "repos/$owner/$
 `$baseline` vs `$installed` = local customizations to keep. `$baseline` vs `$newUpstream` = upstream
 changes to consider. Apply upstream fixes/improvements; keep local substitutions and intentional
 merges; skip conflicting upstream changes and note them. Then bump `upstream-commit` in
-`METADATA.md`, write to the source of truth, and re-run `scripts/sync-skills.ps1`.
+`METADATA.md`, write to the source of truth, and re-run `scripts/setup-repo.ps1 -SkipHooks`.
 
 ## Notes
 

@@ -147,8 +147,8 @@ is loaded every turn and competes with code for context budget — keep it conci
    the first heading of each." Pass: names the repo-root `AGENTS.md` and any present `CLAUDE.md`
    tiers with real content. Fail: invents files or misses `AGENTS.md`.
 2. **Skill invocation check** — Run `/planning:scratch` with no arguments. Pass: the ranked table
-   from `.scratch/BACKLOG.md` is displayed (command body + resources resolved from the mirror).
-   Fail: skill unknown → mirror missing; run `pwsh scripts/sync-skills.ps1`.
+  from `.scratch/BACKLOG.md` is displayed (command body + resources resolved from the mirror).
+  Fail: skill unknown → mirror missing; run `pwsh scripts/setup-repo.ps1 -SkipHooks`.
 3. **Hook check** — Start a new session on a machine with the SessionStart hook configured in
    `.claude/settings.local.json`. Pass: the "Synced skills → …" hook output appears at session
    start. Fail: no output → hook not installed on this machine or script error (`--debug` for logs).

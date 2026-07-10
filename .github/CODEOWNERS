@@ -1,13 +1,17 @@
-# Default owner for all paths.
-* @DenWin
+# Security-boundary paths only (no global owner on purpose)
+# These paths require repo-admin review (@DenWin).
 
-# Sensitive policy and automation areas.
-.github/workflows/* @DenWin
-.github/CODEOWNERS @DenWin
-.github/pull_request_template.md @DenWin
-AGENTS.md @DenWin
-coding-policies/** @DenWin
-shared/skills/** @DenWin
-scripts/** @DenWin
-instructions/** @DenWin
-anthropic/** @DenWin
+# Governance and CI control plane
+.github/CODEOWNERS                @DenWin
+.github/workflows/**              @DenWin
+.githooks/**                      @DenWin
+
+# Runtime capability surfaces
+ai-artifacts/hooks/**             @DenWin
+ai-artifacts/mcp-config/**        @DenWin
+ai-artifacts/plugins/**           @DenWin
+
+# Executable automation and policy gates
+ai-artifacts/skills/**/scripts/** @DenWin
+coding-policies/**                @DenWin
+scripts/**                        @DenWin

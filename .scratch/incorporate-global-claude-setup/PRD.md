@@ -49,7 +49,7 @@ waiting to be merged into it when it lands:
 
 ## Open decisions
 
-1. **Sync direction** — repo SoT → `~/.claude/` via a sync script (like `sync-skills.ps1`), or
+1. **Sync direction** — repo SoT → `~/.claude/` via the repo setup sync path, or
    fetch-once-and-hand-maintain? Recommend repo-SoT + sync for consistency with skills.
 2. **Overlap → `AGENTS.md`** — what is identical between `profile.md` and `CLAUDE.md` and should live
    once in a root `AGENTS.md` (read by Claude Code + Codex + Copilot), leaving only harness-specific

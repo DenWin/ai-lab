@@ -1,4 +1,6 @@
 #Requires -Version 7
+#Requires -PSEdition Core
+# RuntimePolicy: core-first
 <#
 .SYNOPSIS
     Moves files from a staging folder to their target folder, removing duplicates.
@@ -52,8 +54,8 @@ $ErrorActionPreference = 'Stop'
 
 $Root = (Get-Location).Path
 
-if (-not $SourceDir) { $SourceDir = Join-Path $Root '.new\Abrechnungen' }
-if (-not $DestDir)   { $DestDir   = Join-Path $Root '02_Auskunft-Einkommen\Gehaltsabrechnungen' }
+if (-not $SourceDir) { $SourceDir = Join-Path (Join-Path $Root '.new') 'Abrechnungen' }
+if (-not $DestDir)   { $DestDir   = Join-Path (Join-Path $Root '02_Auskunft-Einkommen') 'Gehaltsabrechnungen' }
 
 if (-not (Test-Path $SourceDir)) { throw "SourceDir not found: $SourceDir" }
 

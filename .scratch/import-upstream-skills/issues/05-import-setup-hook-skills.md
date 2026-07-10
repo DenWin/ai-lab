@@ -18,7 +18,7 @@ Status: done (git-guardrails + setup-pre-commit imported 2026-07-05; setup clust
 - [ ] git-guardrails imported; bash guard has a working pwsh equivalent; hook blocks a dangerous git command in test
 - [ ] Decision 3 recorded; setup-pre-commit reflects my toolchain (pre-commit framework), lineage noted
 - [ ] Provenance correct: git-guardrails tracks upstream; setup-pre-commit marked as fork (skipped by update check)
-- [ ] `sync-skills.ps1` run; `/setup:git-guardrails`, `/setup:setup-pre-commit` resolve
+- [ ] `setup-repo.ps1 -SkipHooks` run; `/setup:git-guardrails`, `/setup:setup-pre-commit` resolve
 
 ## Progress (2026-07-05)
 

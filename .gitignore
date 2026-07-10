@@ -26,13 +26,23 @@ $RECYCLE.BIN/
 /.temp/*
 !/.temp/.gitkeep
 
-# Generated Claude Code skill mirror. Source of truth is ai-artifacts/skills/shared/.
-# Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
-/.claude/commands/*
-
-# Generated Codex skill mirror. Source of truth is ai-artifacts/skills/shared/.
-# Rebuild after clone or after editing a skill:  pwsh scripts/sync-skills.ps1
-/.agents/skills/*
+# Generated agent skill mirrors (Claude Code, Codex, Copilot). Source of truth is ai-artifacts/skills/shared/.
+# Rebuild after clone or after editing a skill:  pwsh scripts/setup-repo.ps1 -SkipHooks
+# One-step clone bootstrap: pwsh scripts/setup-repo.ps1
+# Claude Code skill mirrors
+/.claude/commands/**
+!/.claude/commands/setup/
+!/.claude/commands/setup/setup-repo/
+!/.claude/commands/setup/setup-repo/**
+!/.claude/commands/setup/setup-repo.md
+# Codex skill mirrors
+/.agents/skills/**
+!/.agents/skills/setup_setup-repo/
+!/.agents/skills/setup_setup-repo/**
+# Copilot skill mirrors
+/.github/skills/**
+!/.github/skills/setup_setup-repo/
+!/.github/skills/setup_setup-repo/**
 
 # Python bytecode caches (e.g. from running the mail-to-doc tool's test suite)
 __pycache__/

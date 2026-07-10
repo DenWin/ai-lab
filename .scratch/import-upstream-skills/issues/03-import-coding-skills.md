@@ -5,7 +5,7 @@ Status: done (all three coding skills imported + dual-mode adapted 2026-07-05)
 ## What to build
 
 Import these three from Matt's repo into `ai-artifacts/skills/shared/coding/` with per-skill `METADATA.md`
-provenance, copying bundled resources verbatim, then `scripts/sync-skills.ps1`:
+provenance, copying bundled resources verbatim, then `scripts/setup-repo.ps1 -SkipHooks`:
 
 - `diagnose` (+ `scripts/hitl-loop.template.sh` — keep the file; pwsh equivalent is an adaptation task)
 - `improve-codebase-architecture` (+ DEEPENING, INTERFACE-DESIGN, LANGUAGE, HTML-REPORT)
@@ -18,7 +18,7 @@ faithful import + grouping + provenance only.
 
 - [ ] Three skills under `skills/coding/<name>/` with correct `upstream-*` frontmatter
 - [ ] Bundled resources present; `zoom-out` retains `disable-model-invocation`
-- [ ] `sync-skills.ps1` run; `/coding:diagnose` etc. resolve; resource links rewritten correctly
+- [ ] `setup-repo.ps1 -SkipHooks` run; `/coding:diagnose` etc. resolve; resource links rewritten correctly
 - [ ] `/setup:check-skill-updates` shows them `UP-TO-DATE`
 
 ## Progress (2026-07-05)

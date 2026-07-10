@@ -12,7 +12,7 @@ argument-hint: "[<feature-slug>]  — omit to review all features with TBD or ou
 # Scratch Plan
 
 Reviews `.scratch/` features and keeps the backlog current. Reads the ranking formula from
-`skills/planning/scratch/RANKING.md` and the layout from `skills/planning/scratch/LAYOUT.md`.
+`skills/planning/scratch/docs/RANKING.md` and the layout from `skills/planning/scratch/docs/LAYOUT.md`.
 
 ## Process
 
@@ -72,7 +72,7 @@ When the user wants to raise a feature's rank outside the normal interview:
 ### 4. Rewrite BACKLOG.md
 
 After all interviews, compute each feature's score: `P × I × E` using the numeric values in
-`skills/planning/scratch/RANKING.md`. Sort descending by score; apply tiebreakers in order:
+`skills/planning/scratch/docs/RANKING.md`. Sort descending by score; apply tiebreakers in order:
 less effort → higher importance → higher priority → alphabetical.
 
 Rewrite `.scratch/BACKLOG.md` with the updated table, numbered ranks, and a `Last updated:` line.

@@ -28,9 +28,10 @@ description: Create, update, or improve agent skills with proper structure, prog
 
 ```text
 skill-name/
+├── docs/              # Additional markdown docs (if needed)
+│   ├── REFERENCE.md
+│   └── EXAMPLES.md
 ├── SKILL.md           # Main instructions (required)
-├── REFERENCE.md       # Detailed docs (if needed)
-├── EXAMPLES.md        # Usage examples (if needed)
 └── scripts/           # Utility scripts (if needed)
     └── helper.js
 ```
@@ -55,7 +56,7 @@ description: Brief description of capability. Use when [specific triggers].
 
 ## Advanced features
 
-[Link to separate files: See [REFERENCE.md](REFERENCE.md)]
+[Link to separate files: See [REFERENCE.md](docs/REFERENCE.md)]
 ```
 
 ## Description Requirements
@@ -70,7 +71,7 @@ Bad: `Helps with documents.`
 
 ## Scripts
 
-If the skill needs bundled executable scripts, see [SCRIPTS.md](SCRIPTS.md)
+If the skill needs bundled executable scripts, see [SCRIPTS.md](docs/SCRIPTS.md)
 for when to add them and how to build them test-first.
 
 ## When to Split Files

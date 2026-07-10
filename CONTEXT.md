@@ -58,7 +58,7 @@ degrade to a conversational fallback when it does not.
 
 **Sync**:
 The act of rebuilding generated mirrors from source artifacts, typically via
-`pwsh scripts/sync-skills.ps1`.
+`pwsh scripts/setup-repo.ps1 -SkipHooks`.
 *Avoid*: deploy, publish
 
 ### Planning and work tracking

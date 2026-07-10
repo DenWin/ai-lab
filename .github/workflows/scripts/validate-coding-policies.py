@@ -3,15 +3,17 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+import os
 from pathlib import Path
 from typing import Iterable
 
 import yaml
 
-
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[3]
 POLICY_ROOT = REPO_ROOT / "coding-policies"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = Path(
+    os.environ.get("REPORTS_DIR", str(REPO_ROOT / ".temp/Reports"))
+).expanduser()
 
 
 def load_yaml(path: Path) -> dict:
@@ -70,6 +72,9 @@ def iter_shell_files() -> Iterable[Path]:
 
 def validate_bash_policy(errors: list[str]) -> None:
     for path in iter_shell_files():
+        if not path.exists():
+            # Local simulation can run in a dirty tree where tracked files were deleted.
+            continue
         lines = path.read_text(encoding="utf-8").splitlines()
         for idx, line in enumerate(lines, start=1):
             stripped = line.strip()
@@ -99,6 +104,8 @@ def validate_bash_policy(errors: list[str]) -> None:
 def validate_workflow_bash_policy(errors: list[str]) -> None:
     for rel in git_ls_files(".github/workflows/*.yml", ".github/workflows/*.yaml"):
         path = REPO_ROOT / rel
+        if not path.exists():
+            continue
         lines = path.read_text(encoding="utf-8").splitlines()
         for idx, line in enumerate(lines, start=1):
             if re.search(r"^\s*set\s+-[^\n]*[eu]", line):

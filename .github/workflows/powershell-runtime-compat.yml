@@ -1,0 +1,70 @@
+name: powershell-runtime-compat
+
+on:
+  pull_request:
+    paths:
+      - "**/*.ps1"
+      - "**/*.psd1"
+      - "**/*.psm1"
+      - ".github/workflows/powershell-runtime-compat.yml"
+      - ".github/workflows/scripts/validate-powershell-runtime.py"
+      - "coding-policies/languages/powershell-policy.yaml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.ps1"
+      - "**/*.psd1"
+      - "**/*.psm1"
+      - ".github/workflows/powershell-runtime-compat.yml"
+      - ".github/workflows/scripts/validate-powershell-runtime.py"
+      - "coding-policies/languages/powershell-policy.yaml"
+      - "!.scratch/*/artefacts/**"
+      - "!.scratch/*/artifacts/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  powershell-runtime-compat:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Determine diff range
+        id: diff
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/ci/determin-diff-range.sh "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" "${{ github.event.before }}" "${{ github.sha }}"
+
+      - name: Validate pwsh syntax (core-first + dual-runtime)
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/powershell-runtime-compat/validate-pwsh-syntax.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
+
+      - name: Validate Windows PowerShell syntax (dual-runtime + desktop-only)
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/powershell-runtime-compat/validate-windowsps-syntax.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
+
+      - name: Upload runtime-compat reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: powershell-runtime-compat-reports
+          path: reports
+
+      - name: Add job summary
+        if: always()
+        shell: bash
+        run: |
+          bash .github/workflows/scripts/powershell-runtime-compat/write-summary.sh

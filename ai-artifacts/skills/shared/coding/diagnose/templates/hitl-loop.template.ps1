@@ -1,3 +1,7 @@
+#Requires -Version 7.0
+#Requires -PSEdition Core
+# RuntimePolicy: core-first
+
 # Human-in-the-loop reproduction loop (PowerShell 7 primary; pwsh on Windows/macOS/Linux).
 # Copy this file, edit the steps below, and run it:  pwsh hitl-loop.template.ps1
 # The agent runs the script; the user follows prompts in their terminal.

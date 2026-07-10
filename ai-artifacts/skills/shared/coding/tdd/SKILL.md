@@ -34,7 +34,7 @@ silently complying.
 - Confirm what interface changes are needed and which behaviors matter most.
   I cannot test everything — focus on critical paths and complex logic.
 - List behaviors to test (not implementation steps).
-- Design interfaces for testability — see [design-for-testability.md](design-for-testability.md).
+- Design interfaces for testability — see [design-for-testability.md](docs/design-for-testability.md).
 - Use the project's domain vocabulary for test names; respect existing ADRs
   and the existing test suite's style.
 - **Load the stack file for the language in play, and only that one:**
@@ -53,7 +53,7 @@ the path works before you build on it.
 For each remaining behavior: red → green, one test at a time, minimal code,
 no anticipation of future tests. **Drive vertical, not horizontal** — one
 test, one implementation, learn, then the next test. Never write all tests
-first then all code (see [reviewing-and-cycle.md](reviewing-and-cycle.md)).
+first then all code (see [reviewing-and-cycle.md](docs/reviewing-and-cycle.md)).
 
 ### 4. Refactor
 
@@ -75,14 +75,14 @@ Refactor is non-optional — skipping it degrades TDD into "tests plus mess."
 
 ## Reference Files (load as needed)
 
-- [reviewing-and-cycle.md](reviewing-and-cycle.md) — rules for writing/reviewing
+- [reviewing-and-cycle.md](docs/reviewing-and-cycle.md) — rules for writing/reviewing
   tests and the red-green-refactor cycle (strategies, what counts as red).
-- [test-doubles.md](test-doubles.md) — mock/stub/fake selection, mock at
+- [test-doubles.md](docs/test-doubles.md) — mock/stub/fake selection, mock at
   boundaries, third-party wrapping, classicist vs London.
-- [companions.md](companions.md) — when to suggest property-based, mutation,
+- [companions.md](docs/companions.md) — when to suggest property-based, mutation,
   contract, approval, snapshot, and integration testing.
-- [behaviors.md](behaviors.md) — what not to do, how to handle ambiguous
+- [behaviors.md](docs/behaviors.md) — what not to do, how to handle ambiguous
   requests, and output format when producing tests.
-- [design-for-testability.md](design-for-testability.md) — interface design
+- [design-for-testability.md](docs/design-for-testability.md) — interface design
   that makes tests natural.
 - `stacks/<language>.md` — stack-specific rules; load only the one in use.

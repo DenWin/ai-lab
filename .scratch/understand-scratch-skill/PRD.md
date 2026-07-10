@@ -141,7 +141,7 @@ conventions from `LAYOUT.md` directly plus a small triage-label map.
   `scratch`'s append. The LAYOUT template documents only the minimal header a fresh `BACKLOG.md` gets.
 - **Deployment caveat.** `/planning:scratch` only resolves after the generated mirror exists
   (`.claude/commands/planning/scratch.md`). On a fresh clone / non-Windows sandbox the mirror is
-  absent (gitignored; `pwsh scripts/sync-skills.ps1` not yet run) — so the *source* behavior above is
+  absent (gitignored; `pwsh scripts/setup-repo.ps1 -SkipHooks` not yet run) — so the *source* behavior above is
   authoritative, but the slash command itself may be unavailable until sync runs.
 
 ### Reevaluation (2026-07-06)
