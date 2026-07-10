@@ -19,17 +19,17 @@ _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 try:
     _LOCAL_TZ = ZoneInfo("Europe/Berlin")
 except Exception:
-    raise SystemExit(
-        "Missing timezone data. Run: pip install tzdata"
-    )
+    raise SystemExit("Missing timezone data. Run: pip install tzdata")
 _LOG_DIR = _PROJECT_ROOT / ".logs"
 
 #: Dennis's own email addresses — used to determine sent vs. received direction.
 #: [REDACTED for public repo — real values in the .temp/ originals]
-_DENNIS_EMAILS: frozenset[str] = frozenset({
-    "owner@example.com",
-    "owner.alt@example.com",
-})
+_DENNIS_EMAILS: frozenset[str] = frozenset(
+    {
+        "owner@example.com",
+        "owner.alt@example.com",
+    }
+)
 
 #: Maps known email addresses to short party names for filenames.
 #: [REDACTED for public repo — real values in the .temp/ originals]
@@ -82,7 +82,6 @@ QUOTED_HEADER_KEYS = {"from", "sent", "to", "cc", "bcc", "subject", "date"}
 REPLY_HEADER_PATTERN = re.compile(r"^\*([^*]+):\*\s*", re.IGNORECASE)
 
 
-
 def _log_warning(msg: str) -> None:
     """Print a warning and append it to .logs/mail_to_adoc.log."""
     print(msg)
@@ -90,6 +89,7 @@ def _log_warning(msg: str) -> None:
         _LOG_DIR.mkdir(parents=True, exist_ok=True)
         log_file = _LOG_DIR / "mail_to_adoc.log"
         from datetime import datetime
+
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(f"[{timestamp}] {msg}\n")
@@ -97,11 +97,11 @@ def _log_warning(msg: str) -> None:
         pass  # log write failed silently
 
 
-
 def _decode_rfc2047(value: str) -> str:
     """Decode RFC 2047 encoded-words in email headers, e.g. =?utf-8?Q?...?="""
     from email.header import decode_header, make_header
-    if not value or '=?' not in value:
+
+    if not value or "=?" not in value:
         return value
     try:
         return str(make_header(decode_header(value)))
@@ -112,10 +112,13 @@ def _decode_rfc2047(value: str) -> str:
 def _decode_qp_body(text: str) -> str:
     """Decode any residual quoted-printable sequences (=XX) in plain text."""
     import quopri
-    if '=' not in text:
+
+    if "=" not in text:
         return text
     try:
-        return quopri.decodestring(text.encode('ascii', errors='replace')).decode('utf-8', errors='replace')
+        return quopri.decodestring(text.encode("ascii", errors="replace")).decode(
+            "utf-8", errors="replace"
+        )
     except Exception:
         return text
 
@@ -142,17 +145,17 @@ class HTMLToAsciiDoc(HTMLParser):
         # List rendering state — one entry per nesting level to support nested ul/ol
         self.list_depth = 0
         self.list_type_stack: list[str] = []  # 'ul' or 'ol' for each open list
-        self.list_item_stack: list[list[str]] = (
-            []
-        )  # text fragments collected for each open <li>
+        self.list_item_stack: list[
+            list[str]
+        ] = []  # text fragments collected for each open <li>
 
         # Table rendering state
         self.table_depth = 0
         self.current_cell: list[str] | None = None  # None when no <td>/<th> is open
         self.current_row_cells: list[str] = []  # cells accumulated for the current <tr>
-        self.table_rows: list[list[str]] = (
-            []
-        )  # all rows accumulated for the current <table>
+        self.table_rows: list[
+            list[str]
+        ] = []  # all rows accumulated for the current <table>
 
         # Hyperlink state — href is set on <a>, used while writing inner text, cleared on </a>
         self.open_link_href: str | None = None
@@ -307,7 +310,6 @@ def normalize_body(body: str) -> str:
     return body
 
 
-
 def _load_blocklist(script_dir: Path) -> set[str]:
     """Load MD5 checksums from attachment-blocklist.txt next to the skills folder."""
     blocklist_path = script_dir.parent / "attachment-blocklist.txt"
@@ -375,7 +377,6 @@ def _write_unique_file(
     return dest
 
 
-
 def _clean_filename(subject: str) -> str:
     """Clean subject for filesystem use: 'AW: Foo' → 'AW_ Foo'.
 
@@ -390,10 +391,10 @@ def _clean_filename(subject: str) -> str:
 _STEM_SEP = " — "
 # Bracket tags appended at the end of the filename stem (replaces the older emoji
 # markers ✉/✎𓂃/📎). Order in the stem: '{name} {direction}{[CC] if cc-only}{[+] if attachments}'.
-_DIR_RECEIVED = "[FROM]"   # mail Dennis received
-_DIR_SENT     = "[TO]"     # mail Dennis sent
-_CC_FLAG      = "[CC]"     # received mail where Dennis was only in Cc (not To)
-_ATT_FLAG     = "[+]"      # mail has attachments
+_DIR_RECEIVED = "[FROM]"  # mail Dennis received
+_DIR_SENT = "[TO]"  # mail Dennis sent
+_CC_FLAG = "[CC]"  # received mail where Dennis was only in Cc (not To)
+_ATT_FLAG = "[+]"  # mail has attachments
 
 
 def _adoc_stem(mail_date, subject: str) -> str:
@@ -425,7 +426,7 @@ def _meta_field(adoc: str, label: str) -> str:
             continue
         if m.group(1) == "a":  # bulleted list continues on the following '* ' lines
             vals = []
-            for nxt in lines[i + 1:]:
+            for nxt in lines[i + 1 :]:
                 s = nxt.strip()
                 if s.startswith("* "):
                     vals.append(s[2:])
@@ -447,6 +448,7 @@ def _direction_tag(
     From/To header values extracted from the adoc metadata table; uses _DENNIS_EMAILS
     to detect sent mail and _EMAIL_NAME_MAP for party names.
     """
+
     def _extract_addr(field: str) -> str:
         m = re.search(r"<([^>]+)>", field)
         return (m.group(1) if m else field).strip().lower()
@@ -469,8 +471,7 @@ def _direction_tag(
     from_addr = _extract_addr(from_v)
     if from_addr in _DENNIS_EMAILS:
         others = [
-            a for a in re.findall(r"<([^>]+)>", to_v)
-            if a.lower() not in _DENNIS_EMAILS
+            a for a in re.findall(r"<([^>]+)>", to_v) if a.lower() not in _DENNIS_EMAILS
         ]
         _n = "MultipleRecipients" if len(others) > 1 else _name_for(to_v)
         return f"{_n} {_DIR_SENT}{_att}"
@@ -637,7 +638,7 @@ def _addr_table_row(label: str, addr_str: str) -> str:
     return f"|{label} a|" + "\n".join(f"* {a}" for a in addrs)
 
 
-_POSTPROCESS_LONG_LINE = 80   # lines longer than this are QP-wrapped paragraphs
+_POSTPROCESS_LONG_LINE = 80  # lines longer than this are QP-wrapped paragraphs
 _POSTPROCESS_LIST_PREFIXES = ("* ", "** ", "*** ", ". ", ".. ", "... ", "- ")
 
 
@@ -682,10 +683,22 @@ def _postprocess_body(body: str) -> str:
     # thin rule in the rendered email.  Insert AsciiDoc ''' before them.
     _REPLY_START = re.compile(r"^\*(Von|From|De|Van):\*", re.IGNORECASE)
     # All recognised reply-header field names (German + English).
-    _REPLY_HDR_KEYS = frozenset({
-        "from", "sent", "to", "cc", "bcc", "subject", "date",
-        "von", "gesendet", "an", "betreff", "datum",
-    })
+    _REPLY_HDR_KEYS = frozenset(
+        {
+            "from",
+            "sent",
+            "to",
+            "cc",
+            "bcc",
+            "subject",
+            "date",
+            "von",
+            "gesendet",
+            "an",
+            "betreff",
+            "datum",
+        }
+    )
 
     def _is_reply_hdr(line: str) -> bool:
         m = re.match(r"^\*([^*]+):\*", line.strip(), re.IGNORECASE)
@@ -712,21 +725,23 @@ def _postprocess_body(body: str) -> str:
     #   • Everything else that is followed by non-blank → add ' +'
     def _is_structural(line: str) -> bool:
         s = line.strip()
-        return (s.startswith("[")
-                or s in ("'''", "---", "***", "___")
-                or s.startswith("="))
+        return (
+            s.startswith("[") or s in ("'''", "---", "***", "___") or s.startswith("=")
+        )
 
     lines = body.split("\n")
     out = []
     for idx, line in enumerate(lines):
         raw = line.rstrip()
         next_line = lines[idx + 1] if idx + 1 < len(lines) else ""
-        if (raw
-                and next_line.strip()
-                and not raw.endswith(" +")
-                and not _is_structural(raw)
-                and not any(raw.lstrip().startswith(p) for p in _POSTPROCESS_LIST_PREFIXES)
-                and (_is_reply_hdr(raw) or len(raw) <= _POSTPROCESS_LONG_LINE)):
+        if (
+            raw
+            and next_line.strip()
+            and not raw.endswith(" +")
+            and not _is_structural(raw)
+            and not any(raw.lstrip().startswith(p) for p in _POSTPROCESS_LIST_PREFIXES)
+            and (_is_reply_hdr(raw) or len(raw) <= _POSTPROCESS_LONG_LINE)
+        ):
             out.append(raw + " +")
         else:
             out.append(line)
@@ -744,6 +759,7 @@ def _decode_thread_index(raw: str) -> str:
     Depth 0 = root message (no replies in chain yet).
     """
     import base64 as _b64
+
     raw = raw.strip()
     if not raw:
         return ""
@@ -759,18 +775,33 @@ def _decode_thread_index(raw: str) -> str:
         return raw
 
 
-
 def _build_adoc(
-    subject: str, sender: str, to: str, cc: str, date: str,
-    attachment_links: list, body: str,
-    *, reply_to: str = "", bcc: str = "", importance: str = "",
-    sensitivity: str = "", categories: str = "",
-    thread_topic: str = "", thread_index: str = "",
+    subject: str,
+    sender: str,
+    to: str,
+    cc: str,
+    date: str,
+    attachment_links: list,
+    body: str,
+    *,
+    reply_to: str = "",
+    bcc: str = "",
+    importance: str = "",
+    sensitivity: str = "",
+    categories: str = "",
+    thread_topic: str = "",
+    thread_index: str = "",
 ) -> str:
     """Assemble the final AsciiDoc document from extracted mail fields."""
     subject_escaped = subject.replace(": ", "&#58; ")
-    lines = [f"= {subject_escaped}", "", "[%autowidth]", "|===",
-             f"|From |{sender}", f"|Sent |{date}"]
+    lines = [
+        f"= {subject_escaped}",
+        "",
+        "[%autowidth]",
+        "|===",
+        f"|From |{sender}",
+        f"|Sent |{date}",
+    ]
     to_row = _addr_table_row("To  ", to)
     if to_row:
         lines.append(to_row)
@@ -799,7 +830,9 @@ def _build_adoc(
         lines += ["[NOTE]", "====", "*Attachments:*", ""]
         for orig_name, link_path, is_image in attachment_links:
             if is_image:
-                lines.append(f'image::{link_path}[{orig_name}, 120, link="{link_path}"]')
+                lines.append(
+                    f'image::{link_path}[{orig_name}, 120, link="{link_path}"]'
+                )
             else:
                 lines.append(f"* link:{link_path}[{orig_name}]")
         lines += ["", "====", ""]
@@ -831,7 +864,11 @@ def msg_to_adoc(msg_path: Path) -> str:
         # Prefer HTML (has charset) → fallback plain text
         html_bytes = msg.htmlBody
         if html_bytes:
-            html = _decode_msg_html(html_bytes) if isinstance(html_bytes, bytes) else html_bytes
+            html = (
+                _decode_msg_html(html_bytes)
+                if isinstance(html_bytes, bytes)
+                else html_bytes
+            )
             body = strip_html(html)
         else:
             body = msg.body or ""
@@ -840,8 +877,11 @@ def msg_to_adoc(msg_path: Path) -> str:
         for att in msg.attachments:
             if getattr(att, "isInline", False):
                 continue
-            name = re.sub(r"\s+", " ",
-                (att.longFilename or att.shortFilename or "").replace("\x00", "")).strip()
+            name = re.sub(
+                r"\s+",
+                " ",
+                (att.longFilename or att.shortFilename or "").replace("\x00", ""),
+            ).strip()
             if not name:
                 continue
             raw_attachments.append((name, getattr(att, "data", None) or b""))
@@ -849,28 +889,57 @@ def msg_to_adoc(msg_path: Path) -> str:
         if mail_date is not None:
             # extract_msg may return a timezone-naive UTC datetime; convert to local.
             import datetime as _dt
+
             if mail_date.tzinfo is None:
                 mail_date = mail_date.replace(tzinfo=_dt.timezone.utc)
             mail_date = mail_date.astimezone(_LOCAL_TZ)
         reply_to = re.sub(r"[ \t]+", " ", getattr(msg, "reply_to", "") or "")
         bcc = re.sub(r"[ \t]+", " ", getattr(msg, "bcc", "") or "")
-        raw_imp = getattr(msg, "importanceText", None) or getattr(msg, "importance", None)
-        importance = (IMPORTANCE_LABELS.get(raw_imp, "") if isinstance(raw_imp, int)
-                      else str(raw_imp).capitalize() if raw_imp else "")
-        raw_sens = getattr(msg, "sensitivityText", None) or getattr(msg, "sensitivity", None)
-        sensitivity = (SENSITIVITY_LABELS.get(raw_sens, "") if isinstance(raw_sens, int)
-                       else str(raw_sens).capitalize() if raw_sens else "")
+        raw_imp = getattr(msg, "importanceText", None) or getattr(
+            msg, "importance", None
+        )
+        importance = (
+            IMPORTANCE_LABELS.get(raw_imp, "")
+            if isinstance(raw_imp, int)
+            else str(raw_imp).capitalize()
+            if raw_imp
+            else ""
+        )
+        raw_sens = getattr(msg, "sensitivityText", None) or getattr(
+            msg, "sensitivity", None
+        )
+        sensitivity = (
+            SENSITIVITY_LABELS.get(raw_sens, "")
+            if isinstance(raw_sens, int)
+            else str(raw_sens).capitalize()
+            if raw_sens
+            else ""
+        )
         categories = ", ".join(str(c) for c in (getattr(msg, "categories", None) or []))
         thread_topic = (getattr(msg, "threadTopic", None) or "").strip()
         thread_index = (getattr(msg, "threadIndex", None) or "").strip()
     finally:
         msg.close()
     docs_dir = _PROJECT_ROOT / "01_Korrespondenz" / "Attachments"
-    attachment_links = process_attachments(raw_attachments, mail_date, docs_dir, msg_path)
-    return _build_adoc(subject, sender, to, cc, date, attachment_links, body,
-                       reply_to=reply_to, bcc=bcc, importance=importance,
-                       sensitivity=sensitivity, categories=categories,
-                       thread_topic=thread_topic, thread_index=thread_index)
+    attachment_links = process_attachments(
+        raw_attachments, mail_date, docs_dir, msg_path
+    )
+    return _build_adoc(
+        subject,
+        sender,
+        to,
+        cc,
+        date,
+        attachment_links,
+        body,
+        reply_to=reply_to,
+        bcc=bcc,
+        importance=importance,
+        sensitivity=sensitivity,
+        categories=categories,
+        thread_topic=thread_topic,
+        thread_index=thread_index,
+    )
 
 
 def _unfold_header(value: str) -> str:
@@ -915,16 +984,25 @@ def eml_to_adoc(eml_path: Path) -> str:
             payload = part.get_payload(decode=True)
             if isinstance(payload, (bytes, bytearray)) and payload:
                 html_body = bytes(payload).decode(
-                    part.get_content_charset() or "utf-8", errors="replace")
+                    part.get_content_charset() or "utf-8", errors="replace"
+                )
         elif content_type == "text/plain" and plain_body is None:
             payload = part.get_payload(decode=True)
             if isinstance(payload, (bytes, bytearray)) and payload:
                 raw_plain = bytes(payload).decode(
-                    part.get_content_charset() or "utf-8", errors="replace")
+                    part.get_content_charset() or "utf-8", errors="replace"
+                )
                 # Some clients embed QP-encoded text without declaring CTE
-                plain_body = _decode_qp_body(raw_plain) if "=3D" in raw_plain or "=C3" in raw_plain else raw_plain
-    body = normalize_body(strip_html(html_body)) if html_body else (
-           normalize_body(plain_body) if plain_body else "")
+                plain_body = (
+                    _decode_qp_body(raw_plain)
+                    if "=3D" in raw_plain or "=C3" in raw_plain
+                    else raw_plain
+                )
+    body = (
+        normalize_body(strip_html(html_body))
+        if html_body
+        else (normalize_body(plain_body) if plain_body else "")
+    )
     reply_to = _unfold_header(msg.get("Reply-To") or "")
     bcc = _unfold_header(msg.get("BCC") or msg.get("Bcc") or "")
     imp_hdr = msg.get("Importance") or msg.get("X-Priority") or ""
@@ -934,11 +1012,25 @@ def eml_to_adoc(eml_path: Path) -> str:
     thread_topic = _decode_rfc2047(_unfold_header(msg.get("Thread-Topic") or ""))
     thread_index = _unfold_header(msg.get("Thread-Index") or "")
     docs_dir = _PROJECT_ROOT / "01_Korrespondenz" / "Attachments"
-    attachment_links = process_attachments(raw_attachments, mail_date, docs_dir, eml_path)
-    return _build_adoc(subject, sender, to, cc, date, attachment_links, body,
-                       reply_to=reply_to, bcc=bcc, importance=importance,
-                       sensitivity=sensitivity, categories=categories,
-                       thread_topic=thread_topic, thread_index=thread_index)
+    attachment_links = process_attachments(
+        raw_attachments, mail_date, docs_dir, eml_path
+    )
+    return _build_adoc(
+        subject,
+        sender,
+        to,
+        cc,
+        date,
+        attachment_links,
+        body,
+        reply_to=reply_to,
+        bcc=bcc,
+        importance=importance,
+        sensitivity=sensitivity,
+        categories=categories,
+        thread_topic=thread_topic,
+        thread_index=thread_index,
+    )
 
 
 def main():
@@ -979,7 +1071,9 @@ def main():
     _jr: dict = {}
 
     if not args:
-        print("Usage: python mail_to_adoc.py [--root <project-root>] [--overwrite] [--json] <file.msg|.eml>")
+        print(
+            "Usage: python mail_to_adoc.py [--root <project-root>] [--overwrite] [--json] <file.msg|.eml>"
+        )
         sys.exit(1)
 
     mail_path = Path(args[0])
@@ -1001,6 +1095,7 @@ def main():
 
     # ── 2. Convert primary into .temp/ ────────────────────────────────────────
     import tempfile as _tempfile
+
     temp_dir = Path(_tempfile.gettempdir()) / "mail_to_adoc_temp"
     temp_dir.mkdir(parents=True, exist_ok=True)
     temp_primary = temp_dir / (stem + ".adoc")
@@ -1015,9 +1110,12 @@ def main():
 
     if counterpart.exists():
         import tempfile
-        tmp_fd, tmp_name = tempfile.mkstemp(suffix=f".{counterpart_ext[1:]}.adoc",
-                                            prefix=stem + "_cmp_")
+
+        tmp_fd, tmp_name = tempfile.mkstemp(
+            suffix=f".{counterpart_ext[1:]}.adoc", prefix=stem + "_cmp_"
+        )
         import os as _os
+
         _os.close(tmp_fd)
         temp_cmp = Path(tmp_name)
         _, cmp_adoc = _write_converted_mail(counterpart, temp_cmp)
@@ -1039,7 +1137,7 @@ def main():
     _fm = re.search(r"\|From\s*\|(.+)", final_adoc)
     _tm = re.search(r"\|To\s*\|(.+)", final_adoc)
     _from_v = _fm.group(1).strip() if _fm else ""
-    _to_v   = _tm.group(1).strip() if _tm else ""
+    _to_v = _tm.group(1).strip() if _tm else ""
     _has_att = "*Attachments:*" in final_adoc
     # Dennis was only CC'd when he appears in the Cc field but not in To.
     _cc_only = _dennis_in(_meta_field(final_adoc, "CC")) and not _dennis_in(
@@ -1051,6 +1149,7 @@ def main():
 
     # ── 5. Copy from .temp/ to 01_Korrespondenz/{year}/{month}/ ─────────────
     import shutil as _shutil2
+
     out_dir = _PROJECT_ROOT / "01_Korrespondenz" / year / month
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / (full_stem + ".adoc")
@@ -1058,7 +1157,9 @@ def main():
     if out_path.exists():
         try:
             existing = out_path.read_text(encoding="utf-8")
-            identical = existing.replace("\r\n", "\n") == final_adoc.replace("\r\n", "\n")
+            identical = existing.replace("\r\n", "\n") == final_adoc.replace(
+                "\r\n", "\n"
+            )
         except OSError:
             identical = False  # cloud-only file — treat as needing overwrite
         if identical:
@@ -1069,6 +1170,7 @@ def main():
             # write to a sibling temp file, then rename() over the cloud-only target.
             import os as _os
             import tempfile as _tf
+
             tmp_fd, tmp_name = _tf.mkstemp(dir=out_dir, prefix=".tmp_")
             _os.close(tmp_fd)
             _shutil2.copy2(str(temp_primary), tmp_name)
@@ -1091,16 +1193,21 @@ def main():
 
     # ── 6. Archive / rename source file ──────────────────────────────────────
     import filecmp as _filecmp
+
     _parts = [p.lower() for p in mail_path.resolve().parts]
     _in_archive = any(
-        _parts[i] == "01_korrespondenz" and i + 1 < len(_parts) and _parts[i + 1] == "original"
+        _parts[i] == "01_korrespondenz"
+        and i + 1 < len(_parts)
+        and _parts[i + 1] == "original"
         for i in range(len(_parts) - 1)
     )
     archive_ext = mail_path.suffix
     new_src_name = full_stem + archive_ext  # match adoc stem
 
     if not _in_archive:
-        archive_dir = _PROJECT_ROOT / "01_Korrespondenz" / "Original" / f"{year}-{month}"
+        archive_dir = (
+            _PROJECT_ROOT / "01_Korrespondenz" / "Original" / f"{year}-{month}"
+        )
         archive_dir.mkdir(parents=True, exist_ok=True)
         dest = archive_dir / new_src_name
 
@@ -1141,7 +1248,6 @@ def main():
                 _jr["archive"] = str(dest)
                 _jr["archive_status"] = "skipped_rename"
                 _emit(f"Umbenennung übersprungen (Ziel existiert): {dest.name}")
-
 
     if json_mode:
         print(_json.dumps(_jr, ensure_ascii=True))

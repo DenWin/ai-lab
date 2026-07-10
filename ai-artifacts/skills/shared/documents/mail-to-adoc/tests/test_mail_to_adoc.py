@@ -92,7 +92,9 @@ def test_process_attachments_skips_blocklist_and_dedupes_existing(
         msg_path=Path("mails/sample.eml"),
     )
 
-    assert links == [("duplicate.pdf", "../../../docs/20260511_1452-evidence.pdf", False)]
+    assert links == [
+        ("duplicate.pdf", "../../../docs/20260511_1452-evidence.pdf", False)
+    ]
     assert not (docs_dir / "20260511_1452-blocked.png").exists()
 
 
