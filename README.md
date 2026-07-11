@@ -12,18 +12,18 @@ instruction surfaces, MCP config, prompts, hooks, policies, and sync tooling.
 
 ## Start here
 
-1. Read `/home/runner/work/ai-lab/ai-lab/AGENTS.md` for repo-wide operational rules.
-2. Read `/home/runner/work/ai-lab/ai-lab/docs/repo-layout.adoc` for the canonical structure.
-3. Run `pwsh /home/runner/work/ai-lab/ai-lab/scripts/setup-repo.ps1` on fresh clones to enable hooks and rebuild generated mirrors.
+1. Read [`AGENTS.md`](https://raw.githubusercontent.com/DenWin/ai-lab/refs/heads/main/AGENTS.md) for repo-wide operational rules.
+2. Read [`docs/repo-layout.adoc`](https://raw.githubusercontent.com/DenWin/ai-lab/refs/heads/main/docs/repo-layout.adoc) for the canonical structure.
+3. Run `pwsh scripts/setup-repo.ps1` on fresh clones to enable hooks and rebuild generated mirrors.
 
 ## What exists in this repo
 
-- `/home/runner/work/ai-lab/ai-lab/ai-artifacts/skills/` — portable source skills and scoped variants
-- `/home/runner/work/ai-lab/ai-lab/ai-artifacts/instructions/` — editable repo copies of harness instruction surfaces
-- `/home/runner/work/ai-lab/ai-lab/ai-artifacts/{hooks,mcp-config,output-styles,agents,prompts,plugins}/` — artifact families, scoped by `shared/`, `<vendor>/`, or `<vendor>/<harness>/`
-- `/home/runner/work/ai-lab/ai-lab/docs/harnesses/` — harness behavior and loading model docs
-- `/home/runner/work/ai-lab/ai-lab/.scratch/` — tracked planning work (PRDs, issues, backlog)
-- `/home/runner/work/ai-lab/ai-lab/scripts/` — setup/sync orchestration
+- [`ai-artifacts/skills/`](https://github.com/DenWin/ai-lab/tree/main/ai-artifacts/skills) — portable source skills and scoped variants
+- [`ai-artifacts/instructions/`](https://github.com/DenWin/ai-lab/tree/main/ai-artifacts/instructions) — editable repo copies of harness instruction surfaces
+- [`ai-artifacts/`](https://github.com/DenWin/ai-lab/tree/main/ai-artifacts) (`hooks`, `mcp-config`, `output-styles`, `agents`, `prompts`, `plugins`) — artifact families, scoped by `shared/`, `<vendor>/`, or `<vendor>/<harness>/`
+- [`docs/harnesses/`](https://github.com/DenWin/ai-lab/tree/main/docs/harnesses) — harness behavior and loading model docs
+- [`.scratch/`](https://github.com/DenWin/ai-lab/tree/main/.scratch) — tracked planning work (PRDs, issues, backlog)
+- [`scripts/`](https://github.com/DenWin/ai-lab/tree/main/scripts) — setup/sync orchestration
 
 ## How changes are supposed to be implemented
 
@@ -35,7 +35,7 @@ instruction surfaces, MCP config, prompts, hooks, policies, and sync tooling.
 
 ## Canonical references
 
-- Operational rules: `/home/runner/work/ai-lab/ai-lab/AGENTS.md`
-- Layout source of truth: `/home/runner/work/ai-lab/ai-lab/docs/repo-layout.adoc`
-- Terminology/context: `/home/runner/work/ai-lab/ai-lab/CONTEXT.md`
-- Instructions surface model: `/home/runner/work/ai-lab/ai-lab/ai-artifacts/instructions/README.md`
+- Operational rules: [`AGENTS.md`](https://raw.githubusercontent.com/DenWin/ai-lab/refs/heads/main/AGENTS.md)
+- Layout source of truth: [`docs/repo-layout.adoc`](https://raw.githubusercontent.com/DenWin/ai-lab/refs/heads/main/docs/repo-layout.adoc)
+- Terminology/context: [`CONTEXT.md`](https://raw.githubusercontent.com/DenWin/ai-lab/refs/heads/main/CONTEXT.md)
+- Instructions surface model: [`ai-artifacts/instructions/README.md`](https://raw.githubusercontent.com/DenWin/ai-lab/refs/heads/main/ai-artifacts/instructions/README.md)
