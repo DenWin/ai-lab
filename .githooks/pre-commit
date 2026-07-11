@@ -27,20 +27,55 @@ function Get-Matches {
         [string]$Pattern
     )
 
-    return @($Files | Where-Object { $_ -match $Pattern })
+    [string[]]$matches = @($Files | Where-Object { $_ -match $Pattern })
+    return $matches
 }
 
-$staged = @(& git diff --cached --name-only --diff-filter=ACMRTUXB)
+function Get-ItemCount {
+    param($Value)
+
+    if ($null -eq $Value) {
+        return 0
+    }
+
+    if ($Value -is [System.Array]) {
+        return $Value.Count
+    }
+
+    return 1
+}
+
+[string[]]$staged = @(& git diff --cached --name-only --diff-filter=ACMRTUXB)
 if ($LASTEXITCODE -ne 0) {
     throw "Failed to enumerate staged files for pre-commit hook."
 }
-if (-not $staged -or $staged.Count -eq 0) {
+if (-not $staged -or (Get-ItemCount -Value $staged) -eq 0) {
     exit 0
 }
 
 # Keep scratch artifacts as-is for linting; safety scans still run in CI.
-$filtered = @($staged | Where-Object { $_ -notmatch '^\.scratch/[^/]+/(artefacts|artifacts)/' })
-if (-not $filtered -or $filtered.Count -eq 0) {
+[string[]]$filtered = @($staged | Where-Object { $_ -notmatch '^\.scratch/[^/]+/(artefacts|artifacts)/' })
+if (-not $filtered -or (Get-ItemCount -Value $filtered) -eq 0) {
+    exit 0
+}
+
+& pwsh (Join-Path $repoRoot "scripts/generate-repo-index.ps1") -RepoRoot $repoRoot -OutputPath "REPO_INDEX.md"
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to generate REPO_INDEX.md."
+}
+
+& git add -- REPO_INDEX.md
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to stage generated REPO_INDEX.md."
+}
+
+[string[]]$staged = @(& git diff --cached --name-only --diff-filter=ACMRTUXB)
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to refresh staged files after generating REPO_INDEX.md."
+}
+
+[string[]]$filtered = @($staged | Where-Object { $_ -notmatch '^\.scratch/[^/]+/(artefacts|artifacts)/' })
+if (-not $filtered -or (Get-ItemCount -Value $filtered) -eq 0) {
     exit 0
 }
 
@@ -56,15 +91,15 @@ try {
     & python (Join-Path $repoRoot ".github/workflows/scripts/validate-powershell-runtime.py")
     if ($LASTEXITCODE -ne 0) { $failed = $true }
 
-    $yamlFiles = Get-Matches -Files $filtered -Pattern '\.(yml|yaml)$'
-    if ($yamlFiles.Count -gt 0) {
+    [string[]]$yamlFiles = Get-Matches -Files $filtered -Pattern '\.(yml|yaml)$'
+    if ((Get-ItemCount -Value $yamlFiles) -gt 0) {
         Require-Tool -Name "yamllint" -Hint "Install with: pip install yamllint"
         & yamllint -s @yamlFiles
         if ($LASTEXITCODE -ne 0) { $failed = $true }
     }
 
-    $jsonFiles = Get-Matches -Files $filtered -Pattern '\.json$'
-    if ($jsonFiles.Count -gt 0) {
+    [string[]]$jsonFiles = Get-Matches -Files $filtered -Pattern '\.json$'
+    if ((Get-ItemCount -Value $jsonFiles) -gt 0) {
         Require-Tool -Name "python" -Hint "Install Python 3 and add it to PATH."
         foreach ($file in $jsonFiles) {
             & python -m json.tool $file > $null
@@ -74,15 +109,15 @@ try {
         }
     }
 
-    $mdFiles = Get-Matches -Files $filtered -Pattern '\.md$'
-    if ($mdFiles.Count -gt 0) {
+    [string[]]$mdFiles = Get-Matches -Files $filtered -Pattern '\.md$'
+    if ((Get-ItemCount -Value $mdFiles) -gt 0) {
         Require-Tool -Name "markdownlint" -Hint "Install with: npm install -g markdownlint-cli"
         & markdownlint @mdFiles --config .markdownlint.json
         if ($LASTEXITCODE -ne 0) { $failed = $true }
     }
 
-    $adocFiles = Get-Matches -Files $filtered -Pattern '\.(adoc|asciidoc)$'
-    if ($adocFiles.Count -gt 0) {
+    [string[]]$adocFiles = Get-Matches -Files $filtered -Pattern '\.(adoc|asciidoc)$'
+    if ((Get-ItemCount -Value $adocFiles) -gt 0) {
         Require-Tool -Name "asciidoctor" -Hint "Install with: gem install asciidoctor asciidoctor-lint"
         Require-Tool -Name "asciidoctor-lint" -Hint "Install with: gem install asciidoctor asciidoctor-lint"
         foreach ($file in $adocFiles) {
@@ -93,8 +128,8 @@ try {
         }
     }
 
-    $pyFiles = Get-Matches -Files $filtered -Pattern '\.py$'
-    if ($pyFiles.Count -gt 0) {
+    [string[]]$pyFiles = Get-Matches -Files $filtered -Pattern '\.py$'
+    if ((Get-ItemCount -Value $pyFiles) -gt 0) {
         Require-Tool -Name "ruff" -Hint "Install with: pip install ruff"
         & python -m ruff check @pyFiles
         if ($LASTEXITCODE -ne 0) { $failed = $true }
@@ -102,30 +137,33 @@ try {
         if ($LASTEXITCODE -ne 0) { $failed = $true }
     }
 
-    $psFiles = Get-Matches -Files $filtered -Pattern '\.(ps1|psm1|psd1)$'
-    if ($psFiles.Count -gt 0) {
+    [string[]]$psFiles = Get-Matches -Files $filtered -Pattern '\.(ps1|psm1|psd1)$'
+    if ((Get-ItemCount -Value $psFiles) -gt 0) {
         Require-Tool -Name "pwsh" -Hint "Install PowerShell 7 and PSScriptAnalyzer module."
         if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
             Set-PSRepository PSGallery -InstallationPolicy Trusted
             Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
         }
 
-        $results = Invoke-ScriptAnalyzer -Path $psFiles -Severity Warning,Error
+        $results = @()
+        foreach ($psFile in $psFiles) {
+            $results += Invoke-ScriptAnalyzer -Path $psFile -Severity Warning,Error
+        }
         if ($results) {
             $results | Format-Table -AutoSize | Out-String | Write-Output
             $failed = $true
         }
     }
 
-    $shFiles = Get-Matches -Files $filtered -Pattern '\.sh$'
-    if ($shFiles.Count -gt 0) {
+    [string[]]$shFiles = Get-Matches -Files $filtered -Pattern '\.sh$'
+    if ((Get-ItemCount -Value $shFiles) -gt 0) {
         Require-Tool -Name "shellcheck" -Hint "Install shellcheck and add it to PATH."
         & shellcheck @shFiles
         if ($LASTEXITCODE -ne 0) { $failed = $true }
     }
 
-    $jsFiles = Get-Matches -Files $filtered -Pattern '\.js$'
-    if ($jsFiles.Count -gt 0) {
+    [string[]]$jsFiles = Get-Matches -Files $filtered -Pattern '\.js$'
+    if ((Get-ItemCount -Value $jsFiles) -gt 0) {
         Require-Tool -Name "node" -Hint "Install Node.js and add it to PATH."
         foreach ($file in $jsFiles) {
             & node --check $file
@@ -134,7 +172,13 @@ try {
     }
 }
 catch {
-    Write-Error $_
+    Write-Output ("Pre-commit failure: {0}" -f $_.Exception.Message)
+    if ($_.InvocationInfo -and $_.InvocationInfo.PositionMessage) {
+        Write-Output $_.InvocationInfo.PositionMessage
+    }
+    if ($_.ScriptStackTrace) {
+        Write-Output $_.ScriptStackTrace
+    }
     exit 1
 }
 
