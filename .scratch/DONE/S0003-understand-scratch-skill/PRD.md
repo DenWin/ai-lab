@@ -16,7 +16,7 @@ its real behavior, not the one-line description. Establish ground truth before r
 - What files does quick-capture create/touch — `PRD.md`, the `BACKLOG.md` row, anything else? What
   status/ranking does a new entry get, and how is the slug chosen?
 - How does it relate to the sibling skills (`scratch-plan`, `to-issues`, `to-prd`, `triage`) and the
-  canonical [LAYOUT.md](../../ai-artifacts/skills/shared/planning/scratch/LAYOUT.md) they all reference?
+  canonical [LAYOUT.md](../../../ai-artifacts/skills/shared/planning/scratch/LAYOUT.md) they all reference?
 - Does the skill's documented behavior match what's been happening in practice (e.g. the stub PRDs +
   TBD backlog rows captured this session)? Any gaps between the SKILL.md and actual effect?
 
@@ -150,7 +150,7 @@ User-requested recheck of the last open question ("how does it relate to the sib
 **confirmed answered** by §3 + §3a above — `scratch-plan` division of labour is documented, and the
 `to-issues`/`to-prd`/`triage` compatibility analysis (four gaps) is already propagated as the
 "Tracker-contract prerequisites" checklist on
-[`import-upstream-skills` issue 04](../import-upstream-skills/issues/04-import-planning-cluster.md).
+[`import-upstream-skills` issue 04](../../import-upstream-skills/issues/04-import-planning-cluster.md).
 Verified against the repo today: the three siblings are still not imported
 (`ai-artifacts/skills/shared/planning/` = `scratch` + `scratch-plan` only), so the §3a answer stands unchanged.
 Nothing remains in this scratch; follow-up work lives in [[import-upstream-skills]] issues 02/04.

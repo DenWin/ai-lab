@@ -21,7 +21,7 @@ Two related rules the user wants enforced on how the agent handles change reques
 
 ## Solution
 
-_Fill in. Open design points to resolve in triage / scratch-planning:_
+*Fill in. Open design points to resolve in triage / scratch-planning:*
 
 - **Trigger boundary for rule 1.** "Do not act upon *any* prompt" is absolute as written —
   needs a carve-out for trivial/read-only requests, questions, and the scratch-management
@@ -30,7 +30,9 @@ _Fill in. Open design points to resolve in triage / scratch-planning:_
   [[capture-not-execute]] and [[claude-md-planning-defaults]].
 - **What marks a scratch as "human-reviewed"** (the immutability trigger)? A status value,
   a frontmatter flag, a separate marker file? Ties into the approval state question in
-  [[gated-work-prd-issue-approval]].
+  [[gated-work-prd-issue-approval]]. Candidate trigger: `[[backlog-enhancements]]` concept 8's
+  Definition of Done being met — DOD item 4 already moves a scratch to `DONE/<ID>-<slug>/`, which
+  could double as the immutability boundary this scratch needs.
 - **Appendix mechanism & layout.** File naming/location (e.g. `APPENDIX-NN.md` inside the
   feature folder), structure (new info + proposed-changes-to-original), and how
   `.scratch` LAYOUT.md should document it.
@@ -47,4 +49,4 @@ _Fill in. Open design points to resolve in triage / scratch-planning:_
   [[capture-not-execute]] (don't execute, just record). Consider whether these should be
   consolidated into one workflow spec during scratch-planning rather than three separate
   scratches.
-- _Created by /planning:scratch._
+- *Created by /planning:scratch.*

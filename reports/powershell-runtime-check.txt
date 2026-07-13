@@ -1,3 +1,0 @@
-powershell runtime check
-status: passed
-all PowerShell scripts declare a valid runtime policy

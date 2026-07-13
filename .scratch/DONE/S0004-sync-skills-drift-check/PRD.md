@@ -15,7 +15,7 @@ session keeps invoking the old version until someone remembers to re-run the syn
 
 *Proposed — refine in triage:*
 
-- Add a `-Check` mode to [scripts/setup-repo.ps1](../../scripts/setup-repo.ps1): compare source
+- Add a `-Check` mode to [scripts/setup-repo.ps1](../../../scripts/setup-repo.ps1): compare source
   vs. mirror content (per-skill hash over SKILL.md + resources, with the same link rewriting
   applied), list stale skills, and return a nonzero exit code / warning line.
 - Have the SessionStart hook run `-IfMissing` **plus** `-Check`, so a stale mirror produces a
@@ -26,7 +26,7 @@ session keeps invoking the old version until someone remembers to re-run the syn
 
 ## Progress (2026-07-04 — done)
 
-- ✅ `-Check` mode added to [scripts/setup-repo.ps1](../../scripts/setup-repo.ps1): read-only,
+- ✅ `-Check` mode added to [scripts/setup-repo.ps1](../../../scripts/setup-repo.ps1): read-only,
   compares expected mirror output (link rewriting applied) against the actual tree — command-file
   content (`-cne`), per-resource hashes, and extra-files-in-mirror all count as drift. Reports
   UP-TO-DATE / STALE / MISSING per skill; exit 1 on any drift; guarded against combining with

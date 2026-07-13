@@ -19,7 +19,7 @@ section pointing at `docs/testing-methodologies-foundation.adoc` as the canonica
 
 ## Blocked by
 
-- ~~[repo-scaffold](../../repo-scaffold/PRD.md) `git init`~~ — **unblocked 2026-07-04**: git init
+- ~~repo-scaffold `git init`~~ — **unblocked 2026-07-04**: git init
   done 2026-06-04, repo published at `github.com/DenWin/ai-lab`. A repo-relative reference is now
   authorable.
 - Remaining gate: PRD **Open Decision 3** (doc home — this repo vs its own repo). Settle before

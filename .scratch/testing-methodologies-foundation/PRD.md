@@ -56,6 +56,7 @@ purpose.
 > your intent before resuming the grill — "resolved then" is not "frozen now".
 
 Still to walk:
+
 - **AI-block length (dim 12)** — per-deployment rule length is unaddressed (the multi-file split
   helps loading, not length).
 - **Hidden-gap pass** on the currently-maxed dimensions (4 claim validity, 5 breadth, 9 consistency,
@@ -70,7 +71,7 @@ Still to walk:
   (`github.com/DenWin/ai-lab`), so a git-repo reference can now be authored — see
   [issues/01-reference-doc-from-tdd-skill.md](issues/01-reference-doc-from-tdd-skill.md).
   (The earlier blocker pointed at `init-git-repo`, which was folded into
-  [repo-scaffold](../repo-scaffold/PRD.md), now done.) Still gated on **Open Decision 3** below
+  repo-scaffold, now done and removed from `.scratch/`.) Still gated on **Open Decision 3** below
   (doc home: this repo vs its own repo) per the issue's own note — settle before authoring the link.
 - Once the doc changes in (A) land, **regenerate the skill from §11** (it is canonical; the skill is
   never edited directly). Known drift to fix on regen: `behaviors.md` is missing the

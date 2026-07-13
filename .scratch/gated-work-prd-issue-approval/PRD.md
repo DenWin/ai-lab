@@ -31,9 +31,12 @@ branch-per-issue + PR review step so the human reviews code as a PR before it me
   vs human); whether agents may push to remote at all under git-guardrails.
 - Interaction with [[capture-not-execute]] and the planning defaults already being captured in
   `claude-md-planning-defaults` — this is the "execute" side of the same gate.
+- The **content** of what "approved" checks against is `[[backlog-enhancements]]` concept 8's
+  Definition of Ready — this scratch owns *who* approves and the branch/PR flow after, not the
+  checklist itself.
 
 ## Acceptance (rough)
 
 - A documented, enforceable rule set for the gate, plus a decision on hard vs soft enforcement.
 
-_Solution: Fill in._
+*Solution: Fill in.*

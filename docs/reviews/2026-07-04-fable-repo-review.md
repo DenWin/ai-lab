@@ -12,7 +12,7 @@ executed the same day:
 
 | Scratch                                                                      | State after the review session                                             |
 | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [sync-skills-drift-check](../../.scratch/sync-skills-drift-check/PRD.md)     | ✅ done — drift check + hook                                               |
+| sync-skills-drift-check (done, removed from `.scratch/`)                     | ✅ done — drift check + hook                                               |
 | [docs-integrity-pass](../../.scratch/docs-integrity-pass/PRD.md)             | ✅ done — 4 drift fixes + decay contract                                   |
 | [public-repo-compliance](../../.scratch/public-repo-compliance/PRD.md)       | ⏳ ready-for-human — attribution + protections done; profile go/no-go open |
 | [backlog-hygiene-wip-limit](../../.scratch/backlog-hygiene-wip-limit/PRD.md) | needs-triage                                                               |

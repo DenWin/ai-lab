@@ -15,25 +15,25 @@ The structure decisions were resolved via grill-me (2026-06-04) and the layout m
 > **[RESOLVED 2026-06-04 via grill-me]** The handoff's uniform `<vendor>/<harness>/` taxonomy was
 > superseded. Canonical layout is now `shared/` (default) + `<vendor>/` + `<vendor>/<harness>/`,
 > most-specific-wins; **loose folders** (no plugin bundles); folders created **on demand**. See
-> [docs/repo-layout.adoc](../../docs/repo-layout.adoc) — the canonical layout reference.
+> [docs/repo-layout.adoc](../../../docs/repo-layout.adoc) — the canonical layout reference.
 > Done so far: `git init`; skills → `ai-artifacts/skills/shared/`; profile →
 > `ai-artifacts/instructions/anthropic/claude-ai/profile.md`; setup-repo mirror sync retargeted + re-run; layout doc
 > authored. Remaining: `AGENTS.md`, file placement, remote, initial commit.
 
 `git init` (done) unblocks the `tdd`-skill→foundation-doc git-repo reference (see
-[testing-methodologies-foundation › issue 01](../testing-methodologies-foundation/issues/01-reference-doc-from-tdd-skill.md)).
+[testing-methodologies-foundation › issue 01](../../testing-methodologies-foundation/issues/01-reference-doc-from-tdd-skill.md)).
 This also folded in the earlier `init-git-repo` stub.
 
 ## Scope
 
 Phase 1 of the handoff (skill adaptation) is largely done — skills live under `ai-artifacts/skills/shared/` and
-remaining work is tracked in [claude-code-skill-adaptation](../claude-code-skill-adaptation/PRD.md)
-and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is **Phase 2 only**:
+remaining work is tracked in [claude-code-skill-adaptation](../../claude-code-skill-adaptation/PRD.md)
+and [import-upstream-skills](../../import-upstream-skills/PRD.md). This feature is **Phase 2 only**:
 
 1. ✅ `git init`, default branch `main`. `.gitignore` already reconciled (`.claude/commands/*`
    generated; `.temp/*` staged) — no change needed.
 2. ✅ Structure resolved + migrated: skills → `ai-artifacts/skills/shared/`, profile →
-   `ai-artifacts/instructions/anthropic/claude-ai/`, setup-repo mirror sync retargeted, [docs/repo-layout.adoc](../../docs/repo-layout.adoc)
+   `ai-artifacts/instructions/anthropic/claude-ai/`, setup-repo mirror sync retargeted, [docs/repo-layout.adoc](../../../docs/repo-layout.adoc)
    authored. Per-harness artifact folders (`ai-artifacts/mcp-config/`, `ai-artifacts/hooks/`, `ai-artifacts/output-styles/`) are
    created **on demand**, not pre-scaffolded.
 3. ✅ Root `AGENTS.md` authored (2026-07-04) as an **operational stub**: cross-harness facts only
@@ -41,14 +41,14 @@ and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is 
    hoist is deliberately deferred to `incorporate-global-claude-setup` decision 2, so nothing is
    written twice — its Scope note says so.
 4. ✅ Resolved by delegation (2026-07-04): `INSTRUCTION-EVAL.md` → `eval/` is done at build time by
-   [eval-skill-harness](../eval-skill-harness/PRD.md) (its PRD says so; moving it now would break
+   [eval-skill-harness](../../eval-skill-harness/PRD.md) (its PRD says so; moving it now would break
    that PRD's `artifacts/` reference). The claude.ai project files (`02-project-instructions.md`,
    `POWERSHELL.md`, `powershell.yml`) no longer exist — `.temp/` was cleared; only older variants
-   survive in [evaluate-temp-ai-config artifacts](../evaluate-temp-ai-config/artifacts/AI/Claude/Powershell/),
+   survive in [evaluate-temp-ai-config artifacts](../../evaluate-temp-ai-config/artifacts/AI/Claude/Powershell/),
    and that scratch owns their keep-or-discard decision. Nothing left for this feature to place.
 5. ✅ Resolved by practice (2026-07-04): remote exists — `github.com/DenWin/ai-lab`, **public** —
    and commits are pushed. The public-visibility consequences (license/attribution, hardening) are
-   tracked in [public-repo-compliance](../public-repo-compliance/PRD.md).
+   tracked in [public-repo-compliance](../S0002-public-repo-compliance/PRD.md).
 
 ## Decisions
 
@@ -61,8 +61,8 @@ and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is 
 3. **Tracker — settled by practice:** local-markdown `.scratch/`.
 4. **Remote visibility — RESOLVED by practice (2026-07-04):** the repo is **public**
    (`github.com/DenWin/ai-lab`). Knock-on: the license/attribution notes in
-   [import-upstream-skills](../import-upstream-skills/PRD.md) are now due — tracked in
-   [public-repo-compliance](../public-repo-compliance/PRD.md).
+   [import-upstream-skills](../../import-upstream-skills/PRD.md) are now due — tracked in
+   [public-repo-compliance](../S0002-public-repo-compliance/PRD.md).
 5. **Project-specific files — RESOLVED:** the pwsh project files (`02-project-instructions.md`,
    `POWERSHELL.md`, `powershell.yml`) live under `anthropic/claude-ai/projects/<project-name>/`.
 
@@ -71,19 +71,19 @@ and [import-upstream-skills](../import-upstream-skills/PRD.md). This feature is 
 This is the **umbrella/parent** the handoff spawned; several siblings are already decomposed out and
 are **not** re-scoped here:
 
-- [harness-docs](../harness-docs/PRD.md) — the compatibility-matrix / `docs/harnesses/` living doc.
-- [eval-skill-harness](../eval-skill-harness/PRD.md) — the `eval/` build (separate handoff).
-- [incorporate-global-claude-setup](../incorporate-global-claude-setup/PRD.md) — global `~/.claude/`
+- [harness-docs](../../harness-docs/PRD.md) — the compatibility-matrix / `docs/harnesses/` living doc.
+- [eval-skill-harness](../../eval-skill-harness/PRD.md) — the `eval/` build (separate handoff).
+- [incorporate-global-claude-setup](../../incorporate-global-claude-setup/PRD.md) — global `~/.claude/`
   config → repo; touches the same root `AGENTS.md`.
-- [claude-code-skill-adaptation](../claude-code-skill-adaptation/PRD.md) /
-  [import-upstream-skills](../import-upstream-skills/PRD.md) — Phase 1 skill work.
+- [claude-code-skill-adaptation](../../claude-code-skill-adaptation/PRD.md) /
+  [import-upstream-skills](../../import-upstream-skills/PRD.md) — Phase 1 skill work.
 
 Coordinate the root `AGENTS.md` authoring (scope item 3) with `incorporate-global-claude-setup`
 decision 2 (the overlap hoist) so it isn't written twice.
 
 ## Blocks
 
-- [testing-methodologies-foundation › issue 01](../testing-methodologies-foundation/issues/01-reference-doc-from-tdd-skill.md)
+- [testing-methodologies-foundation › issue 01](../../testing-methodologies-foundation/issues/01-reference-doc-from-tdd-skill.md)
   — the tdd-skill→doc git-repo reference needs `git init` (scope item 1) done first.
 
 ## Further Notes
