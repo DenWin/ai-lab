@@ -17,6 +17,7 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Resolve-WorkflowRepoRoot -RepoRoot $RepoRoot -CallerRoot $PSScriptRoot
 $range = Resolve-WorkflowDiffRange -RepoRoot $RepoRoot -Base $Base -Head $Head
+$isFullScan = $FullScan.IsPresent
 Reset-WorkflowFailures -WorkflowName "execute-all-workflow-scripts"
 
 $reportDir = Join-Path $RepoRoot ".temp/Reports"
@@ -45,7 +46,7 @@ foreach ($scriptName in $workflowScripts) {
 
   Write-WorkflowLine ''
   Invoke-WorkflowStep -Name "Run $scriptName" -Action {
-    if ($FullScan) {
+    if ($isFullScan) {
       & pwsh $scriptPath -RepoRoot $RepoRoot -Base $range.Base -Head $range.Head -FullScan
     }
     else {

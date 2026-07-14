@@ -2,8 +2,14 @@
 
 base="$1"
 head="$2"
+full_scan="${3:-}"
 repo_root="$(pwd)"
 reports_dir="${REPORTS_DIR:-.temp/Reports}"
+scan_args=()
+
+if [[ "$full_scan" == "--full-scan" ]]; then
+  scan_args+=(--full-scan)
+fi
 
 if command -v python >/dev/null 2>&1; then
   python_cmd="python"
@@ -15,7 +21,7 @@ else
 fi
 
 mkdir -p "$reports_dir"
-files=$(bash .github/workflows/scripts/ci/get-changed-files.sh --base "${base}" --head "${head}" --repo-root "${repo_root}" --include '*.json')
+files=$(bash .github/workflows/scripts/ci/get-changed-files.sh --base "${base}" --head "${head}" --repo-root "${repo_root}" --include '*.json' "${scan_args[@]}")
 if [ -n "${files}" ]; then
   set +e
   echo "$files" | xargs -I{} "$python_cmd" -m json.tool "{}" > /dev/null

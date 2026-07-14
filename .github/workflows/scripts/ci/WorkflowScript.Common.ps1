@@ -44,12 +44,15 @@ function Assert-WorkflowCommandAvailable {
 }
 
 function Reset-WorkflowFailures {
+  [CmdletBinding(SupportsShouldProcess)]
   param(
     [string]$WorkflowName = "workflow"
   )
 
-  $script:WorkflowCurrentName = $WorkflowName
-  $script:WorkflowCurrentFailures = [System.Collections.Generic.List[string]]::new()
+  if ($PSCmdlet.ShouldProcess($WorkflowName, "Reset workflow failures")) {
+    $script:WorkflowCurrentName = $WorkflowName
+    $script:WorkflowCurrentFailures = [System.Collections.Generic.List[string]]::new()
+  }
 }
 
 function Get-WorkflowFailures {

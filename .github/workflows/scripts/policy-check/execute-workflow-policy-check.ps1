@@ -17,6 +17,7 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Resolve-WorkflowRepoRoot -RepoRoot $RepoRoot -CallerRoot $PSScriptRoot
 $range = Resolve-WorkflowDiffRange -RepoRoot $RepoRoot -Base $Base -Head $Head
+$isFullScan = $FullScan.IsPresent
 Reset-WorkflowFailures -WorkflowName "policy-check"
 
 Invoke-WorkflowStep -Name "policy-check: prerequisites" -Action {
@@ -27,7 +28,7 @@ Invoke-WorkflowStep -Name "policy-check: prerequisites" -Action {
 Push-Location $RepoRoot
 try {
   Invoke-WorkflowStep -Name "policy-check: enforce repo guardrails" -Action {
-    $files = Get-WorkflowFiles -RepoRoot $RepoRoot -Base $range.Base -Head $range.Head -Include @("*") -FullScan:$FullScan
+    $files = Get-WorkflowFiles -RepoRoot $RepoRoot -Base $range.Base -Head $range.Head -Include @("*") -FullScan:$isFullScan
     foreach ($file in $files) {
       if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { continue }
       $text = Get-Content -LiteralPath $file -Raw -ErrorAction SilentlyContinue
@@ -37,7 +38,7 @@ try {
       }
     }
 
-    $psFiles = Get-WorkflowFiles -RepoRoot $RepoRoot -Base $range.Base -Head $range.Head -Include @("*.ps1", "*.psm1") -FullScan:$FullScan
+    $psFiles = Get-WorkflowFiles -RepoRoot $RepoRoot -Base $range.Base -Head $range.Head -Include @("*.ps1", "*.psm1") -FullScan:$isFullScan
     foreach ($file in $psFiles) {
       if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { continue }
       $head = Get-Content -LiteralPath $file -TotalCount 80

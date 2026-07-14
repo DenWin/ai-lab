@@ -2,11 +2,17 @@
 
 base="$1"
 head="$2"
+full_scan="${3:-}"
 repo_root="$(pwd)"
 reports_dir="${REPORTS_DIR:-.temp/Reports}"
+scan_args=()
+
+if [[ "$full_scan" == "--full-scan" ]]; then
+  scan_args+=(--full-scan)
+fi
 
 mkdir -p "$reports_dir"
-files=$(bash .github/workflows/scripts/ci/get-changed-files.sh --base "${base}" --head "${head}" --repo-root "${repo_root}" --include '*.adoc' --include '*.asciidoc')
+files=$(bash .github/workflows/scripts/ci/get-changed-files.sh --base "${base}" --head "${head}" --repo-root "${repo_root}" --include '*.adoc' --include '*.asciidoc' "${scan_args[@]}")
 if [ -n "${files}" ]; then
   # asciidoctor validates document structure/parsing
   set +e

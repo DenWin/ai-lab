@@ -17,6 +17,11 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Resolve-WorkflowRepoRoot -RepoRoot $RepoRoot -CallerRoot $PSScriptRoot
 $range = Resolve-WorkflowDiffRange -RepoRoot $RepoRoot -Base $Base -Head $Head
+$isFullScan = $FullScan.IsPresent
+$scanArgs = @()
+if ($isFullScan) {
+  $scanArgs += "--full-scan"
+}
 Reset-WorkflowFailures -WorkflowName "config-lint"
 
 Invoke-WorkflowStep -Name "config-lint: prerequisites" -Action {
@@ -53,32 +58,32 @@ try {
     }
 
     Invoke-WorkflowStep -Name "config-lint: yaml" -Action {
-      & bash ".github/workflows/scripts/config-lint/lint-yaml.sh" $range.Base $range.Head
+      & bash ".github/workflows/scripts/config-lint/lint-yaml.sh" $range.Base $range.Head @scanArgs
       if ($LASTEXITCODE -ne 0) { throw "lint-yaml.sh failed." }
     }
 
     Invoke-WorkflowStep -Name "config-lint: json syntax" -Action {
-      & bash ".github/workflows/scripts/config-lint/validate-json.sh" $range.Base $range.Head
+      & bash ".github/workflows/scripts/config-lint/validate-json.sh" $range.Base $range.Head @scanArgs
       if ($LASTEXITCODE -ne 0) { throw "validate-json.sh failed." }
     }
 
     Invoke-WorkflowStep -Name "config-lint: markdown" -Action {
-      & bash ".github/workflows/scripts/config-lint/lint-markdown.sh" $range.Base $range.Head
+      & bash ".github/workflows/scripts/config-lint/lint-markdown.sh" $range.Base $range.Head @scanArgs
       if ($LASTEXITCODE -ne 0) { throw "lint-markdown.sh failed." }
     }
 
     Invoke-WorkflowStep -Name "config-lint: asciidoc parse" -Action {
-      & bash ".github/workflows/scripts/config-lint/lint-asciidoc.sh" $range.Base $range.Head
+      & bash ".github/workflows/scripts/config-lint/lint-asciidoc.sh" $range.Base $range.Head @scanArgs
       if ($LASTEXITCODE -ne 0) { throw "lint-asciidoc.sh failed." }
     }
 
     Invoke-WorkflowStep -Name "config-lint: shellcheck" -Action {
-      & bash ".github/workflows/scripts/config-lint/lint-shell.sh" $range.Base $range.Head
+      & bash ".github/workflows/scripts/config-lint/lint-shell.sh" $range.Base $range.Head @scanArgs
       if ($LASTEXITCODE -ne 0) { throw "lint-shell.sh failed." }
     }
 
     Invoke-WorkflowStep -Name "config-lint: javascript syntax" -Action {
-      & bash ".github/workflows/scripts/config-lint/validate-js-syntax.sh" $range.Base $range.Head
+      & bash ".github/workflows/scripts/config-lint/validate-js-syntax.sh" $range.Base $range.Head @scanArgs
       if ($LASTEXITCODE -ne 0) { throw "validate-js-syntax.sh failed." }
     }
   }
