@@ -16,49 +16,94 @@ Load order (later overrides earlier where they conflict; more-specific wins over
 2. **User-global** — `~/.claude/CLAUDE.md` (all projects)
 3. **Project** — `./CLAUDE.md` + nested per-subdirectory `CLAUDE.md` (more-specific subdir wins)
 4. **Local** — `CLAUDE.local.md` (personal, gitignored; sits alongside `CLAUDE.md`)
-5. **`AGENTS.md`** — at repo root; cross-compatible preferred format (read alongside CLAUDE.md,
+5. **`.claude/rules/*.md`** — topic-scoped instruction files, same priority tier as `CLAUDE.md`.
+   A rule with no `paths:` frontmatter loads at session start like `CLAUDE.md`; a rule with
+   `paths:` (glob list) loads only when Claude reads a matching file. Exists at both project
+   (`.claude/rules/`) and user-global (`~/.claude/rules/`) scope. This is the native mechanism
+   for splitting a growing `CLAUDE.md` (recommended past ~200 lines) and for `applyTo`-style
+   path-scoped instructions.
+6. **`AGENTS.md`** — at repo root; cross-compatible preferred format (read alongside CLAUDE.md,
    not instead of it — both load)
-6. **Auto-memory** — `~/.claude/projects/<sanitized-cwd>/memory/MEMORY.md` (first ~200 lines only)
-7. **`settings.json`** — permissions, hooks, MCP config (not instruction text; different mechanism)
+7. **Auto-memory** — `~/.claude/projects/<sanitized-cwd>/memory/MEMORY.md` (first ~200 lines,
+   capped at 25KB)
+8. **`settings.json`** — permissions, hooks, MCP config (not instruction text; different mechanism)
 
 Within instruction files, more-specific path wins. Managed > project > user for policy conflicts.
 
 ## 2. Storage split
 
 - **Repo-scoped (committed):** `CLAUDE.md`, `AGENTS.md`, `.claude/settings.json`,
-  `ai-artifacts/skills/shared/<group>/<name>/`, `.mcp.json`
+  `ai-artifacts/skills/shared/<group>/<name>/`, `.mcp.json`, `.claude/rules/*.md`,
+  `.claude/skills/<name>/SKILL.md`, `.claude/agents/*.md`, `.claude/workflows/*.js`,
+  `.claude/agent-memory/<agent>/MEMORY.md` (subagent with `memory: project`)
 - **Machine-local (gitignored):** `CLAUDE.local.md`, `.claude/settings.local.json`,
-  `~/.claude/projects/<project>/memory/` (auto-memory)
+  `~/.claude/projects/<project>/memory/` (auto-memory),
+  `.claude/agent-memory-local/` (subagent with `memory: local`)
 - **User-global (all repos):** `~/.claude/CLAUDE.md`, `~/.claude/settings.json`,
-  `~/.claude/commands/` (global skills mirror), `~/.claude/plugins/`
+  `~/.claude.json` (app state — theme, trust decisions, personal MCP servers; distinct from
+  `settings.json`), `~/.claude/commands/` (global skills mirror), `~/.claude/skills/`,
+  `~/.claude/rules/`, `~/.claude/workflows/`, `~/.claude/agents/`, `~/.claude/agent-memory/`
+  (subagent with `memory: user`), `~/.claude/plugins/`
 
 ## 3. Disk locations
 
-| Tier                      | Windows                                                  | macOS / Linux                                |
-| ------------------------- | -------------------------------------------------------- | -------------------------------------------- |
-| User-global Claude config | `%USERPROFILE%\.claude\`                                 | `~/.claude/`                                 |
-| Global instruction file   | `%USERPROFILE%\.claude\CLAUDE.md`                        | `~/.claude/CLAUDE.md`                        |
-| Global skills mirror      | `%USERPROFILE%\.claude\commands\`                        | `~/.claude/commands/`                        |
-| Auto-memory               | `%USERPROFILE%\.claude\projects\<slug>\memory\MEMORY.md` | `~/.claude/projects/<slug>/memory/MEMORY.md` |
-| Global settings           | `%USERPROFILE%\.claude\settings.json`                    | `~/.claude/settings.json`                    |
-| Project instruction       | `<repo>\CLAUDE.md` or `<repo>\AGENTS.md`                 | same                                         |
-| Project-local override    | `<repo>\CLAUDE.local.md`                                 | same                                         |
-| Project settings          | `<repo>\.claude\settings.json`                           | same                                         |
-| Project-local settings    | `<repo>\.claude\settings.local.json`                     | same                                         |
-| Project MCP config        | `<repo>\.mcp.json`                                       | same                                         |
+| Tier                        | Windows                                                  | macOS / Linux                                |
+| --------------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| User-global Claude config   | `%USERPROFILE%\.claude\`                                 | `~/.claude/`                                 |
+| Global instruction file     | `%USERPROFILE%\.claude\CLAUDE.md`                        | `~/.claude/CLAUDE.md`                        |
+| Global skills mirror        | `%USERPROFILE%\.claude\commands\`                        | `~/.claude/commands/`                        |
+| Auto-memory                 | `%USERPROFILE%\.claude\projects\<slug>\memory\MEMORY.md` | `~/.claude/projects/<slug>/memory/MEMORY.md` |
+| Global settings             | `%USERPROFILE%\.claude\settings.json`                    | `~/.claude/settings.json`                    |
+| Project instruction         | `<repo>\CLAUDE.md` or `<repo>\AGENTS.md`                 | same                                         |
+| Project-local override      | `<repo>\CLAUDE.local.md`                                 | same                                         |
+| Project settings            | `<repo>\.claude\settings.json`                           | same                                         |
+| Project-local settings      | `<repo>\.claude\settings.local.json`                     | same                                         |
+| Project MCP config          | `<repo>\.mcp.json`                                       | same                                         |
+| Project rules               | `<repo>\.claude\rules\*.md`                              | same                                         |
+| Project skills              | `<repo>\.claude\skills\<name>\SKILL.md`                  | same                                         |
+| Project subagents           | `<repo>\.claude\agents\*.md`                             | same                                         |
+| Project workflows           | `<repo>\.claude\workflows\*.js`                          | same                                         |
+| Project subagent memory     | `<repo>\.claude\agent-memory\<agent>\MEMORY.md`          | same                                         |
+| Global rules                | `%USERPROFILE%\.claude\rules\`                           | `~/.claude/rules/`                           |
+| Global skills               | `%USERPROFILE%\.claude\skills\`                          | `~/.claude/skills/`                          |
+| Global subagents            | `%USERPROFILE%\.claude\agents\`                          | `~/.claude/agents/`                          |
+| Global workflows            | `%USERPROFILE%\.claude\workflows\`                       | `~/.claude/workflows/`                       |
+| App state (non-instruction) | `%USERPROFILE%\.claude.json`                             | `~/.claude.json`                             |
 
 ## 4. Artifact mapping
 
-| Artifact type                                      | Support                                                                                                 |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Instruction docs (`AGENTS.md`, `CLAUDE.md`, rules) | **Native** — file-based, auto-loaded, path-scoped                                                       |
-| Skills / slash commands                            | **Native** — `commands/<group>/<name>.md`; `!cmd` preprocessing, `$ARGUMENTS`, `/group:name` invocation |
-| Subagents                                          | **Native** — `agents/*.md`                                                                              |
-| Hooks                                              | **Native** — `settings.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, etc.)                        |
-| MCP servers                                        | **Native** — `.mcp.json` (project), `~/.claude.json` (global), Desktop `claude_desktop_config.json`     |
-| Output styles                                      | **Native** — `ai-artifacts/output-styles/` (referenced in settings)                                     |
-| Settings / permissions                             | **Native** — `settings.json` / `settings.local.json`                                                    |
-| Plugins / bundles                                  | **Native** — `.claude-plugin/plugin.json` wrapping skills/agents/hooks/mcp                              |
+| Artifact type                               | Support                                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Instruction docs (`AGENTS.md`, `CLAUDE.md`) | **Native** — file-based, auto-loaded every session start                                                                        |
+| Rules                                       | **Native** — `.claude/rules/*.md`; see note below                                                                               |
+| Skills / slash commands                     | **Native** — `.claude/skills/` and legacy `.claude/commands/`; see note below                                                   |
+| Subagents                                   | **Native** — `.claude/agents/*.md`                                                                                              |
+| Dynamic workflows                           | **Native** — `.claude/workflows/*.js`; see note below                                                                           |
+| Subagent persistent memory                  | **Native** — `.claude/agent-memory/`; see note below                                                                            |
+| Hooks                                       | **Native** — `settings.json` (`PreToolUse`, `PostToolUse`, `SessionStart`, etc.); scripts conventionally under `.claude/hooks/` |
+| MCP servers                                 | **Native** — `.mcp.json` (project), `~/.claude.json` (personal), Desktop `claude_desktop_config.json`                           |
+| Output styles                               | **Native** — `ai-artifacts/output-styles/` (referenced in settings)                                                             |
+| Settings / permissions                      | **Native** — `settings.json` / `settings.local.json`                                                                            |
+| Plugins / bundles                           | **Native** — `.claude-plugin/plugin.json` wrapping skills/agents/hooks/mcp                                                      |
+
+- **Rules:** `.claude/rules/*.md` (project) or `~/.claude/rules/*.md` (global) — same priority
+  tier as `CLAUDE.md`. No `paths:` frontmatter → loads at session start like `CLAUDE.md`. With
+  `paths:` (glob list) → loads only when Claude reads a matching file — the native
+  `applyTo`-equivalent. This repo does not currently use rules; all guidance lives in `CLAUDE.md`
+  and skills.
+- **Skills vs. commands:** `.claude/skills/<name>/SKILL.md` is the vendor-recommended mechanism —
+  directory bundling, `paths:`-scoped auto-load, `disable-model-invocation`, `context: fork` for
+  subagent execution. The legacy `.claude/commands/<name>.md` (single file) still works
+  identically for `/name` invocation; a skill wins on a name clash. **This repo mirrors
+  `ai-artifacts/skills/shared/` to `.claude/commands/<group>/<name>.md` — the legacy path, not
+  `.claude/skills/`.**
+- **Dynamic workflows:** `.claude/workflows/*.js` (project) or `~/.claude/workflows/*.js`
+  (global) — each file becomes a `/<name>` command that spawns and orchestrates multiple
+  subagents. Authored via `/workflows`, not hand-written.
+- **Subagent persistent memory:** `.claude/agent-memory/<agent>/MEMORY.md` (project, committed),
+  `.claude/agent-memory-local/` (project, gitignored), `~/.claude/agent-memory/` (user-global) —
+  opt-in per subagent via `memory:` frontmatter. Distinct from main-session auto-memory
+  (`~/.claude/projects/<slug>/memory/`).
 
 ## 5. Cross-compatibility
 
@@ -71,27 +116,36 @@ Within instruction files, more-specific path wins. Managed > project > user for 
 
 ## 6. Composition mechanics
 
-- **`applyTo`:** not natively supported for `CLAUDE.md`/`AGENTS.md` — path-scoping is via directory
-  nesting (subdir `CLAUDE.md` applies to that subtree)
+- **`applyTo` / path-scoped rules:** natively supported via `.claude/rules/*.md` frontmatter
+  `paths:` (glob list) — the rule loads only when Claude reads a matching file. Skills carry the
+  same `paths:` field for auto-load scoping. `CLAUDE.md`/`AGENTS.md` themselves are not
+  path-scoped; nesting a subdir `CLAUDE.md` is the only scoping mechanism for those two files
+  specifically.
 - **`@import` / include:** `@path/to/file` syntax in CLAUDE.md injects another file's content inline
-- **Frontmatter:** skills carry YAML frontmatter (`name`, `description`, `version`,
-  `argument-hint`, `disable-model-invocation`); source-skill provenance lives in sibling
+- **Frontmatter:** skills carry YAML frontmatter (`name`, `description`, `paths`,
+  `disable-model-invocation`, `user-invocable`, `allowed-tools`, `context`, `agent`, `model`,
+  `effort`, `hooks`, `arguments`, `argument-hint`); source-skill provenance lives in sibling
   `METADATA.md`
 - **Merge:** settings files merge across tiers (user → project → local); later/more-specific wins
 
 ## 7. Activation + load model
 
-| Surface                   | Load model                                                                      |
-| ------------------------- | ------------------------------------------------------------------------------- |
-| `CLAUDE.md` / `AGENTS.md` | Auto, every session start (loaded into system prompt)                           |
-| Auto-memory (`MEMORY.md`) | Auto-injected, first ~200 lines only                                            |
-| Skills (`commands/`)      | Description-match OR explicit `/group:name` invocation                          |
-| Hooks                     | Event-triggered (pre/post tool, session start, stop, etc.) — run shell commands |
-| MCP servers               | On-demand tool calls                                                            |
-| Subagents                 | Spawned explicitly by the model or via hooks                                    |
+| Surface                   | Load model                                                                             |
+| ------------------------- | -------------------------------------------------------------------------------------- |
+| `CLAUDE.md` / `AGENTS.md` | Auto, every session start (loaded into system prompt)                                  |
+| Rules, no `paths:`        | Auto, every session start — same tier as `CLAUDE.md`                                   |
+| Rules, with `paths:`      | Auto, on-demand — loads when Claude reads a matching file                              |
+| Auto-memory (`MEMORY.md`) | Auto-injected, first ~200 lines (25KB cap)                                             |
+| Skills / commands         | Description always listed; full body loads on `/name` invocation or Claude's own match |
+| Dynamic workflows         | Explicit `/name` invocation or schedule; spawns/orchestrates subagents                 |
+| Hooks                     | Event-triggered (pre/post tool, session start, stop, etc.) — run shell commands        |
+| MCP servers               | On-demand tool calls                                                                   |
+| Subagents                 | Spawned explicitly by the model or via hooks                                           |
 
-Skills are **not** loaded into context every turn — they are resolved on invocation. `CLAUDE.md`
-is loaded every turn and competes with code for context budget — keep it concise.
+Skills are **not** loaded into context every turn — only the name+description listing is; the
+full body loads once invoked and then persists for the rest of the session (re-invocations with
+identical content are deduplicated rather than re-appended). `CLAUDE.md` and unscoped rules are
+loaded every turn and compete with code for context budget — keep both concise.
 
 ## 8. Validation
 
@@ -122,24 +176,28 @@ is loaded every turn and competes with code for context budget — keep it conci
 ## 11. Evidence metadata
 
 - **Verified on:** 2026-07-04 (re-checked from inside a Claude Code session; original
-  self-description 2026-06)
+  self-description 2026-06). Sections 1–4, 6, 7 patched 2026-07-13 to add `rules/`, `skills/`,
+  `workflows/`, and `agent-memory/` — these shipped after the 2026-07-04 pass and were missing
+  entirely. Source for the patch: official docs (`code.claude.com/docs/en/claude-directory`,
+  `/en/skills`), not a fresh in-session self-description — re-verify from inside a session at the
+  next full pass per the decay contract.
 - **Harness/App:** Claude Code VS Code extension, Windows 11; model `claude-fable-5`
 - **Not yet answered:** the newer TEMPLATE questions 12–13 (command + argument mapping, capability
   contract) postdate this doc — answer them at the next full re-verification rather than guessing now.
 
-| Section                              | Confidence | Why                                                                                           |
-| ------------------------------------ | ---------- | --------------------------------------------------------------------------------------------- |
-| 1. Instruction surfaces + precedence | high       | Load order observed in-session; managed/enterprise tier not exercised (`?` on exact path)     |
-| 2. Storage split                     | high       | Paths confirmed on this machine                                                               |
-| 3. Disk locations                    | high       | Standard stable paths; auto-memory location confirmed in-session 2026-07                      |
-| 4. Artifact mapping                  | high       | All types exercised in this repo except output styles / plugins (medium)                      |
-| 5. Cross-compatibility               | medium     | `AGENTS.md` auto-load is documented behavior; other harnesses' reads are external observation |
-| 6. Composition mechanics             | medium     | `@import` / frontmatter used; tier-merge semantics not systematically tested                  |
-| 7. Activation + load model           | high       | Observed in-session: skills resolve on invocation, hooks fire on events                       |
-| 8. Validation                        | high       | Commands verified                                                                             |
-| 9. Security / secrets boundary       | high       | Matches documented settings behavior                                                          |
-| 10. Capability limits                | medium     | Fast-moving (line limits, known issues); re-verify per the TEMPLATE decay contract            |
-| Cowork section                       | low–medium | External observation + shared-engine knowledge — never self-described from inside Cowork      |
+| Section                              | Confidence | Why                                                                                                                                                                          |
+| ------------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Instruction surfaces + precedence | high       | Load order observed in-session; `rules/` tier confirmed against official docs 2026-07-13; managed/enterprise tier not exercised (`?` on exact path)                          |
+| 2. Storage split                     | high       | Paths confirmed on this machine; new paths (`rules/`, `skills/`, `workflows/`, `agent-memory/`, `~/.claude.json`) sourced from official docs, not yet exercised in this repo |
+| 3. Disk locations                    | high       | Standard stable paths; auto-memory location confirmed in-session 2026-07                                                                                                     |
+| 4. Artifact mapping                  | medium     | Existing rows exercised in this repo; `rules/`, `.claude/skills/`, `workflows/`, `agent-memory/` are documented but unused here — doc-sourced, not repo-verified             |
+| 5. Cross-compatibility               | medium     | `AGENTS.md` auto-load is documented behavior; other harnesses' reads are external observation                                                                                |
+| 6. Composition mechanics             | medium     | `@import` / frontmatter used; `paths:` scoping confirmed against official docs 2026-07-13 but not exercised in this repo                                                     |
+| 7. Activation + load model           | high       | Observed in-session: skills resolve on invocation, hooks fire on events; rules/workflows load model doc-sourced 2026-07-13                                                   |
+| 8. Validation                        | high       | Commands verified                                                                                                                                                            |
+| 9. Security / secrets boundary       | high       | Matches documented settings behavior                                                                                                                                         |
+| 10. Capability limits                | medium     | Fast-moving (line limits, known issues); re-verify per the TEMPLATE decay contract                                                                                           |
+| Cowork section                       | low–medium | External observation + shared-engine knowledge — never self-described from inside Cowork                                                                                     |
 
 ## 12. Validation smoke tests
 
