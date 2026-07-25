@@ -76,7 +76,7 @@ jobs:
           bash .github/workflows/scripts/policy-check/enforce-repo-guardrails.sh "${{ steps.diff.outputs.base }}" "${{ steps.diff.outputs.head }}"
 
       - name: Setup Python (policy validation)
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
