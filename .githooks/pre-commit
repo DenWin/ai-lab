@@ -46,10 +46,9 @@ if matches '\.md$'; then
 fi
 
 if matches '\.(adoc|asciidoc)$'; then
-  need_tool "asciidoctor" "Install with: gem install asciidoctor asciidoctor-lint"
-  need_tool "asciidoctor-lint" "Install with: gem install asciidoctor asciidoctor-lint"
+  need_tool "asciidoctor" "Install with: gem install asciidoctor"
+  # Mirror the CI gate (.github/workflows/config-lint.yml) exactly: parse validation only.
   echo "${filtered}" | grep -E '\.(adoc|asciidoc)$' | xargs -I{} asciidoctor -o /dev/null "{}" || failed=1
-  echo "${filtered}" | grep -E '\.(adoc|asciidoc)$' | xargs -I{} asciidoctor-lint "{}" || failed=1
 fi
 
 if matches '\.py$'; then
