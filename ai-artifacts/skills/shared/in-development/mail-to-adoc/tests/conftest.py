@@ -3,8 +3,8 @@ from __future__ import annotations
 import importlib.util
 import sys
 import types
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
@@ -23,7 +23,7 @@ def converter(monkeypatch, tmp_path):
             )
 
         open_msg: Callable[..., object] = _open_msg_stub
-        setattr(extract_msg_stub, "openMsg", open_msg)
+        extract_msg_stub.openMsg = open_msg
         sys.modules["extract_msg"] = extract_msg_stub
 
     spec = importlib.util.spec_from_file_location("mail_to_adoc", SCRIPT_PATH)

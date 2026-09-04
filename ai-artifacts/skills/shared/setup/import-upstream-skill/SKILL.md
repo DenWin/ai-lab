@@ -1,7 +1,8 @@
 ---
 name: import-upstream-skill
-version: 1.0.0
 description: Import a skill from any upstream source into this repo as a first-class, grouped, provenance-tracked skill. Snapshots the source, places it under the right intent group, writes OKF-style METADATA.md provenance, runs the capability-contract adaptation pass, and updates the origin map. Use when user wants to import, vendor, adopt, or pull in a skill from an upstream repo (GitHub, another project) or from a chat/global copy.
+metadata:
+  version: 1.0.1
 ---
 
 # Import an Upstream Skill
@@ -33,9 +34,10 @@ The single source of truth is `ai-artifacts/skills/shared/<group>/<name>/SKILL.m
    only when none fit — a new group is a deliberate decision, not a default.
 
 3. **Place it** at `ai-artifacts/skills/shared/<group>/<name>/SKILL.md` with resources alongside. Runtime
-   frontmatter should contain only harness-relevant fields plus `version: <semver>`; start new local
-   imports at `version: 1.0.0` unless they are explicitly experimental (`0.x.y`). Use `git mv`-style
-   care if you are relocating something already tracked.
+   frontmatter should contain only harness-relevant fields plus a SemVer version nested under a
+   `metadata:` block (a `version:` line indented beneath `metadata:`); start new local imports at
+   `1.0.0` unless they are explicitly experimental (`0.x.y`). Use `git mv`-style care if you are
+   relocating something already tracked.
 
 4. **Write `METADATA.md`** next to `SKILL.md` so `/setup:check-skill-updates` can read the origin
    without loading provenance into the runtime skill. The file follows OKF v0.1 concept conventions:

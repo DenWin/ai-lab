@@ -1,8 +1,9 @@
 ---
 name: handoff
-version: 1.0.0
 description: Compact the current conversation into a handoff document for another agent to pick up.
 argument-hint: "What will the next session be used for?"
+metadata:
+  version: 1.0.0
 ---
 
 Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS - not the current workspace.

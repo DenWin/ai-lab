@@ -1,7 +1,8 @@
 ---
 name: check-skill-updates
-version: 1.0.0
 description: Check whether the skills in this repo are stale against their upstream source on GitHub, and file a work item (GitHub issue or .scratch entry) for each stale one. It never edits or merges skills itself. Use when user wants to check for new skill versions, run "check-skill-updates", or sync with upstream changes.
+metadata:
+  version: 1.0.0
 ---
 
 # Check Skill Updates

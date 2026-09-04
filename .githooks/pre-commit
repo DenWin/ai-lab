@@ -71,7 +71,8 @@ if matches '\.(ps1|psm1|psd1)$'; then
         if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
           Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
         }
-        \$results = Invoke-ScriptAnalyzer -Path '${file}' -Severity Warning,Error
+        # Mirror the CI gate (.github/workflows/powershell-quality.yml) exactly.
+        \$results = Invoke-ScriptAnalyzer -Path '${file}' -Severity Warning,Error -ExcludeRule PSUseSingularNouns,PSAvoidUsingWriteHost,PSUseBOMForUnicodeEncodedFile
         if (\$results) {
           \$results | Format-Table -AutoSize
           throw 'PSScriptAnalyzer found issues in ${file}.'

@@ -9,6 +9,11 @@ tags: [session, skill]
 ## Skill Metadata
 
 - Runtime skill: [SKILL.md](SKILL.md)
-- Group: `session`
+- Group: `deprecated` (was `session`)
 - Origin: local
+- Status: **Deprecated 2026-09.** Superseded by `session/throwaway/`, which the
+  2026-08 claude.ai fetch produced by renaming `recon` → `throwaway`. Kept here
+  for reference only; `sync-skills.ps1` skips everything under `deprecated/`, so
+  this skill is no longer mirrored to any harness. `recon` survives as a trigger
+  word in the `throwaway` skill.
 - Notes: Local original.

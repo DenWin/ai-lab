@@ -1,4 +1,4 @@
-#Requires -Version 7
+﻿#Requires -Version 7
 <#
 .SYNOPSIS
     Batch-converts .eml/.msg files in a source folder to AsciiDoc via mail_to_adoc.py.
@@ -93,7 +93,7 @@ if ($Recurse) { $GciParams['Recurse'] = $true }
 $Files = Get-ChildItem @GciParams | Where-Object { $_.Extension -in '.eml', '.msg' }
 
 if (-not $Files) {
-    Write-Host "No .eml / .msg files found in: $SourceDir$(if ($Recurse) { ' (recursive)' })"
+    Write-Warning "No .eml / .msg files found in: $SourceDir$(if ($Recurse) { ' (recursive)' })"
     return
 }
 

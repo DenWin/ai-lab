@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control Register</title>
+<style>
+:root { color-scheme: light dark; }
+body { font: 15px/1.55 -apple-system, "Segoe UI", system-ui, sans-serif;
+        margin: 0 auto; padding: 0 1rem 5rem; max-width: 1180px; }
+h1 { font-size: 1.4rem; margin: 0 0 1rem; }
+h3 { font-size: .8rem; margin: 1rem 0 .3rem; opacity: .7;
+      text-transform: uppercase; letter-spacing: .05em; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th { text-align: left; font-size: .78rem; text-transform: uppercase;
+      letter-spacing: .05em; opacity: .6; padding: .4rem .5rem; }
+td { vertical-align: top; padding: .5rem .5rem;
+      border-top: 1px solid rgba(128,128,128,.22); }
+td.id { text-align: center; font-variant-numeric: tabular-nums; opacity: 1; }
+tr.resolved td:not(.id):not(.act), tr.superseded td:not(.id):not(.act) { opacity: .45; }
+code { font: .86em ui-monospace, "Cascadia Code", Consolas, monospace;
+        background: rgba(128,128,128,.16); padding: .08em .32em; border-radius: 3px; }
+pre { background: rgba(128,128,128,.14); padding: .7rem .9rem; border-radius: 6px;
+       overflow-x: auto; font-size: .82rem; }
+pre code { background: none; padding: 0; }
+ul, ol { padding-left: 1.2rem; margin: .4rem 0; }
+li { margin: .3rem 0; }
+p { margin: .5rem 0; }
+
+#bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0 0 .8rem; }
+#chips { display: flex; flex-wrap: wrap; gap: .3rem; }
+.chip { font: inherit; font-size: .76rem; text-transform: uppercase; letter-spacing: .04em;
+        padding: .26rem .55rem; border-radius: 999px; border: 1px solid rgba(128,128,128,.45);
+        background: transparent; color: inherit; cursor: pointer; opacity: .5; }
+.chip[aria-pressed="true"] { opacity: 1; background: rgba(128,128,128,.22); }
+.chip .n { opacity: .55; margin-left: .35em; }
+#q { flex: 1 1 10rem; min-width: 8rem; font: inherit; font-size: .84rem; padding: .3rem .5rem;
+     border-radius: 5px; color: inherit; background: transparent; border: 1px solid rgba(128,128,128,.4); }
+#count { font-size: .76rem; opacity: .5; white-space: nowrap; }
+th[data-sort] { cursor: pointer; user-select: none; }
+th[data-sort]:not([aria-sort])::after { content: "\00a0\2195"; font-size: .7em; opacity: .35; }
+th[aria-sort]::after { content: "\00a0▲"; font-size: .7em; }
+th[aria-sort="descending"]::after { content: "\00a0▼"; }
+tr[hidden] { display: none; }
+
+td.act { font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+td.act .mark { font-size: 1.05em; margin-left: .3em; }
+
+.blocked { display: block; font-weight: 400; font-size: .72rem; text-transform: none;
+        letter-spacing: 0; opacity: .85; margin-top: .15rem; color: #c07b12; }
+/* Every cross-reference is a jump target - the blocker, and any #n written in
+   prose. Anchors are swallowed by the host page, so these are buttons. */
+.jump { font: inherit; color: inherit; background: rgba(128,128,128,.18);
+        border: 1px solid rgba(128,128,128,.45); border-radius: 4px; padding: 0 .3em;
+        cursor: pointer; }
+.jump:hover { background: rgba(128,128,128,.36); }
+.blocked .jump { background: rgba(192,123,18,.16); border-color: rgba(192,123,18,.5); }
+.blocked .jump:hover { background: rgba(192,123,18,.34); }
+tr.decide td.act { color: #d1454b; }
+tr.paste  td.act { color: #c07b12; }
+tr.exec   td.act { color: #2f7fbf; }
+tr.agent  td.act { color: #8257c4; }
+tr.ack    td.act { color: #4b8f5a; }
+tr.resolved td.act, tr.superseded td.act { font-weight: 400; opacity: .55; }
+tr.superseded td.act { font-style: italic; }
+tr.decide:not(.resolved):not(.superseded) { background: rgba(209,69,75,.07); }
+tr.paste:not(.resolved):not(.superseded)  { background: rgba(192,123,18,.07); }
+@keyframes flash { 0%,100% { background: transparent } 30% { background: rgba(192,123,18,.4) } }
+tr.flash td { animation: flash 1.1s ease-out; }
+@media (prefers-color-scheme: dark) {
+  tr.decide td.act { color: #ff8a8f; }
+  tr.paste  td.act { color: #e8b45c; }
+  tr.exec   td.act { color: #74b8ee; }
+  tr.agent  td.act { color: #b79bea; }
+  tr.ack    td.act { color: #82c795; }
+  .blocked { color: #e8b45c; }
+}
+.chip[data-key="decide"] { border-color: rgba(209,69,75,.6); }
+.chip[data-key="paste"]  { border-color: rgba(192,123,18,.6); }
+.chip[data-key="exec"]   { border-color: rgba(47,127,191,.6); }
+.chip[data-key="agent"]  { border-color: rgba(130,87,196,.6); }
+.chip[data-key="ack"]    { border-color: rgba(75,143,90,.6); }
+.chip[data-key="blocked"], .chip[data-key="blockedepic"] { border-color: rgba(192,123,18,.6); }
+
+.toggle { display: inline-flex; align-items: center; gap: .3em; margin-top: .45rem;
+        font: inherit; font-size: .76rem; text-transform: uppercase; letter-spacing: .04em;
+        padding: .22rem .6rem; border-radius: 5px; cursor: pointer; color: inherit;
+        border: 1px solid rgba(128,128,128,.55); background: rgba(128,128,128,.14); }
+.toggle:hover { background: rgba(128,128,128,.28); }
+.toggle::before { content: "▸"; font-size: .9em; }
+tr.open .toggle::before { content: "▾"; }
+tr.open .toggle { background: rgba(128,128,128,.3); }
+tr.detail > td { border-top: none; padding: 0 .5rem 1rem 2.4rem;
+        background: rgba(128,128,128,.07); font-size: .93rem; }
+tr.detail[hidden] { display: none; }
+
+/* Verdict buttons. They queue a command in the outbox; nothing here sends
+   anything anywhere - the embedded frame has no channel back to the chat. */
+.verdict { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .4rem; }
+.vbtn { font: inherit; font-size: .74rem; text-transform: uppercase; letter-spacing: .04em;
+        padding: .2rem .55rem; border-radius: 5px; cursor: pointer; color: inherit;
+        border: 1px solid rgba(128,128,128,.55); background: rgba(128,128,128,.12); opacity: .8; }
+.vbtn:hover { opacity: 1; background: rgba(128,128,128,.26); }
+.vbtn[aria-pressed="true"] { opacity: 1; font-weight: 600; }
+.vbtn.yes[aria-pressed="true"] { border-color: rgba(75,143,90,.9); background: rgba(75,143,90,.22); }
+.vbtn.no[aria-pressed="true"]  { border-color: rgba(209,69,75,.9); background: rgba(209,69,75,.22); }
+tr.queued td.id::after { content: "•"; display: block; font-size: 1.1rem; line-height: .6; opacity: .7; }
+
+/* Epic grouping - the header row is authored; membership is position, not an attribute. */
+tr.epichead > td { border-top: 2px solid rgba(128,128,128,.4); padding: .7rem .5rem .45rem;
+        background: rgba(128,128,128,.09); }
+tr.epichead .ename { font-weight: 700; font-size: .95rem; }
+tr.epichead .model { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
+        border: 1px solid rgba(128,128,128,.5); border-radius: 999px;
+        padding: .1rem .5rem; margin-left: .55rem; white-space: nowrap; }
+tr.epichead .gcount { font-size: .76rem; opacity: .6; margin-left: .55rem; }
+tr.epichead .gtoggle { float: right; margin: 0; }
+tr.epichead .gtoggle::before { content: "▾"; }
+tr.epichead.collapsed .gtoggle::before { content: "▸"; }
+tr.epichead.collapsed > td { opacity: .8; }
+/* A blocked block is blocked as a whole. The bar runs down every member, so the
+   state is readable on a row whose header has scrolled away. */
+tr.epichead.isblocked > td { border-left: 3px solid rgba(192,123,18,.85); }
+tr.epichead .blocked { margin-top: .3rem; }
+tr.inepic td:first-child { box-shadow: inset 3px 0 0 rgba(128,128,128,.5); }
+tr.inblockedepic td:first-child { box-shadow: inset 3px 0 0 rgba(192,123,18,.85); }
+#hint { font-size: .76rem; opacity: .5; white-space: nowrap; }
+
+/* Outbox - one basket for every queued verdict, so a reading session ends with
+   a single copy instead of one copy per row. The clipboard holds one value;
+   a per-row copy button is therefore unusable the moment two rows are open. */
+#outbox { width: clamp(20rem, 33vw, 50vw); flex: 0 0 auto;
+        display: flex; align-items: flex-start; gap: .5rem;
+        padding: .45rem .55rem; border: 1px solid rgba(128,128,128,.35);
+        border-left: 3px solid rgba(75,143,90,.7); border-radius: 6px;
+        background: Canvas; }
+#outbox.empty { border-left-color: rgba(128,128,128,.35); opacity: .5;
+                pointer-events: none; }
+#outbox.empty:hover, #outbox:focus-within { opacity: 1; }
+/* Header. Everything that is not a row sticks: title, outbox, chips, filter.
+   The table is the only thing that scrolls, so no control can be scrolled
+   away and nothing has to reserve the space a floating outbox would cover.
+   The cap is what keeps a narrow frame from becoming all header - past it
+   the header scrolls inside itself and the table keeps its share. */
+#top { position: sticky; top: 0; z-index: 15; background: Canvas;
+       padding: 1.5rem 0 .6rem; margin-bottom: .6rem;
+       max-height: 55vh; overflow: auto;
+       border-bottom: 1px solid rgba(128,128,128,.3); }
+#tophead { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.75rem; }
+#tophead h1 { flex: 1 1 auto; margin-bottom: 0; }
+#obtext { flex: 1; box-sizing: border-box; border: none; background: transparent;
+        color: inherit; resize: vertical; min-height: 3.4rem; padding: 0;
+        font: .82rem/1.45 ui-monospace, "Cascadia Code", Consolas, monospace; }
+#obtext:focus { outline: none; }
+#obfoot { display: flex; flex-direction: column; gap: .3rem; flex: 0 0 auto; }
+#obfoot button { font: inherit; font-size: .72rem; text-transform: uppercase;
+        letter-spacing: .04em; padding: .2rem .6rem; border-radius: 5px; cursor: pointer;
+        color: inherit; border: 1px solid rgba(128,128,128,.5); background: transparent;
+        opacity: .75; white-space: nowrap; }
+#obfoot button:hover { opacity: 1; background: rgba(128,128,128,.22); }
+#obn { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; opacity: .5;
+        flex: 0 0 auto; padding-top: .1rem; font-variant-numeric: tabular-nums; }
+#obcopy[data-state="ok"] { opacity: 1; border-color: rgba(75,143,90,.8); color: #4b8f5a; }
+#obcopy[data-state="fail"] { opacity: 1; border-color: rgba(209,69,75,.8); color: #d1454b; }
+
+/* Copy button on every <pre> inside a detail row. */
+.codeblock { position: relative; }
+.codeblock pre { padding-right: 4.6rem; }
+.codeblock .copy { position: absolute; top: .45rem; right: .45rem; font: inherit;
+        font-size: .7rem; text-transform: uppercase; letter-spacing: .04em;
+        padding: .2rem .55rem; border-radius: 5px; cursor: pointer; color: inherit;
+        border: 1px solid rgba(128,128,128,.55); background: rgba(128,128,128,.2); opacity: .65; }
+.codeblock .copy:hover, .codeblock .copy:focus { opacity: 1; background: rgba(128,128,128,.34); }
+.codeblock .copy[data-state="ok"] { opacity: 1; border-color: rgba(75,143,90,.8); color: #4b8f5a; }
+.codeblock .copy[data-state="fail"] { opacity: 1; border-color: rgba(209,69,75,.8); color: #d1454b; }
+
+/* Line numbers from a CSS counter, never as text nodes - a number in the markup
+   would land in textContent and be copied along with the code. */
+pre.numbered { counter-reset: ln; padding-left: 0; }
+pre.numbered .ln { display: block; counter-increment: ln; position: relative;
+        padding-left: 3.4rem; min-height: 1.2em; }
+pre.numbered .ln::before { content: counter(ln); position: absolute; left: 0; width: 2.4rem;
+        text-align: right; opacity: .38; user-select: none; font-variant-numeric: tabular-nums; }
+
+@media (prefers-color-scheme: dark) {
+  .codeblock .copy[data-state="ok"] { color: #82c795; }
+  .codeblock .copy[data-state="fail"] { color: #ff8a8f; }
+}
+@media (max-width: 700px) {
+  #tophead { display: block; margin-bottom: 1.4rem; }
+  #tophead h1 { margin-bottom: .8rem; }
+  #outbox { width: auto; margin: 0; }
+  #top { padding-top: 1rem; }
+  body { padding: 0 .6rem 4rem; }
+  table, colgroup, thead, tbody, th, td, tr { display: block; }
+  thead { display: none; }
+  tbody tr:not(.detail) { border-top: 1px solid rgba(128,128,128,.3); padding: .5rem 0; }
+  td { border: none; padding: .15rem 0; }
+  td.id { text-align: left; font-weight: 700; }
+  td.id::before { content: "#"; }
+  tr.detail > td { padding: .4rem .6rem .8rem; }
+  .toggle { padding: .4rem .8rem; }
+  tr.epichead > td { padding: .6rem .5rem; }
+  tbody tr.inepic:not(.detail) { border-left: 3px solid rgba(128,128,128,.5); padding-left: .55rem; }
+  tbody tr.inblockedepic:not(.detail) { border-left-color: rgba(192,123,18,.85); }
+  tr.inepic td:first-child { box-shadow: none; }
+  tr.inepic.detail > td { border-left: 3px solid rgba(128,128,128,.5); }
+  tr.epichead .model, tr.epichead .gcount { display: inline-block; margin: .25rem .55rem 0 0; }
+  tr.epichead .gtoggle { float: none; display: flex; margin: .45rem 0 0; padding: .4rem .8rem; }
+  .codeblock .copy { padding: .35rem .7rem; }
+  .vbtn { padding: .35rem .7rem; }
+}
+</style></head><body>
+<div id="top">
+<div id="tophead">
+<h1>Control Register</h1>
+
+<div id="outbox" class="empty">
+  <span id="obn">0</span>
+  <textarea id="obtext" spellcheck="false" rows="2" placeholder="outbox"></textarea>
+  <div id="obfoot">
+    <button type="button" id="obcopy">copy all</button>
+    <button type="button" id="obclear">clear</button>
+  </div>
+</div>
+</div>
+
+<div id="bar">
+  <div id="chips"></div>
+  <input id="q" type="search" placeholder="filter text…" autocomplete="off">
+  <span id="count"></span>
+  <span id="hint"></span>
+</div>
+</div>
+
+<table id="grid" data-tpl="11"><colgroup>
+<col style="width:5%"><col style="width:21%"><col style="width:9%"><col style="width:29%"><col style="width:36%">
+</colgroup>
+<thead><tr><th data-sort="id">ID</th><th>item</th><th data-sort="action">action</th><th>recommendation</th><th>rationale</th></tr></thead>
+<tbody>
+
+<tr class="decide has-detail"><td class="id">1</td><td>Example item needing a decision</td><td class="act">decide</td><td>What to do about it</td><td>Why this is the recommendation</td></tr>
+<tr class="detail" hidden><td colspan="5">
+<h3>Problem</h3>
+<p>The cost of leaving it alone.</p>
+<h3>Alternatives</h3>
+<p>What was rejected, and why.</p>
+</td></tr>
+
+<tr class="exec has-detail"><td class="id">2</td><td>Example item to run or apply</td><td class="act">exec<span class="blocked">blocked by <button type="button" class="jump" data-goto="1">#1</button></span></td><td>The command or the file to paste</td><td>Blocker lives in the action cell, never here</td></tr>
+<tr class="detail" hidden><td colspan="5">
+<h3>Problem</h3>
+<p>What is wrong until this is applied.</p>
+<h3>Fix</h3>
+<p>Run this once #1 is answered.</p>
+<pre><code>$return = &amp; {
+  &apos;the command this row hands over&apos;
+}
+
+$return</code></pre>
+</td></tr>
+
+<tr class="ack resolved" data-closed="1"><td class="id">3</td><td>Example item already closed</td><td class="act">ack<span class="mark">✅</span></td><td>What was done</td><td>The action stays visible; the mark says it is closed</td></tr>
+
+<tr class="epichead" data-epic="p1"><td colspan="5"><span class="ename">Phase 1 - example epic</span><span class="model">Sonnet</span><button type="button" class="toggle gtoggle">hide</button></td></tr>
+
+<tr class="exec has-detail"><td class="id">4</td><td>First row of the epic</td><td class="act">exec</td><td>What to build</td><td>Everything under a header belongs to it until the next header</td></tr>
+<tr class="detail" hidden><td colspan="5">
+<h3>Goal</h3>
+<p>The state this row leaves behind once it has been applied.</p>
+<h3>Fix</h3>
+<p>An exec row carries what to run; without it there is nothing to apply.</p>
+<pre><code>$return = &amp; {
+  &apos;apply this&apos;
+}
+
+$return</code></pre>
+</td></tr>
+
+<tr class="paste has-detail"><td class="id">5</td><td>Second row of the epic</td><td class="act">paste</td><td>Run the probe in the detail and paste the output</td><td>Membership is position, so the block is written in the order it should read</td></tr>
+<tr class="detail" hidden><td colspan="5">
+<h3>Problem</h3>
+<p>The value is not known here, and guessing it would put a wrong fact in the next row.</p>
+<h3>Fix</h3>
+<pre><code>$return = &amp; {
+  $PSVersionTable.PSVersion.ToString()
+}
+
+$return</code></pre>
+<p>Every <code>pre</code> in a detail is numbered and carries a copy button.</p>
+</td></tr>
+
+<tr class="agent has-detail"><td class="id">6</td><td>Third row of the epic - work an agent will build</td><td class="act">agent</td><td>Scope, inputs and acceptance in the detail</td><td>Closes when the output lands and is accepted</td></tr>
+<tr class="detail" hidden><td colspan="5">
+<h3>Goal</h3>
+<p>The state the finished work leaves behind.</p>
+<h3>Fix</h3>
+<p>What to build, what it takes as input, and what counts as accepted - an
+agent row is judged against this, so a bare one is an instruction to guess.</p>
+</td></tr>
+
+</tbody></table>
+<script>
+
+(function () {
+  var RANK = { decide: 0, paste: 1, exec: 2, review: 3, agent: 4, ack: 5 };
+  var STATUS = ['resolved', 'superseded'];
+
+  // The emitted verb matches the button, so the outbox reads back as what was
+  // decided rather than collapsing three verdicts into one "close". `exec` gets
+  // "applied" instead of "agree": agreeing with a command is not the same as
+  // having run it, and only the latter closes the row.
+  var VERDICTS = {
+    decide: [
+      { cls: 'yes', label: '✔️ agree',      cmd: function (id) { return 'agree #' + id; } },
+      { cls: 'no',  label: '❌ disagree',   cmd: function (id) { return 'disagree #' + id + ' - '; } }
+    ],
+    exec: [
+      { cls: 'yes', label: '✔️ applied',    cmd: function (id) { return 'applied #' + id; } }
+    ],
+    // Agreeing to an agent row approves the specification; what closes it is
+    // the accepted output, which is why there is no closing button here.
+    agent: [
+      { cls: 'yes', label: '✔️ agree',      cmd: function (id) { return 'agree #' + id; } },
+      { cls: 'no',  label: '❌ disagree',   cmd: function (id) { return 'disagree #' + id + ' - '; } }
+    ],
+    ack: [
+      { cls: 'yes', label: '✔️ understood', cmd: function (id) { return 'understood #' + id; } }
+    ],
+    // Delivered agent work becomes a review, which is a task for the reader.
+    // `agree` on an agent row approves the specification; accepting the output
+    // is a different question and gets different words.
+    review: [
+      { cls: 'yes', label: '✔️ accepted',   cmd: function (id) { return 'accepted #' + id; } },
+      { cls: 'no',  label: '❌ rejected',   cmd: function (id) { return 'rejected #' + id + ' - '; } }
+    ]
+  };
+
+  // ---- pure helpers -------------------------------------------------------
+  // No DOM, no closure state. They are on window.__cb at the end of this file
+  // so scripts/checks.js reads these values instead of keeping its own copy.
+
+  function rankOf(action) { return RANK[action]; }
+
+  function isAction(key) { return RANK[key] !== undefined; }
+
+  // Action chips narrow; status chips widen; the two blocked chips subtract.
+  // Row-level and epic-level blocking are separate statements: hiding blocked
+  // rows leaves the members of a blocked epic on screen, each individually
+  // unblocked and none of them actionable.
+  function matchesFilters(state, activeKeys) {
+    var actionKeys = 0;
+    activeKeys.forEach(function (k) { if (isAction(k)) { actionKeys++; } });
+    if (actionKeys && !activeKeys.has(state.action)) { return false; }
+    if (activeKeys.has('blocked') && state.blocked) { return false; }
+    if (activeKeys.has('blockedepic') && state.epicBlocked) { return false; }
+    return state.status === 'open' || activeKeys.has(state.status);
+  }
+
+  // Reporting against the total would imply the missing rows were filtered out
+  // by something the reader did. Name the closed ones separately.
+  function formatCount(shown, total, closed) {
+    var open = total - closed;
+    if (shown === total) { return total + ' rows'; }
+    if (shown === open && closed) { return open + ' open, ' + closed + ' closed'; }
+    return shown + ' of ' + total + ' shown';
+  }
+
+  // An empty table is the one state that reads as breakage rather than as an
+  // answer. Every register reaches it eventually, so it has to say which it is.
+  function formatHint(shown, open, closed, sorted, hasEpics) {
+    if (!shown) {
+      return closed && shown === open
+        ? 'nothing open - press "show resolved" to read the closed rows'
+        : 'no row matches the current filter';
+    }
+    return sorted && hasEpics ? 'sorted within each block' : '';
+  }
+
+  function formatEpicCount(openActions, total) {
+    if (!total) { return ''; }
+    var keys = Object.keys(openActions);
+    if (!keys.length) { return total + (total === 1 ? ' row, all closed' : ' rows, all closed'); }
+    return keys.sort(function (a, b) { return RANK[a] - RANK[b]; })
+      .map(function (k) { return openActions[k] + ' ' + k; }).join(' \u00b7 ');
+  }
+
+  function splitCodeLines(text) { return text.replace(/\n$/, '').split('\n'); }
+
+  // ---- index --------------------------------------------------------------
+
+  var grid = document.getElementById('grid');
+  var tbody = grid.tBodies[0];
+  var epics = [{ header: null, entries: [], collapsed: false }];
+  var entries = [], itemRows = [], entryById = {}, epicById = {};
+  var activeKeys = new Set();
+  var sort = { key: 'default', dir: 1 };
+
+  function currentEpic() { return epics[epics.length - 1]; }
+
+  Array.prototype.slice.call(tbody.rows).forEach(function (row) {
+    if (row.classList.contains('epichead')) {
+      var epic = { header: row, entries: [], collapsed: false, id: row.dataset.epic,
+                   blocked: !!row.querySelector('.blocked') };
+      epics.push(epic);
+      if (epic.id) { epicById[epic.id] = epic; }
+      return;
+    }
+    // An epic ends at the next header or here; without this, nothing unheaded
+    // can follow one and an urgent epic cannot be written at the top.
+    if (row.classList.contains('blockend')) {
+      epics.push({ header: null, terminator: row, entries: [], collapsed: false });
+      return;
+    }
+    if (row.classList.contains('detail')) {
+      entries[entries.length - 1].detail = row;
+      return;
+    }
+    var classes = row.className.split(' ');
+    row.dataset.action = classes.filter(isAction)[0];
+    row.dataset.status = classes.filter(function (c) { return STATUS.indexOf(c) > -1; })[0] || 'open';
+    row.dataset.id = parseInt(row.cells[0].textContent.trim(), 10);
+    // Blocked is a state, not an action - the row keeps its action so it still
+    // sorts correctly, and gains a flag the filter can act on.
+    row.dataset.blocked = row.querySelector('.blocked') ? '1' : '';
+    var entry = { row: row, detail: null, matchesFilter: true, epic: currentEpic() };
+    itemRows.push(row);
+    entries.push(entry);
+    entryById[row.dataset.id] = entry;
+    currentEpic().entries.push(entry);
+  });
+
+  function filterState(entry) {
+    return { action: entry.row.dataset.action, status: entry.row.dataset.status,
+             blocked: !!entry.row.dataset.blocked, epicBlocked: !!entry.epic.blocked };
+  }
+
+  // The epic count is derived for the same reason the toggle is: one typed by
+  // hand drifts from its rows and still looks correct on screen.
+  epics.forEach(function (epic) {
+    if (!epic.header) { return; }
+    var el = epic.header.querySelector('.gcount');
+    if (!el) {
+      el = document.createElement('span');
+      el.className = 'gcount';
+      epic.header.cells[0].insertBefore(el, epic.header.querySelector('.gtoggle') || null);
+    }
+    var openActions = {};
+    epic.entries.filter(function (e) { return e.row.dataset.status === 'open'; })
+      .forEach(function (e) {
+        var a = e.row.dataset.action;
+        openActions[a] = (openActions[a] || 0) + 1;
+      });
+    el.textContent = formatEpicCount(openActions, epic.entries.length);
+  });
+
+  entries.forEach(function (entry) {
+    entry.searchText = (entry.row.textContent + ' ' +
+      (entry.epic.header ? entry.epic.header.textContent : '') + ' ' +
+      (entry.detail ? entry.detail.textContent : '')).toLowerCase();
+  });
+
+  // ---- cross references ---------------------------------------------------
+  // Generating them means a reference can never be authored as dead text. A
+  // reference to a row that is not here stays plain, which reads as "not a
+  // control" rather than as a button that goes nowhere.
+  function linkifyReferences(root) {
+    var textNodes = [], walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        if (node.parentNode.closest('code, pre, button, .id, .act')) { return NodeFilter.FILTER_REJECT; }
+        return /#\d+/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    while (walker.nextNode()) { textNodes.push(walker.currentNode); }
+    textNodes.forEach(function (node) {
+      var fragment = document.createDocumentFragment(), cut = 0;
+      var pattern = /#(\d+)/g, match, replaced = false;
+      while ((match = pattern.exec(node.nodeValue))) {
+        if (!entryById[match[1]]) { continue; }
+        replaced = true;
+        fragment.appendChild(document.createTextNode(node.nodeValue.slice(cut, match.index)));
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'jump';
+        button.dataset.goto = match[1];
+        button.textContent = '#' + match[1];
+        fragment.appendChild(button);
+        cut = match.index + match[0].length;
+      }
+      if (!replaced) { return; }
+      fragment.appendChild(document.createTextNode(node.nodeValue.slice(cut)));
+      node.parentNode.replaceChild(fragment, node);
+    });
+  }
+  entries.forEach(function (entry) {
+    Array.prototype.slice.call(entry.row.cells, 1).forEach(linkifyReferences);
+    if (entry.detail) { linkifyReferences(entry.detail); }
+  });
+
+  // ---- order --------------------------------------------------------------
+
+  function closedRank(row) { return row.dataset.status === 'open' ? 0 : 1; }
+
+  function epicIsAllClosed(epic) {
+    return epic.entries.length > 0 && epic.entries.every(function (e) {
+      return e.row.dataset.status !== 'open';
+    });
+  }
+
+  // Sorting reorders rows inside an epic only - a header is positional, so
+  // moving a row across one would file it under someone else's epic.
+  //
+  // Demotion is deliberately the only thing that reorders epics themselves.
+  // Ranking them by their best open action would let one jump the queue for
+  // acquiring a single `decide`, and epic order would stop being the author's.
+  function orderRows() {
+    epics.map(function (epic, i) { return { epic: epic, i: i }; })
+      .sort(function (a, b) {
+        return (epicIsAllClosed(a.epic) - epicIsAllClosed(b.epic)) || (a.i - b.i);
+      })
+      .forEach(function (keyed) { placeEpic(keyed.epic); });
+  }
+
+  function placeEpic(epic) {
+    var keyed = epic.entries.map(function (entry, i) { return { entry: entry, i: i }; });
+    keyed.sort(function (a, b) {
+      var x = a.entry.row, y = b.entry.row, c;
+      if (sort.key === 'id') { c = x.dataset.id - y.dataset.id; }
+      else {
+        c = closedRank(x) - closedRank(y)
+         || RANK[x.dataset.action] - RANK[y.dataset.action]
+         || x.dataset.id - y.dataset.id;
+      }
+      return (c || a.i - b.i) * (sort.key === 'default' ? 1 : sort.dir);
+    });
+    if (epic.header) { tbody.appendChild(epic.header); }
+    else if (epic.terminator) { tbody.appendChild(epic.terminator); }
+    keyed.forEach(function (k) {
+      // The accent marks where an epic ends; without it the rows below the last
+      // member read as part of the epic above them.
+      markMembership(k.entry.row, epic);
+      tbody.appendChild(k.entry.row);
+      if (k.entry.detail) {
+        markMembership(k.entry.detail, epic);
+        tbody.appendChild(k.entry.detail);
+      }
+    });
+  }
+
+  function markMembership(row, epic) {
+    row.classList.toggle('inepic', !!epic.header);
+    row.classList.toggle('inblockedepic', !!epic.blocked);
+  }
+
+  // ---- filter -------------------------------------------------------------
+
+  function applyFilters() {
+    var query = document.getElementById('q').value.trim().toLowerCase();
+    var shown = updateRowVisibility(query);
+    updateEpicVisibility();
+    renderCount(shown);
+    renderHint(shown);
+    syncChipPressedState();
+  }
+
+  function updateRowVisibility(query) {
+    var shown = 0;
+    entries.forEach(function (entry) {
+      entry.matchesFilter = matchesFilters(filterState(entry), activeKeys)
+        && (!query || entry.searchText.indexOf(query) > -1);
+      var visible = entry.matchesFilter && !entry.epic.collapsed;
+      entry.row.hidden = !visible;
+      if (entry.detail) {
+        entry.detail.hidden = !visible || !entry.row.classList.contains('open');
+      }
+      if (entry.matchesFilter) { shown++; }
+    });
+    return shown;
+  }
+
+  function updateEpicVisibility() {
+    epics.forEach(function (epic) {
+      if (!epic.header) { return; }
+      epic.header.hidden = !epic.entries.some(function (e) { return e.matchesFilter; });
+    });
+  }
+
+  function closedCount() {
+    return entries.filter(function (e) { return e.row.dataset.status !== 'open'; }).length;
+  }
+
+  function renderCount(shown) {
+    document.getElementById('count').textContent =
+      formatCount(shown, entries.length, closedCount());
+  }
+
+  function renderHint(shown) {
+    var closed = closedCount();
+    var hasEpics = epics.some(function (e) { return !!e.header; });
+    document.getElementById('hint').textContent =
+      formatHint(shown, entries.length - closed, closed, sort.key !== 'default', hasEpics);
+  }
+
+  function syncChipPressedState() {
+    document.querySelectorAll('.chip').forEach(function (chip) {
+      chip.setAttribute('aria-pressed', activeKeys.has(chip.dataset.key));
+    });
+  }
+
+  // ---- chips --------------------------------------------------------------
+
+  var chipBar = document.getElementById('chips');
+  function addChip(key, label, count) {
+    if (!count) { return; }
+    var chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.dataset.key = key;
+    chip.appendChild(document.createTextNode(label));
+    var badge = document.createElement('span');
+    badge.className = 'n';
+    badge.textContent = count;
+    chip.appendChild(badge);
+    chip.addEventListener('click', function () {
+      if (activeKeys.has(key)) { activeKeys.delete(key); } else { activeKeys.add(key); }
+      applyFilters();
+    });
+    chipBar.appendChild(chip);
+  }
+
+  Object.keys(RANK).concat(STATUS).forEach(function (key) {
+    var count = itemRows.filter(function (row) {
+      return row.dataset.action === key || row.dataset.status === key;
+    }).length;
+    // A status chip is additive, so it is labelled with its effect. "resolved"
+    // alone reads as a filter down to resolved rows, which is the opposite.
+    addChip(key, STATUS.indexOf(key) > -1 ? 'show ' + key : key, count);
+  });
+  addChip('blocked', 'hide blocked',
+    itemRows.filter(function (row) { return row.dataset.blocked; }).length);
+  addChip('blockedepic', 'hide blocked epics',
+    entries.filter(function (entry) { return entry.epic.blocked; }).length);
+
+  // ---- epic collapse and sorting -----------------------------------------
+
+  epics.forEach(function (epic) {
+    if (!epic.header) { return; }
+    var toggle = epic.header.querySelector('.gtoggle');
+    toggle.addEventListener('click', function () {
+      epic.collapsed = !epic.collapsed;
+      epic.header.classList.toggle('collapsed', epic.collapsed);
+      toggle.textContent = epic.collapsed ? 'show' : 'hide';
+      toggle.setAttribute('aria-expanded', String(!epic.collapsed));
+      applyFilters();
+    });
+  });
+
+  grid.querySelectorAll('th[data-sort]').forEach(function (th) {
+    th.addEventListener('click', function () {
+      var key = th.dataset.sort;
+      if (sort.key !== key) { sort.key = key; sort.dir = 1; }
+      else if (sort.dir === 1) { sort.dir = -1; }
+      else { sort.key = 'default'; sort.dir = 1; }
+      grid.querySelectorAll('th[data-sort]').forEach(function (other) {
+        other.removeAttribute('aria-sort');
+      });
+      if (sort.key !== 'default') {
+        th.setAttribute('aria-sort', sort.dir === 1 ? 'ascending' : 'descending');
+      }
+      orderRows();
+      applyFilters();
+    });
+  });
+
+  document.getElementById('q').addEventListener('input', applyFilters);
+
+  // ---- jumps --------------------------------------------------------------
+
+  function revealEpic(epic) {
+    activeKeys.clear();
+    document.getElementById('q').value = '';
+    epic.collapsed = false;
+    if (epic.header) {
+      epic.header.classList.remove('collapsed');
+      var toggle = epic.header.querySelector('.gtoggle');
+      toggle.textContent = 'hide';
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  function flash(el) {
+    if (el.scrollIntoView) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+
+  // A filter that hides the target has to be lifted first, otherwise the jump
+  // lands on a hidden row and reads as a dead control.
+  grid.addEventListener('click', function (event) {
+    var jump = event.target.closest('.jump');
+    if (!jump) { return; }
+    if (jump.dataset.gotoEpic) {
+      var epic = epicById[jump.dataset.gotoEpic];
+      if (!epic) { return; }
+      if (epic.header.hidden || epic.collapsed) { revealEpic(epic); applyFilters(); }
+      flash(epic.header);
+      return;
+    }
+    var entry = entryById[jump.dataset.goto];
+    if (!entry) { return; }
+    if (!entry.matchesFilter || entry.row.hidden) {
+      revealEpic(entry.epic);
+      if (entry.row.dataset.status !== 'open') { activeKeys.add(entry.row.dataset.status); }
+      applyFilters();
+    }
+    flash(entry.row);
+  });
+
+  // ---- detail toggles -----------------------------------------------------
+
+  entries.forEach(function (entry) {
+    if (!entry.detail) { return; }
+    // Generated, never authored. An authored one carries no handler, so of two
+    // identical-looking buttons exactly one would work.
+    var stale = entry.row.cells[1].querySelector('.toggle');
+    if (stale) { stale.remove(); }
+    var toggle = document.createElement('button');
+    toggle.className = 'toggle';
+    toggle.type = 'button';
+    toggle.textContent = 'details';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.addEventListener('click', function () {
+      var open = entry.row.classList.toggle('open');
+      entry.detail.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? 'hide' : 'details';
+    });
+    entry.row.cells[1].appendChild(document.createElement('br'));
+    entry.row.cells[1].appendChild(toggle);
+  });
+
+  // ---- clipboard ----------------------------------------------------------
+
+  function copyByExecCommand(text) {
+    var scratch = document.createElement('textarea'), copied = false;
+    scratch.value = text;
+    scratch.setAttribute('readonly', '');
+    scratch.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0';
+    document.body.appendChild(scratch);
+    scratch.select();
+    scratch.setSelectionRange(0, text.length);
+    try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+    document.body.removeChild(scratch);
+    return copied;
+  }
+
+  function selectNode(node) {
+    var range = document.createRange(), selection = window.getSelection();
+    range.selectNodeContents(node);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  function copyText(text, button, fallbackNode) {
+    function finish(copied) {
+      if (!copied && fallbackNode) { selectNode(fallbackNode); }
+      button.textContent = copied ? 'copied' : (fallbackNode ? 'select + copy' : 'copy failed');
+      button.dataset.state = copied ? 'ok' : 'fail';
+      setTimeout(function () {
+        button.textContent = button.dataset.label;
+        delete button.dataset.state;
+      }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { finish(true); },
+                                               function () { finish(copyByExecCommand(text)); });
+    } else { finish(copyByExecCommand(text)); }
+  }
+
+  // ---- outbox -------------------------------------------------------------
+  // Ordered by ID so the emitted block reads in register order rather than in
+  // click order. A second click on the same button removes the entry: a
+  // misclick has to be undoable without clearing everything.
+
+  var queue = {};
+  var outboxText = document.getElementById('obtext');
+  var outboxCount = document.getElementById('obn');
+  var outbox = document.getElementById('outbox');
+
+  function renderOutbox() {
+    var ids = Object.keys(queue).map(Number).sort(function (a, b) { return a - b; });
+    outboxText.value = ids.map(function (id) { return queue[id]; }).join('\n');
+    outboxCount.textContent = ids.length;
+    outbox.classList.toggle('empty', ids.length === 0);
+    entries.forEach(function (entry) {
+      entry.row.classList.toggle('queued', queue[entry.row.dataset.id] !== undefined);
+    });
+  }
+
+  function collapseDetail(entry) {
+    if (!entry.detail || !entry.row.classList.contains('open')) { return; }
+    entry.row.classList.remove('open');
+    entry.detail.hidden = true;
+    var toggle = entry.row.querySelector('.toggle');
+    if (toggle) { toggle.textContent = 'details'; toggle.setAttribute('aria-expanded', 'false'); }
+  }
+
+  // A row that offers named choices asks which one, not whether. agree/disagree
+  // cannot carry that answer - agreeing to "A or B" names neither - so the
+  // choices themselves become the buttons and replace the pair.
+  function verdictSpec(row) {
+    var raw = row.dataset.choices;
+    if (!raw) { return VERDICTS[row.dataset.action]; }
+    return raw.split('|').map(function (choice) {
+      var label = choice.trim();
+      return {
+        cls: 'yes',
+        label: label,
+        cmd: function (id) { return 'choose #' + id + ' ' + label; }
+      };
+    });
+  }
+
+  entries.forEach(function (entry) {
+    if (entry.row.dataset.status !== 'open') { return; }
+    var spec = verdictSpec(entry.row);
+    if (!spec) { return; }
+    var wrap = document.createElement('div');
+    wrap.className = 'verdict';
+    var id = entry.row.dataset.id;
+    spec.forEach(function (verdict) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'vbtn ' + verdict.cls;
+      button.textContent = verdict.label;
+      button.dataset.cmd = verdict.cmd(id);
+      button.setAttribute('aria-pressed', 'false');
+      button.addEventListener('click', function () {
+        var cmd = verdict.cmd(id);
+        if (queue[id] === cmd) { delete queue[id]; } else { queue[id] = cmd; }
+        wrap.querySelectorAll('.vbtn').forEach(function (other) {
+          other.setAttribute('aria-pressed', String(queue[id] === other.dataset.cmd));
+        });
+        // A verdict ends the reading of that row, so its detail folds away.
+        // Collapsing on un-queue too would be wrong: taking a verdict back is
+        // usually the moment the reasoning is wanted back on screen.
+        if (queue[id] !== undefined) { collapseDetail(entry); }
+        renderOutbox();
+      });
+      wrap.appendChild(button);
+    });
+    entry.row.cells[3].appendChild(wrap);
+  });
+
+  var copyAll = document.getElementById('obcopy');
+  copyAll.dataset.label = 'copy all';
+  copyAll.addEventListener('click', function () {
+    if (!outboxText.value.trim()) { return; }
+    copyText(outboxText.value, copyAll, outboxText);
+  });
+  document.getElementById('obclear').addEventListener('click', function () {
+    queue = {};
+    // A manual resize leaves an inline height behind, which survives emptying
+    // the box and leaves a tall blank box. Clear means clear.
+    outboxText.style.height = '';
+    document.querySelectorAll('.vbtn').forEach(function (b) {
+      b.setAttribute('aria-pressed', 'false');
+    });
+    renderOutbox();
+  });
+
+  // ---- code blocks --------------------------------------------------------
+  // Numbers come from a CSS counter on one wrapper per line. Wrapping is the
+  // only structural change; the text nodes are untouched, so pre.textContent -
+  // what the copy button reads - is still exactly the code.
+
+  Array.prototype.slice.call(document.querySelectorAll('tr.detail pre')).forEach(function (pre) {
+    var code = pre.querySelector('code') || pre;
+    var lines = splitCodeLines(code.textContent);
+    code.textContent = '';
+    lines.forEach(function (line, i) {
+      var span = document.createElement('span');
+      span.className = 'ln';
+      span.textContent = line + (i < lines.length - 1 ? '\n' : '');
+      code.appendChild(span);
+    });
+    pre.classList.add('numbered');
+
+    var box = document.createElement('div');
+    var button = document.createElement('button');
+    pre.parentNode.insertBefore(box, pre);
+    box.className = 'codeblock';
+    box.appendChild(pre);
+    button.type = 'button';
+    button.className = 'copy';
+    button.textContent = 'copy';
+    button.dataset.label = 'copy';
+    box.appendChild(button);
+    button.addEventListener('click', function () { copyText(pre.textContent, button, pre); });
+  });
+
+  // The verifier reads these instead of keeping its own copy. Without it a new
+  // action or a new verdict button is a two-file edit, and missing the second
+  // file makes the verifier blame the register for its own stale constant.
+  window.__cb = {
+    RANK: RANK,
+    STATUS: STATUS,
+    VERDICTS: VERDICTS,
+    verdictSpec: verdictSpec,
+    rankOf: rankOf,
+    matchesFilters: matchesFilters,
+    formatCount: formatCount,
+    formatHint: formatHint,
+    formatEpicCount: formatEpicCount,
+    splitCodeLines: splitCodeLines
+  };
+
+  orderRows();
+  applyFilters();
+  renderOutbox();
+})();
+
+</script>
+</body></html>

@@ -1,7 +1,8 @@
 ---
 name: setup-pre-commit
-version: 1.0.0
 description: Set up pre-commit hooks for PowerShell, Markdown, AsciiDoc, and SQL repositories using the pre-commit framework. Use when user wants to add pre-commit hooks, set up linting/formatting on commit, configure PSScriptAnalyzer, markdownlint, vale, or sqlfluff.
+metadata:
+  version: 1.0.0
 ---
 
 <!-- Local fork. Lineage: mattpocock skills/misc/setup-pre-commit (Husky + lint-staged + Prettier,

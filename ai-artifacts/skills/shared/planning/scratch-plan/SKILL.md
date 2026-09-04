@@ -1,12 +1,13 @@
 ---
 name: scratch-plan
-version: 1.0.0
 description: >
   Review .scratch/ features one by one via a structured grill-me to calibrate or update each
   feature's priority, importance, and effort estimate — then rewrite .scratch/BACKLOG.md in ranked
   order. Use when the backlog has TBD rankings, when circumstances have changed, or when the order
   no longer feels right. Pass a feature slug as $ARGUMENTS to review a single feature; omit for all.
 argument-hint: "[<feature-slug>]  — omit to review all features with TBD or outdated rankings"
+metadata:
+  version: 1.0.0
 ---
 
 # Scratch Plan

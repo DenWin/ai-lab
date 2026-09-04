@@ -1,7 +1,8 @@
 ---
 name: tdd
-version: 1.0.0
 description: Test-driven development applied as a workflow across unit, integration, and acceptance levels, with on-demand stack-specific rules for PowerShell, SQL, Python, and C#. Use when building features or fixing bugs test-first, when writing or reviewing tests, when choosing test doubles, when picking a companion technique (property-based, mutation, contract, approval, snapshot testing), or when the user mentions TDD, red-green-refactor, BDD, acceptance tests, or mocking.
+metadata:
+  version: 1.0.0
 ---
 
 # Test-Driven Development

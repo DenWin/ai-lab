@@ -12,6 +12,7 @@ Otherwise, inline instructions in SKILL.md are enough.
 
 ## How to build
 
-Route through the `tdd` skill — failing test → pass → refactor, one
-behavior at a time. Load the matching stack file (PowerShell, SQL, Python,
-C#). Applies to creating *and* updating bundled scripts.
+Build test-first — failing test → pass → refactor, one behavior at a time.
+If the `tdd` skill is available, route through it (and load its matching stack
+rules); otherwise apply the same loop by hand. Applies to creating *and*
+updating bundled scripts.

@@ -18,6 +18,9 @@ $RECYCLE.BIN/
 # VS Code Local History extension
 /.history/
 
+# Claude Code session scratch: the Action Register
+/.claude/action-register.html
+
 # Gradle cache written by docToolchain runs
 /.gradle/
 

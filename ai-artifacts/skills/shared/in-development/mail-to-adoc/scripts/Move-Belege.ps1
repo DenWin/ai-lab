@@ -1,4 +1,4 @@
-#Requires -Version 7
+﻿#Requires -Version 7
 <#
 .SYNOPSIS
     Moves files from a staging folder to their target folder, removing duplicates.
@@ -69,7 +69,7 @@ if ($Recurse) { $GciParams['Recurse'] = $true }
 $Files = Get-ChildItem @GciParams
 
 if (-not $Files) {
-    Write-Host "No files found in: $SourceDir"
+    Write-Warning "No files found in: $SourceDir"
     return
 }
 

@@ -11,6 +11,9 @@
 
     By default it updates both. Use -Target to limit the sync to one harness.
 
+    Any skill under a 'deprecated/' path in ai-artifacts/skills/shared/ is retained
+    for reference only and is never mirrored to a harness.
+
 .PARAMETER Target
     All (default), Claude, or Codex.
 
@@ -77,6 +80,7 @@ function Get-SkillDirectories {
     )
 
     $dirs = Get-ChildItem $Root -Recurse -Filter 'SKILL.md' -File |
+        Where-Object { $_.FullName -notmatch '[\\/]deprecated[\\/]' } |
         ForEach-Object { $_.Directory } |
         Where-Object { -not $Name -or $_.Name -eq $Name }
 
@@ -169,6 +173,10 @@ function ConvertTo-CodexSkill {
     $description = Get-FrontmatterValue -Document $SourceDocument -Key 'description'
     if (-not $description) { $description = "Repo skill mirrored from $SourceRelPath." }
     $version = Get-FrontmatterValue -Document $SourceDocument -Key 'version'
+    if (-not $version -and $SourceDocument -match "(?s)\A---\r?\n(.*?)\r?\n---\r?\n") {
+        $nested = [regex]::Match($Matches[1], "(?m)^[ \t]+version:[ \t]*(.+?)[ \t]*$")
+        if ($nested.Success) { $version = $nested.Groups[1].Value.Trim().Trim('"', "'") }
+    }
 
     $body = Get-SkillBody -Document $SourceDocument
     $frontmatter = @(

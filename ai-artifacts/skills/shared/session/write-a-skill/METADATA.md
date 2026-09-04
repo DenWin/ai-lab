@@ -17,7 +17,12 @@ upstream-commit: aaf2453fbdfe7a15c07f11d861224f34ab4b53cb
 - Origin: upstream-derived from [https://github.com/mattpocock/skills](https://github.com/mattpocock/skills)
 - Upstream path: `skills/productivity/write-a-skill/SKILL.md`
 - Reconciled commit: `aaf2453fbdfe7a15c07f11d861224f34ab4b53cb`
-- Notes: Localized. Known issue: links REFERENCE.md but ships EXAMPLES.md.
+- Notes: Localized. Content updated from the 2026-08 claude.ai fetch (step 0 for
+  updates, Establish scope, Delivery section, TEMPLATE.md); repo keeps LF endings
+  and markdownlint formatting. The earlier "links REFERENCE.md but ships
+  EXAMPLES.md" mismatch is resolved — SKILL.md now links only shipped files
+  (SCRIPTS.md, TEMPLATE.md, EXAMPLES.md); REFERENCE.md appears only as an
+  illustrative entry in the structure diagram. Runtime `metadata.version` 1.1.0.
 
 ## Citations
 

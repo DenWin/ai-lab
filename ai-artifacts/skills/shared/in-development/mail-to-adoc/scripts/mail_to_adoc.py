@@ -11,15 +11,15 @@ import sys
 from email.utils import getaddresses, parsedate_to_datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 # Project root: scripts/ → mail-to-adoc/ → skills/ → <project-root>/
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
 try:
     _LOCAL_TZ = ZoneInfo("Europe/Berlin")
-except Exception:
-    raise SystemExit("Missing timezone data. Run: pip install tzdata")
+except ZoneInfoNotFoundError:
+    raise SystemExit("Missing timezone data. Run: pip install tzdata") from None
 _LOG_DIR = _PROJECT_ROOT / ".logs"
 
 #: Dennis's own email addresses — used to determine sent vs. received direction.
@@ -90,7 +90,7 @@ def _log_warning(msg: str) -> None:
         log_file = _LOG_DIR / "mail_to_adoc.log"
         from datetime import datetime
 
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.now(tz=_LOCAL_TZ).strftime("%Y-%m-%d %H:%M:%S")
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(f"[{timestamp}] {msg}\n")
     except OSError:
@@ -105,7 +105,7 @@ def _decode_rfc2047(value: str) -> str:
         return value
     try:
         return str(make_header(decode_header(value)))
-    except Exception:
+    except (ValueError, LookupError):
         return value
 
 
@@ -119,7 +119,7 @@ def _decode_qp_body(text: str) -> str:
         return quopri.decodestring(text.encode("ascii", errors="replace")).decode(
             "utf-8", errors="replace"
         )
-    except Exception:
+    except ValueError:
         return text
 
 
@@ -508,7 +508,7 @@ def _peek_mail_metadata(mail_path: Path) -> tuple[object | None, str]:
             mail_date = parsedate_to_datetime(date_str) if date_str else None
             if mail_date:
                 mail_date = mail_date.astimezone(_LOCAL_TZ)
-        except Exception:
+        except (TypeError, ValueError):
             mail_date = None
         return mail_date, subject
     return None, ""
@@ -601,7 +601,7 @@ def process_attachments(
                 nested_out, _ = _write_converted_mail(source_mail)
                 print(f"  Converted mail attachment: {nested_out}")
                 results.append((name, _as_adoc_link(nested_out), False))
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 — nested conversion is best-effort; any failure falls back to a raw-file link
                 print(f"  Warning: Could not convert mail attachment '{name}': {exc}")
                 results.append((name, _as_adoc_link(source_mail), False))
             continue
@@ -666,7 +666,8 @@ def _postprocess_body(body: str) -> str:
        - Line is ≤ 80 chars — longer lines are Quoted-Printable soft-wrapped
          paragraphs that should flow as prose, not be hard-split.
     """
-    from urllib.parse import urlparse, parse_qs, unquote as _unquote
+    from urllib.parse import parse_qs, urlparse
+    from urllib.parse import unquote as _unquote
 
     # ── 1. SafeLinks ──────────────────────────────────────────────────────────
     def _unwrap(m: re.Match) -> str:
@@ -678,8 +679,8 @@ def _postprocess_body(body: str) -> str:
             real = qs.get("url", [None])[0]
             if real:
                 return f"link:{_unquote(real).replace(' ', '%20')}[{m.group('disp')}]"
-        except Exception:
-            pass
+        except ValueError:
+            return m.group(0)
         return m.group(0)
 
     body = re.sub(
@@ -735,9 +736,7 @@ def _postprocess_body(body: str) -> str:
     #   • Everything else that is followed by non-blank → add ' +'
     def _is_structural(line: str) -> bool:
         s = line.strip()
-        return (
-            s.startswith("[") or s in ("'''", "---", "***", "___") or s.startswith("=")
-        )
+        return s.startswith(("[", "=")) or s in ("'''", "---", "***", "___")
 
     lines = body.split("\n")
     out = []
@@ -781,7 +780,7 @@ def _decode_thread_index(raw: str) -> str:
         # Stable short ID: base64 of the 16-byte GUID (bytes 6–21), no padding
         short_id = _b64.b64encode(data[6:22]).decode("ascii").rstrip("=")
         return short_id if depth == 0 else f"{short_id} (Index: {depth})"
-    except Exception:
+    except (ValueError, TypeError):
         return raw
 
 
@@ -973,8 +972,8 @@ def eml_to_adoc(eml_path: Path) -> str:
             mail_date = parsedate_to_datetime(date_str)
             mail_date = mail_date.astimezone(_LOCAL_TZ)
             date = str(mail_date)
-        except Exception:
-            pass
+        except (TypeError, ValueError):
+            mail_date = None
     html_body: str | None = None
     plain_body: str | None = None
     raw_attachments: list[tuple[str, bytes]] = []

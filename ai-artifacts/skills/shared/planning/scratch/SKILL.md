@@ -1,6 +1,5 @@
 ---
 name: scratch
-version: 1.0.0
 description: >
   Manage .scratch/ feature entries and the backlog. Two modes: with $ARGUMENTS quick-captures a new
   feature idea as a stub PRD; without arguments, lists the ranked backlog. The canonical definition
@@ -8,6 +7,8 @@ description: >
   [LAYOUT.md](scratch/LAYOUT.md) rather than restating the conventions. For re-ranking the backlog
   use /planning:scratch-plan.
 argument-hint: "<feature idea or slug>"
+metadata:
+  version: 1.0.0
 ---
 
 # Scratch
