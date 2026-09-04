@@ -13,6 +13,15 @@ Current tracked file:
 
 - `anthropic/claude-ai/profile.md` (claude.ai Chat tab). Live location: Settings → Instructions for Claude.
 
+## Deploying a repo copy
+
+These files often carry OKF frontmatter (`docs/okf-adoption.md`) for repo-side cataloging — revision,
+status, sources. That frontmatter is metadata about the file, not content to deploy. Where the live
+surface is unstructured prose with no frontmatter parser of its own (e.g. a claude.ai settings field),
+deploying means copying the body **below** the closing `---`, never the frontmatter block itself.
+Pasting the block turns catalog metadata into live behavioral prompt text and silently consumes the
+harness's instruction payload on every turn. See `docs/okf-adoption.md` § "Deploy-time stripping".
+
 ## Not the same file (common confusion)
 
 Owned by [docs/repo-layout.adoc](../../docs/repo-layout.adoc) ("Not the same file" section) — not

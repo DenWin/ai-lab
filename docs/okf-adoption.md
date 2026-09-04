@@ -20,6 +20,25 @@ bodies.
 - Runtime `SKILL.md` frontmatter keeps harness-facing fields such as `name`, `description`,
   `argument-hint`, `disable-model-invocation`, and `version`.
 
+## Deploy-Time Stripping
+
+Some repo copies under `ai-artifacts/instructions/<vendor>/<harness>/` carry OKF frontmatter for
+repo-side cataloging (revision, status, sources) while their live destination is a plain-text
+surface with no frontmatter parser — a settings field (claude.ai Instructions for Claude), or a
+file another harness reads as raw prose. In that case the frontmatter is metadata about the repo
+copy, not part of the deployed content: **deploying means copying the body below the closing `---`,
+never the frontmatter block.** Pasting the block turns catalog metadata into live behavioral prompt
+text and silently eats into the harness's instruction budget on every turn.
+
+This differs from the Adoption Boundary below: those files reject OKF frontmatter entirely because
+another system owns their format. Here OKF frontmatter is intentional and correct — it just doesn't
+travel past the repo.
+
+Applies today to `ai-artifacts/instructions/anthropic/claude-ai/profile.md` (see
+`docs/repo-layout.adoc` § "Not the same file"). Apply the same rule to any future instruction repo
+copy whose live surface is unstructured prose rather than a markdown file with its own frontmatter
+convention.
+
 ## Adoption Boundary
 
 Do not force OKF frontmatter onto files whose format is owned by another system:

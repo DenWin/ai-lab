@@ -115,7 +115,10 @@ with a harness-owned file format. The current concrete use is per-skill `METADAT
 == Not the same file (common confusion)
 
 * `ai-artifacts/instructions/anthropic/claude-ai/profile.md` — the claude.ai account profile. Read by the Chat
-  harness only. Live version: Settings → Instructions for Claude (paste the whole file).
+  harness only. Live version: Settings → Instructions for Claude (paste the body **below** the OKF
+  frontmatter, never the `---` block itself — that field has no frontmatter parser, so pasting it
+  turns catalog metadata into behavioral prompt text; see `docs/okf-adoption.md` § "Deploy-time
+  stripping").
 * `~/.claude/CLAUDE.md` — Claude Code's global instructions. Different harness, different file. Expected
   to *overlap* with the profile (same behavioral preferences) but authored and loaded separately.
   Repo copy, when added, lives at `ai-artifacts/instructions/anthropic/claude-code/CLAUDE.md`.
