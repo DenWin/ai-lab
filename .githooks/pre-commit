@@ -47,8 +47,11 @@ fi
 
 if matches '\.(adoc|asciidoc)$'; then
   need_tool "asciidoctor" "Install with: gem install asciidoctor"
-  # Mirror the CI gate (.github/workflows/config-lint.yml) exactly: parse validation only.
-  echo "${filtered}" | grep -E '\.(adoc|asciidoc)$' | xargs -I{} asciidoctor -o /dev/null "{}" || failed=1
+  # Stricter than the CI gate (.github/workflows/config-lint.yml), which parses at the
+  # default failure level: here warnings (unresolved xrefs, missing includes) fail too.
+  echo "${filtered}" | grep -E '\.(adoc|asciidoc)$' | xargs -I{} asciidoctor --failure-level WARN -o /dev/null "{}" || failed=1
+  # Trailing whitespace on the staged AsciiDoc hunks; git carries this check itself.
+  echo "${filtered}" | grep -E '\.(adoc|asciidoc)$' | xargs git diff --cached --check -- || failed=1
 fi
 
 if matches '\.py$'; then
