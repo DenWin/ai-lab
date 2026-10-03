@@ -70,7 +70,7 @@ jobs:
           node-version: "20"
 
       - name: Setup Ruby (for AsciiDoc lint)
-        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8
         with:
           ruby-version: "3.3"
 
